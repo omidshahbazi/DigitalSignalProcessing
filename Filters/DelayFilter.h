@@ -101,7 +101,7 @@ public:
 		m_Buffer[m_BufferIndex] = Value;
 
 		if (Additive)
-			m_Buffer[m_BufferIndex] = delayedSample;
+			m_Buffer[m_BufferIndex] += delayedSample;
 
 		MoveForward();
 
