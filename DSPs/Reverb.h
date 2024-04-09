@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-class Reverb : public IDSP
+template <typename T>
+class Reverb : public IDSP<T>
 {
 public:
 	Reverb(uint32 SampleRate)
@@ -49,14 +50,14 @@ public:
 		return m_Delay.GetOutputMixRate();
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = m_Delay.Process(Buffer[i], true);
 	}
 
 private:
-	DelayFilter m_Delay;
+	DelayFilter<float> m_Delay;
 
 public:
 	static constexpr float MAX_DELAY_TIME = 1;

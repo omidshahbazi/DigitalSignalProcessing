@@ -7,7 +7,8 @@
 #include "../Debug.h"
 #include "../Filters/OscillatorFilter.h"
 
-class Tremolo : public IDSP
+template <typename T>
+class Tremolo : public IDSP<T>
 {
 
 public:
@@ -43,7 +44,7 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
@@ -54,7 +55,7 @@ public:
 	}
 
 private:
-	OscillatorFilter m_Oscillator;
+	OscillatorFilter<T> m_Oscillator;
 	float m_Depth;
 };
 

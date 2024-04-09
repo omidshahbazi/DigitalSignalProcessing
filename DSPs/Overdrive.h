@@ -7,7 +7,8 @@
 #include "../Debug.h"
 #include "../Filters/LowPassFilter.h"
 
-class Overdrive : public IDSP
+template <typename T>
+class Overdrive : public IDSP<T>
 {
 public:
 	Overdrive(void)
@@ -48,7 +49,7 @@ public:
 		return m_Drive;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Buffer[i] * m_Multiplier, m_Factor) / m_Multiplier;

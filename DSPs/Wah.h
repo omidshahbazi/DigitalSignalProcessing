@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/BandPassFilter.h"
 
-class Wah : public IDSP
+template <typename T>
+class Wah : public IDSP<T>
 {
 private:
 	struct FrequencyRange
@@ -68,20 +69,20 @@ public:
 		return m_Ratio;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = Process(Buffer[i]);
 	}
 
 protected:
-	double Process(double Value)
+	T Process(T Value)
 	{
 		return m_BandPassFilter.Process(Value);
 	}
 
 private:
-	BandPassFilter m_BandPassFilter;
+	BandPassFilter<T> m_BandPassFilter;
 	Types m_Type;
 	float m_Ratio;
 };

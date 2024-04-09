@@ -8,7 +8,8 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-class HighPassFilter : public Filter
+template <typename T>
+class HighPassFilter : public Filter<T>
 {
 public:
 	HighPassFilter(uint32 SampleRate)
@@ -52,7 +53,7 @@ public:
 		return m_CutoffFrequency;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		double delta = (Value - m_CapacitorVoltage) * m_Alpha;
 
@@ -86,11 +87,12 @@ public:
 #include "../Math.h"
 #include "../Debug.h"
 
-class HighPassFilter : private BiquadFilter
+template <typename T>
+class HighPassFilter : private BiquadFilter<T>
 {
 public:
 	HighPassFilter(uint32 SampleRate)
-		: BiquadFilter(1),
+		: BiquadFilter<T>(1),
 		  m_SampleRate(SampleRate),
 		  m_CutoffFrequency(1),
 		  m_Resonance(1)
@@ -129,15 +131,15 @@ public:
 		return m_Resonance;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
-		return BiquadFilter::Process(Value);
+		return BiquadFilter<T>::Process(Value);
 	}
 
 private:
 	void Update(void)
 	{
-		BiquadFilter::SetHighPassFilterCoefficients(this, m_SampleRate, m_CutoffFrequency, m_Resonance);
+		BiquadFilter<T>::SetHighPassFilterCoefficients(this, m_SampleRate, m_CutoffFrequency, m_Resonance);
 	}
 
 private:

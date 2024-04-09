@@ -7,7 +7,8 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/DelayFilter.h"
 
-class Flanger : public IDSP
+template <typename T>
+class Flanger : public IDSP<T>
 {
 public:
 	Flanger(uint32 SampleRate)
@@ -73,7 +74,7 @@ public:
 		return m_WetRate;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
@@ -89,8 +90,8 @@ public:
 
 private:
 	uint32 m_SampleRate;
-	OscillatorFilter m_Oscillator;
-	DelayFilter m_Delay;
+	OscillatorFilter<T> m_Oscillator;
+	DelayFilter<float> m_Delay;
 	float m_Depth;
 	float m_WetRate;
 

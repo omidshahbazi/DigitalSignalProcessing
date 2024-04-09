@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/NoiseGateFilter.h"
 
-class NoiseGate : public IDSP
+template <typename T>
+class NoiseGate : public IDSP<T>
 {
 public:
 	NoiseGate(uint32 SampleRate)
@@ -23,14 +24,14 @@ public:
 		return m_NoiseGateFilter.GetThreshold();
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = m_NoiseGateFilter.Process(Buffer[i]);
 	}
 
 private:
-	NoiseGateFilter m_NoiseGateFilter;
+	NoiseGateFilter<T> m_NoiseGateFilter;
 };
 
 #endif

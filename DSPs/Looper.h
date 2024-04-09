@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-class Looper : public IDSP
+template <typename T>
+class Looper : public IDSP<T>
 {
 public:
 	enum class Modes
@@ -47,7 +48,7 @@ public:
 		return m_Volume;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
@@ -64,7 +65,7 @@ public:
 	}
 
 private:
-	DelayFilter m_Delay;
+	DelayFilter<float> m_Delay;
 	Modes m_Mode;
 	float m_Volume;
 

@@ -15,7 +15,7 @@ public:
 	SineWaveGenerator(void)
 		: m_SampleRate(SAMPLE_RATE_44100),
 		  m_Frequency(NOTE_G5),
-		  m_Amplitude(8000),
+		  m_Amplitude(1),
 		  m_DoubleBuffer(true),
 		  m_Buffer(nullptr),
 		  m_BufferLength(0)

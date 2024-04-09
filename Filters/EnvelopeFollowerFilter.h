@@ -8,7 +8,8 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-class EnvelopeFollowerFilter : public Filter
+template <typename T>
+class EnvelopeFollowerFilter : public Filter<T>
 {
 public:
 	EnvelopeFollowerFilter(uint32 SampleRate)
@@ -76,7 +77,7 @@ public:
 		return m_AbsoluteValue;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		Value = m_AbsoluteValue ? fabs(Value) : Value;
 

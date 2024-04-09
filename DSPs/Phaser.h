@@ -8,7 +8,8 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/DelayFilter.h"
 
-class Phaser : public IDSP
+template <typename T>
+class Phaser : public IDSP<T>
 {
 private:
 	static const uint8 DELAY_STAGE_COUNT = 2;
@@ -61,11 +62,11 @@ public:
 		return m_WetRate;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			double output = Buffer[i];
+			T output = Buffer[i];
 
 			float modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
 
@@ -83,8 +84,8 @@ public:
 	}
 
 private:
-	OscillatorFilter m_Oscillator;
-	DelayFilter m_Delays[DELAY_STAGE_COUNT];
+	OscillatorFilter<T> m_Oscillator;
+	DelayFilter<float> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 

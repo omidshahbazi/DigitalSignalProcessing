@@ -5,14 +5,15 @@
 #include "Filter.h"
 #include "../Math.h"
 
-class WaveShaperFilter : public Filter
+template <typename T>
+class WaveShaperFilter : public Filter<T>
 {
 public:
 	struct TablePoints
 	{
 	public:
-		float InputValue;
-		float OutputValue;
+		T InputValue;
+		T OutputValue;
 	};
 
 public:
@@ -39,7 +40,7 @@ public:
 		return m_Length;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		const TablePoints *prev = nullptr;
 		const TablePoints *next = nullptr;

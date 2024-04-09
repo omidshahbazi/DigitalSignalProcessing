@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/ThreeToneControlFilter.h"
 
-class Test : public IDSP
+template <typename T>
+class Test : public IDSP<T>
 {
 public:
 	Test(uint32 SampleRate)
@@ -28,16 +29,14 @@ public:
 		m_ThreeToneControlFilter.SetHighTone(Value);
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
-		{
 			Buffer[i] = m_ThreeToneControlFilter.Process(Buffer[i]);
-		}
 	}
 
 private:
-	ThreeToneControlFilter m_ThreeToneControlFilter;
+	ThreeToneControlFilter<T> m_ThreeToneControlFilter;
 };
 
 #endif

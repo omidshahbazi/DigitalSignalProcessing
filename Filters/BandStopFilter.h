@@ -6,6 +6,7 @@
 #include "../Math.h"
 #include "../Debug.h"
 
+template <typename T>
 class BandStopFilter : private BiquadFilter
 {
 public:
@@ -77,7 +78,7 @@ public:
 		return m_Resonance;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		return BiquadFilter::Process(Value);
 	}

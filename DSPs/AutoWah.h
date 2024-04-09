@@ -6,13 +6,14 @@
 #include "../Math.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
-class AutoWah : private Wah
+template <typename T>
+class AutoWah : private Wah<T>
 {
 #define ENVELOP_AVERAGE_DURATION 0.1
 
 public:
 	AutoWah(uint32 SampleRate)
-		: Wah(SampleRate),
+		: Wah<T>(SampleRate),
 		  m_EnvelopeFollowerFilter(SampleRate),
 		  m_MaxEnvelopSampleCount(ENVELOP_AVERAGE_DURATION * SampleRate),
 		  m_EnvelopeSum(0),
@@ -22,7 +23,7 @@ public:
 		m_EnvelopeFollowerFilter.SetReleaseTime(0.045401);
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
@@ -33,18 +34,18 @@ public:
 				ratio *= 125;
 				ratio = Math::Clamp01(ratio);
 
-				Wah::SetRatio(ratio);
+				Wah<T>::SetRatio(ratio);
 
 				m_EnvelopeSum = 0;
 				m_EnvelopeSampleCount = 0;
 			}
 
-			Buffer[i] = Wah::Process(Buffer[i]);
+			Buffer[i] = Wah<T>::Process(Buffer[i]);
 		}
 	}
 
 private:
-	EnvelopeFollowerFilter m_EnvelopeFollowerFilter;
+	EnvelopeFollowerFilter<T> m_EnvelopeFollowerFilter;
 	uint32 m_MaxEnvelopSampleCount;
 	double m_EnvelopeSum;
 	uint32 m_EnvelopeSampleCount;

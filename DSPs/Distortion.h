@@ -7,7 +7,8 @@
 #include "../Debug.h"
 #include "../Filters/WaveShaperFilter.h"
 
-class Distortion : public IDSP
+template <typename T>
+class Distortion : public IDSP<T>
 {
 public:
 	Distortion(uint32 SampleRate)
@@ -16,7 +17,7 @@ public:
 		  m_Factor(0),
 		  m_Multiplier(0)
 	{
-		static WaveShaperFilter::TablePoints points[] = {{-1, -0.8}, {-0.5, -0.8}, {0, 0}, {0.5, 0.8}, {1, 0.8}};
+		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -0.8}, {-0.5, -0.8}, {0, 0}, {0.5, 0.8}, {1, 0.8}};
 		m_WaveShaperFilter.SetTable(points, 5);
 
 		SetGain(1);
@@ -51,14 +52,14 @@ public:
 		return m_Rate;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = m_Factor * m_WaveShaperFilter.Process(Buffer[i] * m_Multiplier) / m_Multiplier;
 	}
 
 private:
-	WaveShaperFilter m_WaveShaperFilter;
+	WaveShaperFilter<T> m_WaveShaperFilter;
 
 	float m_Gain;
 	float m_Rate;

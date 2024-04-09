@@ -5,7 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-class Sustain : public IDSP
+template <typename T>
+class Sustain : public IDSP<T>
 {
 public:
 	Sustain(uint32 SampleRate)
@@ -50,7 +51,7 @@ public:
 		return m_Wet;
 	}
 
-	void ProcessBuffer(double *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
@@ -70,7 +71,7 @@ public:
 	}
 
 private:
-	DelayFilter m_Delay;
+	DelayFilter<float> m_Delay;
 	bool m_Active;
 	bool m_Wet;
 

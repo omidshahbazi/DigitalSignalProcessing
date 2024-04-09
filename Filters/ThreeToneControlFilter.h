@@ -7,7 +7,8 @@
 #include "BandPassFilter.h"
 #include "HighPassFilter.h"
 
-class ThreeToneControlFilter : public Filter
+template <typename T>
+class ThreeToneControlFilter : public Filter<T>
 {
 #define MULTIPLIER 0.0495
 
@@ -75,7 +76,7 @@ public:
 		return m_HighTone;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		return (m_LowPassFilter.Process(Value) * (1 + (m_LowTone * MULTIPLIER))) +
 			   (m_BandPassFilter.Process(Value) * (1 + (m_MidTone * MULTIPLIER))) +
@@ -87,8 +88,8 @@ private:
 	float m_MidTone;
 	float m_HighTone;
 
-	LowPassFilter m_LowPassFilter;
-	BandPassFilter m_BandPassFilter;
-	HighPassFilter m_HighPassFilter;
+	LowPassFilter<T> m_LowPassFilter;
+	BandPassFilter<T> m_BandPassFilter;
+	HighPassFilter<T> m_HighPassFilter;
 };
 #endif

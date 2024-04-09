@@ -6,7 +6,8 @@
 #include "../Math.h"
 #include "../Memory.h"
 
-class DelayFilter : public Filter
+template <typename T>
+class DelayFilter : public Filter<T>
 {
 public:
 	DelayFilter(uint32 SampleRate, float MaxTime)
@@ -20,9 +21,9 @@ public:
 		  m_BufferIndex(0)
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-		ASSERT(MaxTime * SampleRate * sizeof(float) <= SAMPLE_RATE_22050 * sizeof(float), "The result of MaxTime * SampleRate * sizeof(float) must not exceed from %i", SAMPLE_RATE_22050 * sizeof(float));
+		ASSERT(MaxTime * SampleRate * sizeof(T) <= SAMPLE_RATE_22050 * sizeof(T), "The result of MaxTime * SampleRate * sizeof(T) must not exceed from %i", SAMPLE_RATE_22050 * sizeof(T));
 
-		m_Buffer = Memory::Allocate<float>(m_MaxTime * m_SampleRate, true);
+		m_Buffer = Memory::Allocate<T>(m_MaxTime * m_SampleRate, true);
 
 		SetTime(m_MaxTime);
 		SetFeedback(1);
@@ -77,12 +78,12 @@ public:
 		return m_BufferLength;
 	}
 
-	float GetSample(int32 Offset = 0) const
+	T GetSample(int32 Offset = 0) const
 	{
 		return GetCircularSample(m_BufferIndex + Offset);
 	}
 
-	float GetLerpedSample(int32 Offset, float Fraction) const
+	T GetLerpedSample(int32 Offset, float Fraction) const
 	{
 		int32 index = m_BufferIndex + Offset;
 
@@ -94,9 +95,9 @@ public:
 		m_BufferIndex = (m_BufferIndex + 1) % m_BufferLength;
 	}
 
-	double Process(double Value, bool Additive)
+	T Process(T Value, bool Additive)
 	{
-		float delayedSample = GetCircularSample(m_BufferIndex);
+		T delayedSample = GetCircularSample(m_BufferIndex);
 
 		m_Buffer[m_BufferIndex] = Value;
 
@@ -109,12 +110,12 @@ public:
 	}
 
 private:
-	float GetCircularSample(int32 Index) const
+	T GetCircularSample(int32 Index) const
 	{
 		return m_Buffer[Index % m_BufferLength] * m_Feedback;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		return 0;
 	}
@@ -126,7 +127,7 @@ private:
 	float m_Feedback;
 	float m_OutputMixRate;
 
-	float *m_Buffer;
+	T *m_Buffer;
 	uint32 m_BufferLength;
 	uint32 m_BufferIndex;
 };

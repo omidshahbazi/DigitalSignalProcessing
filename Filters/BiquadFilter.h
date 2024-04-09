@@ -10,7 +10,8 @@
 // https://en.wikipedia.org/wiki/Digital_biquad_filter#Direct_form_2
 // https://www.earlevel.com/main/2012/11/26/biquad-c-source-code/
 // https://music-dsp.music.columbia.narkive.com/YF4UlHAc/auto-wah-implementation#post6
-class BiquadFilter : public Filter
+template <typename T>
+class BiquadFilter : public Filter<T>
 {
 public:
 	struct Coefficients
@@ -72,7 +73,7 @@ public:
 		}
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		if (m_Stages == nullptr)
 			return Value;

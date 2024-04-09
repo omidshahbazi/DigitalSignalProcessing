@@ -6,7 +6,8 @@
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
 
-class SingleToneControlFilter : public Filter
+template <typename T>
+class SingleToneControlFilter : public Filter<T>
 {
 public:
 	SingleToneControlFilter(uint32 SampleRate)
@@ -30,7 +31,7 @@ public:
 		return m_Tone;
 	}
 
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		return Math::Lerp(m_LowPassFilter.Process(Value), m_HighPassFilter.Process(Value), m_Tone);
 	}

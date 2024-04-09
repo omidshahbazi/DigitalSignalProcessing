@@ -7,7 +7,8 @@
 #include "../Debug.h"
 #include <functional>
 
-class OscillatorFilter : public Filter
+template <typename T>
+class OscillatorFilter : public Filter<T>
 {
 public:
 	typedef std::function<float(float)> OscillatorFunction;
@@ -71,7 +72,7 @@ public:
 	}
 
 private:
-	double Process(double Value) override
+	T Process(T Value) override
 	{
 		return 0;
 	}

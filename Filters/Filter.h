@@ -4,12 +4,13 @@
 
 #include "../Common.h"
 
+template <typename T>
 class Filter
 {
 public:
-	virtual double Process(double Value) = 0;
+	virtual T Process(T Value) = 0;
 
-	virtual void ProcessBuffer(double *Buffer, uint16 Count)
+	virtual void ProcessBuffer(T *Buffer, uint16 Count)
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = Process(Buffer[i]);
