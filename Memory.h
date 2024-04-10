@@ -5,25 +5,23 @@
 #include "Common.h"
 #include "Debug.h"
 #include <memory.h>
-#include <Esp.h>
 
 class Memory
 {
 public:
+	static void Initialize(IHAL *HAL)
+	{
+		GetHAL() = HAL;
+	}
+
 	template <typename T>
 	static T *Allocate(uint16 Count = 1, bool FromExternalRAM = false)
 	{
 		uint16 length = sizeof(T) * Count;
 
-		uint32 ramType = MALLOC_CAP_DEFAULT;
-		// if (FromExternalRAM)
-		// 	ramType = MALLOC_CAP_SPIRAM;
-
-		T *mem = reinterpret_cast<T *>(heap_caps_malloc(length, ramType));
+		T *mem = reinterpret_cast<T *>(GetHAL()->Allocate(length));
 
 		ASSERT(mem != nullptr, "Couldn't allocate memory: %i of %iB", Count, sizeof(T));
-
-		Log::WriteDebug("Memory", "%ib Allocated Count: %i, ELement Size: %i, Available RAM: %ib", length, Count, sizeof(T), ESP.getFreeHeap());
 
 		Set(mem, 0, Count);
 
@@ -33,7 +31,7 @@ public:
 	template <typename T>
 	static void Deallocate(T *Memory)
 	{
-		heap_caps_free(Memory);
+		GetHAL()->Deallocate(Memory);
 	}
 
 	template <typename T>
@@ -46,6 +44,14 @@ public:
 	static void Copy(const T *Source, T *Destination, uint16 Count = 1)
 	{
 		memcpy(Destination, Source, sizeof(T) * Count);
+	}
+
+private:
+	static IHAL *&GetHAL(void)
+	{
+		static IHAL *hal;
+
+		return hal;
 	}
 };
 #endif

@@ -3,6 +3,7 @@
 #define LOG_H
 
 #include "Bitwise.h"
+#include "IHAL.h"
 #include <stdio.h>
 
 class Log
@@ -21,6 +22,11 @@ public:
 	};
 
 public:
+	static void Initialize(IHAL *HAL)
+	{
+		GetHAL() = HAL;
+	}
+
 	static void SetMask(Types Mask)
 	{
 		GetMask() = Mask;
@@ -67,7 +73,7 @@ public:
 		buff[index++] = '\n';
 		buff[index++] = '\0';
 
-		printf(buff);
+		GetHAL()->Print(buff);
 	}
 
 	template <typename... ArgsT>
@@ -130,7 +136,22 @@ public:
 		Write(Types::Critical, Tag, FormattedMessage, Args...);
 	}
 
+	template <typename... ArgsT>
+	static void Break(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	{
+		WriteCritical(Tag, FormattedMessage, Args...);
+
+		GetHAL()->Break();
+	}
+
 private:
+	static IHAL *&GetHAL(void)
+	{
+		static IHAL *hal;
+
+		return hal;
+	}
+
 	static Types &GetMask(void)
 	{
 		static Types mask;
