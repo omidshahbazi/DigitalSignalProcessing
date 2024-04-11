@@ -11,11 +11,6 @@
 class ControlFactory
 {
 public:
-	ControlFactory(uint16 UpdateRate)
-		: m_UpdateRate(UpdateRate)
-	{
-	}
-
 	template <typename T, typename... ArgsT>
 	T *Create(ArgsT... Args)
 	{
@@ -37,19 +32,11 @@ public:
 
 	void Process(void)
 	{
-		double now = Time::Now();
-		if (now < m_NextUpdateTime)
-			return;
-
-		m_NextUpdateTime = now + (1 / m_UpdateRate);
-
 		for (Control *control : m_Controls)
 			control->Process();
 	}
 
 private:
-	uint16 m_UpdateRate;
-	double m_NextUpdateTime;
 	std::vector<Control *> m_Controls;
 };
 

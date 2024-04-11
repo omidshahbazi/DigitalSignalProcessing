@@ -9,8 +9,8 @@
 class LED : public Control
 {
 public:
-	LED(IHAL *HAL, uint8 Pin)
-		: Control(HAL, Pin, IHAL::PinModes::Output),
+	LED(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
+		: Control(HAL, Pin, IHAL::PinModes::Output, UpdateRate),
 		  m_TurnedOn(false),
 		  m_IsBlinking(false),
 		  m_BlinkRate(0),
@@ -60,7 +60,7 @@ protected:
 		if (!m_IsBlinking)
 			return;
 
-		if (m_NextBlinkTime > Time::Now())
+		if (m_NextBlinkTime > Time::GetNow())
 			return;
 
 		m_NextBlinkTime += 1 / m_BlinkRate;

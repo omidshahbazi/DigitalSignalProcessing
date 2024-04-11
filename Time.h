@@ -15,7 +15,7 @@ public:
 		GetBeginning();
 	}
 
-	static double Now(void)
+	static double GetNow(void)
 	{
 		high_resolution_clock::time_point now = high_resolution_clock::now();
 

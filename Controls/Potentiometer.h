@@ -13,12 +13,14 @@ public:
 	typedef std::function<void(float)> EventHandler;
 
 public:
-	Potentiometer(IHAL *HAL, uint16 UpdateRate, uint8 Pin)
-		: Control(HAL, Pin, IHAL::PinModes::Input),
+	Potentiometer(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
+		: Control(HAL, Pin, IHAL::PinModes::Input, UpdateRate),
 		  m_Filter(1),
 		  m_Value(-1)
 	{
 		ASSERT(HAL->IsAnAnaloglPin(Pin), "Pin %i is not an analog pin", Pin);
+
+		HAL->SetAnalogReadResolution(10);
 
 		BiquadFilter<float>::SetLowPassFilterCoefficients(&m_Filter, UpdateRate, 0.5);
 	}
