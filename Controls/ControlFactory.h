@@ -2,7 +2,7 @@
 #ifndef CONTROL_FACTORY_H
 #define CONTROL_FACTORY_H
 
-#include "Control.h"
+#include "ControlBase.h"
 #include "../Memory.h"
 #include "../Time.h"
 #include <vector>
@@ -32,12 +32,12 @@ public:
 
 	void Process(void)
 	{
-		for (Control *control : m_Controls)
+		for (ControlBase *control : m_Controls)
 			control->Process();
 	}
 
 private:
-	std::vector<Control *> m_Controls;
+	std::vector<ControlBase *> m_Controls;
 };
 
 #endif

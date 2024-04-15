@@ -2,41 +2,28 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#include "../Common.h"
-#include "../IHAL.h"
-#include "../Debug.h"
-#include "../Time.h"
+#include "ControlBase.h"
 
-class ControlFactory;
+class DualLED;
+class TripleLED;
 
-class Control
+class Control : public ControlBase
 {
-	friend class ControlFactory;
+	friend class DualLED;
+	friend class TripleLED;
 
 public:
 	Control(IHAL *HAL, uint8 Pin, IHAL::PinModes Mode, uint16 UpdateRate)
-		: m_HAL(HAL),
-		  m_Pin(Pin),
-		  m_Enabled(true),
-		  m_UpdateRate(UpdateRate)
+		: ControlBase(HAL, UpdateRate),
+		  m_Pin(Pin)
 	{
-		ASSERT(Mode != IHAL::PinModes::Input || m_HAL->IsAnInputPin(Pin), "Pin %i is not an input pin", Pin);
-		ASSERT(Mode != IHAL::PinModes::Output || m_HAL->IsAnOutputPin(Pin), "Pin %i is not an output pin", Pin);
-
-		m_HAL->SetPinMode(m_Pin, Mode);
-	}
-
-	void SetEnabled(bool Value)
-	{
-		m_Enabled = false;
-	}
-	bool GetEnabled(void) const
-	{
-		return m_Enabled;
+		SetPinMode(m_Pin, Mode);
 	}
 
 protected:
-	virtual void Update(void) = 0;
+	virtual void Update(void) override
+	{
+	}
 
 	uint8 GetPin(void) const
 	{
@@ -45,38 +32,31 @@ protected:
 
 	float AnalogRead(void) const
 	{
-		return m_HAL->AnalogRead(m_Pin);
+		return ControlBase::AnalogRead(m_Pin);
+	}
+
+	void AnalogWrite(float Value) const
+	{
+		return ControlBase::AnalogWrite(m_Pin, Value);
 	}
 
 	bool DigitalRead(void) const
 	{
-		return m_HAL->DigitalRead(m_Pin);
+		return ControlBase::DigitalRead(m_Pin);
 	}
 
 	void DigitalWrite(bool Value)
 	{
-		m_HAL->DigitalWrite(m_Pin, Value);
+		ControlBase::DigitalWrite(m_Pin, Value);
 	}
 
-private:
-	void Process(void)
+	void PWMWrite(float Value)
 	{
-		if (!m_Enabled)
-			return;
-
-		if (Time::GetNow() < m_NextUpdateTime)
-			return;
-		m_NextUpdateTime = Time::GetNow() + (1.0F / m_UpdateRate);
-
-		Update();
+		ControlBase::PWMWrite(m_Pin, Value);
 	}
 
 private:
-	IHAL *m_HAL;
 	uint8 m_Pin;
-	bool m_Enabled;
-	uint16 m_UpdateRate;
-	float m_NextUpdateTime;
 };
 
 #endif
