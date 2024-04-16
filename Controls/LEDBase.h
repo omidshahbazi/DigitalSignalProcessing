@@ -5,6 +5,7 @@
 #include "../Time.h"
 #include "../Debug.h"
 #include "../Math.h"
+#include <functional>
 
 class LEDBase
 {
