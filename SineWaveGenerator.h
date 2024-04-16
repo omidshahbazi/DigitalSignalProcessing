@@ -88,7 +88,6 @@ public:
 private:
 	void SetupWave(void)
 	{
-		static const int32 MAX_VALUE = 0x7FFFFFFF >> (sizeof(int32) - sizeof(T));
 
 		const uint16 SamplePerCycle = m_SampleRate / m_Frequency;
 
@@ -124,5 +123,8 @@ private:
 	bool m_DoubleBuffer;
 	T *m_Buffer;
 	uint32 m_BufferLength;
+
+public:
+	static const int32 MAX_VALUE = 0x7FFFFFFF >> (sizeof(int32) - sizeof(T));
 };
 #endif
