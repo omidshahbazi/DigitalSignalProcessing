@@ -33,7 +33,6 @@ public:
 	virtual uint8 GetAnalogReadResolution(void) const = 0;
 
 	virtual float AnalogRead(uint8 Pin) const = 0;
-	virtual void AnalogWrite(uint8 Pin, float Value) = 0;
 
 	virtual bool DigitalRead(uint8 Pin) const = 0;
 	virtual void DigitalWrite(uint8 Pin, bool Value) = 0;

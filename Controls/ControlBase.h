@@ -43,14 +43,6 @@ protected:
 		return m_HAL->AnalogRead(Pin);
 	}
 
-	//[0, 1]
-	void AnalogWrite(uint8 Pin, float Value) const
-	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
-
-		m_HAL->AnalogWrite(Pin, Value);
-	}
-
 	bool DigitalRead(uint8 Pin) const
 	{
 		return m_HAL->DigitalRead(Pin);

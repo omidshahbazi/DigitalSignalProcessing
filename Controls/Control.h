@@ -35,11 +35,6 @@ protected:
 		return ControlBase::AnalogRead(m_Pin);
 	}
 
-	void AnalogWrite(float Value) const
-	{
-		return ControlBase::AnalogWrite(m_Pin, Value);
-	}
-
 	bool DigitalRead(void) const
 	{
 		return ControlBase::DigitalRead(m_Pin);
