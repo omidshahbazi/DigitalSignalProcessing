@@ -29,9 +29,6 @@ public:
 	virtual void SetPWMResolution(uint8 Value) = 0;
 	virtual uint8 GetPWMResolution(void) const = 0;
 
-	virtual void SetAnalogReadResolution(uint8 Value) = 0;
-	virtual uint8 GetAnalogReadResolution(void) const = 0;
-
 	virtual float AnalogRead(uint8 Pin) const = 0;
 
 	virtual bool DigitalRead(uint8 Pin) const = 0;
