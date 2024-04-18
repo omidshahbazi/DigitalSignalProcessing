@@ -60,8 +60,7 @@ protected:
 	}
 
 private:
-	BiquadFilter<float>
-		m_Filter;
+	BiquadFilter<float> m_Filter;
 	bool m_FilterSwings;
 	float m_Value;
 	EventHandler m_OnChanged;

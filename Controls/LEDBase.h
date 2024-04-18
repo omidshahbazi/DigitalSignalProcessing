@@ -52,9 +52,11 @@ public:
 		ASSERT(0 < Rate, "Invalid Rate");
 
 		SetBrightnessFunction(
-			[&]()
+			[this, MinValue, MaxValue, Rate]()
 			{
-				return ((int32)(sin(m_HAL->GetTimeSinceStartup() * 4 * Rate) + 1) == 0 ? MinValue : MaxValue);
+				float value = fmodf(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
+
+				return ((int32)value == 0 ? MinValue : MaxValue);
 			});
 	}
 
@@ -69,9 +71,13 @@ public:
 		ASSERT(0 < Rate, "Invalid Rate");
 
 		SetBrightnessFunction(
-			[&]()
+			[this, MinValue, MaxValue, Rate]()
 			{
-				return Math::Lerp(MinValue, MaxValue, abs(sin(m_HAL->GetTimeSinceStartup() * 4 * Rate)));
+				float value = fmodf(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
+				if (value > 1)
+					value = 1 - (value - 1);
+
+				return Math::Lerp(MinValue, MaxValue, value);
 			});
 	}
 

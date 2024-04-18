@@ -16,7 +16,8 @@ public:
 	ControlBase(IHAL *HAL, uint16 UpdateRate)
 		: m_HAL(HAL),
 		  m_Enabled(true),
-		  m_UpdateRate(UpdateRate)
+		  m_UpdateRate(UpdateRate),
+		  m_NextUpdateTime(0)
 	{
 	}
 
