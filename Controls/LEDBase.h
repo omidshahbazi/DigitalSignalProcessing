@@ -41,6 +41,10 @@ public:
 			});
 	}
 
+	void SetBlinkingBrighness(float Value, float Rate)
+	{
+		SetBlinkingBrighness(0, Value, Rate);
+	}
 	void SetBlinkingBrighness(float MinValue, float MaxValue, float Rate)
 	{
 		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
@@ -54,6 +58,10 @@ public:
 			});
 	}
 
+	void SetFadingBrighness(float Value, float Rate)
+	{
+		SetFadingBrighness(0, Value, Rate);
+	}
 	void SetFadingBrighness(float MinValue, float MaxValue, float Rate)
 	{
 		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
