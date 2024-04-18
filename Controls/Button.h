@@ -54,7 +54,7 @@ public:
 		if (!m_TurnedOn)
 			return 0;
 
-		return Time::GetNow() - m_TurnedOnTime;
+		return GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;
 	}
 
 protected:
@@ -73,7 +73,7 @@ protected:
 
 		if (m_TurnedOn)
 		{
-			m_TurnedOnTime = Time::GetNow();
+			m_TurnedOnTime = GetHAL()->GetTimeSinceStartup();
 
 			if (m_OnTurnedOn != nullptr)
 				m_OnTurnedOn();

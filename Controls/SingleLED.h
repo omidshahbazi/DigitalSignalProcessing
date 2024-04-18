@@ -9,7 +9,8 @@ class SingleLED : public Control, public LEDBase
 {
 public:
 	SingleLED(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
-		: Control(HAL, Pin, IHAL::PinModes::PWM, UpdateRate)
+		: Control(HAL, Pin, IHAL::PinModes::PWM, UpdateRate),
+		  LEDBase(HAL)
 	{
 	}
 

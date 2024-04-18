@@ -61,6 +61,12 @@ public:
 	}
 
 	template <typename T>
+	static T Cube(T Value)
+	{
+		return (Value * Value) * Value;
+	}
+
+	template <typename T>
 	static T SoftClip(T Value, float Factor)
 	{
 		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");

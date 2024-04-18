@@ -2,9 +2,9 @@
 #ifndef LED_BASE_H
 #define LED_BASE_H
 
-#include "../Time.h"
 #include "../Debug.h"
 #include "../Math.h"
+#include "../IHAL.h"
 #include <functional>
 
 class LEDBase
@@ -13,7 +13,8 @@ public:
 	typedef std::function<float(void)> BrightnessFunction;
 
 public:
-	LEDBase(void)
+	LEDBase(IHAL *HAL)
+		: m_HAL(HAL)
 	{
 		SetConstantBrighness(0);
 	}
@@ -40,15 +41,29 @@ public:
 			});
 	}
 
-	void SetBlinkingBrighness(float Value, float Rate)
+	void SetBlinkingBrighness(float MinValue, float MaxValue, float Rate)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
+		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
 		ASSERT(0 < Rate, "Invalid Rate");
 
 		SetBrightnessFunction(
-			[Value, Rate]()
+			[&]()
 			{
-				return (int32)(sin(Time::GetNow() * 4 * Rate) + 1) * Value;
+				return ((int32)(sin(m_HAL->GetTimeSinceStartup() * 4 * Rate) + 1) == 0 ? MinValue : MaxValue);
+			});
+	}
+
+	void SetFadingBrighness(float MinValue, float MaxValue, float Rate)
+	{
+		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
+		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
+		ASSERT(0 < Rate, "Invalid Rate");
+
+		SetBrightnessFunction(
+			[&]()
+			{
+				return Math::Lerp(MinValue, MaxValue, abs(sin(m_HAL->GetTimeSinceStartup() * 4 * Rate)));
 			});
 	}
 
@@ -58,6 +73,7 @@ public:
 	}
 
 private:
+	IHAL *m_HAL;
 	BrightnessFunction m_Function;
 };
 

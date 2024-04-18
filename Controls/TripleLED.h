@@ -19,6 +19,7 @@ public:
 public:
 	TripleLED(IHAL *HAL, uint8 RedPin, uint8 GreenPin, uint8 BluePin, uint16 UpdateRate)
 		: ControlBase(HAL, UpdateRate),
+		  LEDBase(HAL),
 		  m_LEDRed(HAL, RedPin, IHAL::PinModes::PWM, UpdateRate),
 		  m_LEDGreen(HAL, GreenPin, IHAL::PinModes::PWM, UpdateRate),
 		  m_LEDBlue(HAL, BluePin, IHAL::PinModes::PWM, UpdateRate)

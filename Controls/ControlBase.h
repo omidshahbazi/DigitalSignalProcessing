@@ -4,7 +4,6 @@
 
 #include "../Common.h"
 #include "../IHAL.h"
-#include "../Time.h"
 #include "../Debug.h"
 
 class ControlFactory;
@@ -61,13 +60,19 @@ protected:
 		m_HAL->PWMWrite(Pin, Value);
 	}
 
+protected:
+	IHAL *GetHAL(void) const
+	{
+		return m_HAL;
+	}
+
 private:
 	void Process(void)
 	{
 		if (!m_Enabled)
 			return;
 
-		float time = Time::GetNow();
+		float time = m_HAL->GetTimeSinceStartup();
 		if (time < m_NextUpdateTime)
 			return;
 		m_NextUpdateTime = time + (1.0F / m_UpdateRate);
