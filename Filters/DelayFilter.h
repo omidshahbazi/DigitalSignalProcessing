@@ -35,6 +35,11 @@ public:
 		Memory::Deallocate(m_Buffer);
 	}
 
+	float GetMaxTime(void) const
+	{
+		return m_MaxTime;
+	}
+
 	//[0, MaxTime]
 	void SetTime(float Value)
 	{

@@ -17,14 +17,12 @@ public:
 	};
 
 public:
-	Looper(uint32 SampleRate)
-		: m_Delay(SampleRate, MAX_DELAY_TIME),
+	Looper(uint32 SampleRate, float MaxDelayTime)
+		: m_Delay(SampleRate, MaxDelayTime),
 		  m_Mode(Modes::Replay),
 		  m_Volume(0)
 	{
 		SetVolume(1);
-
-		// SetTime(m_MaxTime);
 	}
 
 	void SetMode(Modes Value)
@@ -68,9 +66,6 @@ private:
 	DelayFilter<float> m_Delay;
 	Modes m_Mode;
 	float m_Volume;
-
-public:
-	static constexpr float MAX_DELAY_TIME = 1; // 2.75;
 };
 
 #endif

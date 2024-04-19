@@ -9,8 +9,8 @@ template <typename T>
 class Sustain : public IDSP<T>
 {
 public:
-	Sustain(uint32 SampleRate)
-		: m_Delay(SampleRate, MAX_DELAY_TIME),
+	Sustain(uint32 SampleRate, float MaxDelayTime)
+		: m_Delay(SampleRate, MaxDelayTime),
 		  m_Active(false),
 		  m_Wet(false)
 	{
@@ -77,7 +77,7 @@ private:
 
 	uint32 m_DelayOffset;
 
-	static constexpr float MAX_DELAY_TIME = 1;
+	static constexpr float MAX_DELAY_TIME = 10;
 };
 
 #endif

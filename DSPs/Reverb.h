@@ -9,14 +9,19 @@ template <typename T>
 class Reverb : public IDSP<T>
 {
 public:
-	Reverb(uint32 SampleRate)
-		: m_Delay(SampleRate, MAX_DELAY_TIME)
+	Reverb(uint32 SampleRate, float MaxDelayTime)
+		: m_Delay(SampleRate, MaxDelayTime)
 	{
 		SetDelayTime(0.5);
 		SetFeedback(0.5);
 	}
 
-	//[0, MAX_DELAY_TIME]
+	float GetMaxDelayTime(void) const
+	{
+		return m_Delay.GetMaxTime();
+	}
+
+	//[0, GetMaxDelayTime()]
 	void SetDelayTime(float Value)
 	{
 		m_Delay.SetTime(Value);
@@ -58,9 +63,6 @@ public:
 
 private:
 	DelayFilter<float> m_Delay;
-
-public:
-	static constexpr float MAX_DELAY_TIME = 1;
 };
 
 #endif
