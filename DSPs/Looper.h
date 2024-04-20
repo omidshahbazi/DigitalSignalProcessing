@@ -42,7 +42,7 @@ public:
 	{
 		m_Delay.Clear();
 
-		m_Mode = Modes::Replay;
+		m_IsReplaying = true;
 		m_FirstRecordIsDone = false;
 	}
 
