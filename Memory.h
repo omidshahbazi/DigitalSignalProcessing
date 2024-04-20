@@ -35,13 +35,13 @@ public:
 	}
 
 	template <typename T>
-	static void Set(T *Memory, int32 Value, uint16 Count = 1)
+	static void Set(T *Memory, int32 Value, uint32 Count = 1)
 	{
 		memset(Memory, Value, sizeof(T) * Count);
 	}
 
 	template <typename T>
-	static void Copy(const T *Source, T *Destination, uint16 Count = 1)
+	static void Copy(const T *Source, T *Destination, uint32 Count = 1)
 	{
 		memcpy(Destination, Source, sizeof(T) * Count);
 	}

@@ -9,29 +9,41 @@ template <typename T>
 class Looper : public IDSP<T>
 {
 public:
-	enum class Modes
-	{
-		Replay = 0,
-		Record,
-		Additive
-	};
-
-public:
 	Looper(uint32 SampleRate, float MaxDelayTime)
 		: m_Delay(SampleRate, MaxDelayTime),
-		  m_Mode(Modes::Replay),
+		  m_IsReplaying(true),
+		  m_FirstRecordIsDone(false),
 		  m_Volume(0)
 	{
 		SetVolume(1);
 	}
 
-	void SetMode(Modes Value)
+	//(0, ...]
+	void SetReplayMode(float Value)
 	{
-		m_Mode = Value;
+		ASSERT(0 < Value, "Invalid Value");
+
+		if (!m_FirstRecordIsDone)
+		{
+			m_FirstRecordIsDone = true;
+
+			m_Delay.SetTime(Value);
+		}
+
+		m_IsReplaying = true;
 	}
-	Modes GetMode(void) const
+
+	void SetRecordMode(void)
 	{
-		return m_Mode;
+		m_IsReplaying = false;
+	}
+
+	void Clear(void)
+	{
+		m_Delay.Clear();
+
+		m_Mode = Modes::Replay;
+		m_FirstRecordIsDone = false;
 	}
 
 	//[0, 1]
@@ -53,10 +65,10 @@ public:
 			double input = Buffer[i];
 			float delayLine = m_Delay.GetSample();
 
-			if (m_Mode == Modes::Replay)
+			if (m_IsReplaying)
 				m_Delay.MoveForward();
 			else
-				Buffer[i] = m_Delay.Process(input, (m_Mode == Modes::Additive));
+				Buffer[i] = m_Delay.Process(input, m_FirstRecordIsDone);
 
 			Buffer[i] = (input + (delayLine * m_Volume)) * 0.5;
 		}
@@ -64,7 +76,8 @@ public:
 
 private:
 	DelayFilter<float> m_Delay;
-	Modes m_Mode;
+	bool m_IsReplaying;
+	bool m_FirstRecordIsDone;
 	float m_Volume;
 };
 

@@ -21,7 +21,7 @@ public:
 	{
 		ASSERT(HAL->IsADigitalPin(Pin), "Pin %i is not an digital pin", Pin);
 
-		Update();
+		m_TurnedOn = DigitalRead();
 	}
 
 	void SetOnStateChangedListener(OnStateChangedEventHandler &&Listener)
@@ -69,9 +69,7 @@ protected:
 			return;
 		}
 
-		m_TurnedOn = newValue;
-
-		if (m_TurnedOn)
+		if (newValue)
 		{
 			m_TurnedOnTime = GetHAL()->GetTimeSinceStartup();
 
@@ -80,6 +78,8 @@ protected:
 		}
 		else if (m_OnTurnedOff != nullptr)
 			m_OnTurnedOff(GetHeldTime());
+
+		m_TurnedOn = newValue;
 
 		if (m_OnStateChanged != nullptr)
 			m_OnStateChanged(m_TurnedOn);

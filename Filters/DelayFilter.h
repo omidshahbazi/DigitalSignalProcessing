@@ -17,12 +17,13 @@ public:
 		  m_Feedback(0),
 		  m_OutputMixRate(0),
 		  m_Buffer(nullptr),
+		  m_TotalBufferLength(m_MaxTime * m_SampleRate),
 		  m_BufferLength(0),
 		  m_BufferIndex(0)
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
 
-		m_Buffer = Memory::Allocate<T>(m_MaxTime * m_SampleRate, true);
+		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
 		SetTime(m_MaxTime);
 		SetFeedback(1);
@@ -113,6 +114,11 @@ public:
 		return Math::Lerp(Value, delayedSample, m_OutputMixRate);
 	}
 
+	void Clear(void)
+	{
+		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
+	}
+
 private:
 	T GetCircularSample(uint32 Index) const
 	{
@@ -132,6 +138,7 @@ private:
 	float m_OutputMixRate;
 
 	T *m_Buffer;
+	uint32 m_TotalBufferLength;
 	uint32 m_BufferLength;
 	uint32 m_BufferIndex;
 };
