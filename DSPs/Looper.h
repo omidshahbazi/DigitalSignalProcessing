@@ -40,7 +40,7 @@ public:
 
 	void Clear(void)
 	{
-		m_Delay.Clear();
+		m_Delay.Reset();
 
 		m_IsReplaying = true;
 		m_FirstRecordIsDone = false;
@@ -66,7 +66,10 @@ public:
 			T delayLine = m_Delay.GetSample();
 
 			if (m_IsReplaying)
-				m_Delay.MoveForward();
+			{
+				if (m_FirstRecordIsDone)
+					m_Delay.MoveForward();
+			}
 			else
 				Buffer[i] = m_Delay.Process(input, m_FirstRecordIsDone);
 

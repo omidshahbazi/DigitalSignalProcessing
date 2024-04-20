@@ -121,6 +121,13 @@ public:
 		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
 	}
 
+	void Reset(void)
+	{
+		Clear();
+
+		m_BufferIndex = 0;
+	}
+
 private:
 	T GetCircularSample(uint32 Index) const
 	{

@@ -88,7 +88,6 @@ public:
 private:
 	void SetupWave(void)
 	{
-
 		const uint16 SamplePerCycle = m_SampleRate / m_Frequency;
 
 		const int8 STEP = (m_DoubleBuffer ? 2 : 1);
@@ -100,7 +99,7 @@ private:
 				Memory::Deallocate(m_Buffer);
 
 			m_BufferLength = requiredBufferLen;
-			m_Buffer = Memory::Allocate<T>(m_BufferLength);
+			m_Buffer = Memory::Allocate<T>(m_BufferLength, true);
 		}
 
 		for (uint32 i = 0; i < SamplePerCycle; ++i)
