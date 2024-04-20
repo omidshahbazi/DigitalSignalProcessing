@@ -125,6 +125,8 @@ public:
 	{
 		Clear();
 
+		SetTime(m_MaxTime);
+
 		m_BufferIndex = 0;
 	}
 
