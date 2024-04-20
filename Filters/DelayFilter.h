@@ -21,7 +21,6 @@ public:
 		  m_BufferIndex(0)
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-		ASSERT(MaxTime * SampleRate * sizeof(T) <= SAMPLE_RATE_22050 * sizeof(T), "The result of MaxTime * SampleRate * sizeof(T) must not exceed from %i", SAMPLE_RATE_22050 * sizeof(T));
 
 		m_Buffer = Memory::Allocate<T>(m_MaxTime * m_SampleRate, true);
 
@@ -83,14 +82,14 @@ public:
 		return m_BufferLength;
 	}
 
-	T GetSample(int32 Offset = 0) const
+	T GetSample(uint32 Offset = 0) const
 	{
 		return GetCircularSample(m_BufferIndex + Offset);
 	}
 
-	T GetLerpedSample(int32 Offset, float Fraction) const
+	T GetLerpedSample(uint32 Offset, float Fraction) const
 	{
-		int32 index = m_BufferIndex + Offset;
+		uint32 index = m_BufferIndex + Offset;
 
 		return Math::Lerp(GetCircularSample(index), GetCircularSample(index + 1), Fraction);
 	}
@@ -115,7 +114,7 @@ public:
 	}
 
 private:
-	T GetCircularSample(int32 Index) const
+	T GetCircularSample(uint32 Index) const
 	{
 		return m_Buffer[Index % m_BufferLength] * m_Feedback;
 	}

@@ -13,7 +13,7 @@ public:
 	template <typename T, typename... ArgsT>
 	T *Create(ArgsT... Args)
 	{
-		T *control = Memory::Allocate<T>(1, true);
+		T *control = Memory::Allocate<T>(1);
 		new (control) T(Args...);
 
 		m_Controls.push_back(control);

@@ -35,6 +35,9 @@ public:
 	template <typename... ArgsT>
 	static void Write(Types Type, const char *Tag, const char *FormattedMessage, ArgsT... Args)
 	{
+		if (GetHAL() == nullptr)
+			return;
+
 		if (!Bitwise::IsEnabled(GetMask(), Type))
 			return;
 

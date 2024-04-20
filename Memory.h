@@ -15,11 +15,11 @@ public:
 	}
 
 	template <typename T>
-	static T *Allocate(uint16 Count = 1, bool FromExternalRAM = false)
+	static T *Allocate(uint32 Count = 1, bool OnSDRAM = false)
 	{
-		uint16 length = sizeof(T) * Count;
+		uint32 length = sizeof(T) * Count;
 
-		T *mem = reinterpret_cast<T *>(GetHAL()->Allocate(length));
+		T *mem = reinterpret_cast<T *>(GetHAL()->Allocate(length, OnSDRAM));
 
 		ASSERT(mem != nullptr, "Couldn't allocate memory: %i of %iB", Count, sizeof(T));
 

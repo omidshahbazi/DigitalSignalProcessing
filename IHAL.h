@@ -13,7 +13,7 @@ public:
 	};
 
 public:
-	virtual void *Allocate(uint16 Size) = 0;
+	virtual void *Allocate(uint32 Size, bool OnSDRAM = false) = 0;
 	virtual void Deallocate(void *Memory) = 0;
 
 	virtual bool IsAnAnaloglPin(uint8 Pin) const = 0;
