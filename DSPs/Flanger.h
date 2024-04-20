@@ -80,9 +80,9 @@ public:
 		{
 			m_Delay.Process(Buffer[i], true);
 
-			float modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
 
-			float delayedSample = m_Delay.GetLerpedSample(modulationIndex, modulationIndex - (int32)modulationIndex);
+			T delayedSample = m_Delay.GetLerpedSample(modulationIndex, modulationIndex - (int32)modulationIndex);
 
 			Buffer[i] = Math::Lerp(Buffer[i], delayedSample, m_WetRate);
 		}
@@ -91,7 +91,7 @@ public:
 private:
 	uint32 m_SampleRate;
 	OscillatorFilter<T> m_Oscillator;
-	DelayFilter<float> m_Delay;
+	DelayFilter<T> m_Delay;
 	float m_Depth;
 	float m_WetRate;
 

@@ -11,7 +11,7 @@ template <typename T>
 class OscillatorFilter : public Filter<T>
 {
 public:
-	typedef std::function<float(float)> OscillatorFunction;
+	typedef std::function<T(T)> OscillatorFunction;
 
 public:
 	OscillatorFilter(uint32 SampleRate)
@@ -62,19 +62,18 @@ public:
 		return m_PhaseOffset;
 	}
 
-	double Process(void)
+	T Process(T Value) override
 	{
-		float value = m_Function(fmod(m_Phase + m_PhaseOffset, Math::TWO_PI_VALUE));
+		return Process();
+	}
+
+	T Process(void)
+	{
+		T value = m_Function(fmod(m_Phase + m_PhaseOffset, Math::TWO_PI_VALUE));
 
 		m_Phase = fmod(m_Phase + m_DeltaPhase, Math::TWO_PI_VALUE);
 
 		return value;
-	}
-
-private:
-	T Process(T Value) override
-	{
-		return 0;
 	}
 
 private:

@@ -80,7 +80,7 @@ public:
 
 		for (uint8 i = 0; i < m_StageCount; ++i)
 		{
-			double input = Value;
+			T input = Value;
 
 			Stage &stage = m_Stages[i];
 

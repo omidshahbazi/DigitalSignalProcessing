@@ -62,8 +62,8 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			double input = Buffer[i];
-			float delayLine = m_Delay.GetSample();
+			T input = Buffer[i];
+			T delayLine = m_Delay.GetSample();
 
 			if (m_IsReplaying)
 				m_Delay.MoveForward();
@@ -75,7 +75,7 @@ public:
 	}
 
 private:
-	DelayFilter<float> m_Delay;
+	DelayFilter<T> m_Delay;
 	bool m_IsReplaying;
 	bool m_FirstRecordIsDone;
 	float m_Volume;

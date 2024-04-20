@@ -48,7 +48,7 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			float modulation = (1 - m_Depth) + (m_Depth * 0.5 * (1 + m_Oscillator.Process()));
+			T modulation = (1 - m_Depth) + (m_Depth * 0.5 * (1 + m_Oscillator.Process()));
 
 			Buffer[i] *= modulation;
 		}

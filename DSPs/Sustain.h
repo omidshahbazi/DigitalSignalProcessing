@@ -55,7 +55,7 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			float delayedSample = m_Delay.GetSample(m_DelayOffset);
+			T delayedSample = m_Delay.GetSample(m_DelayOffset);
 			m_DelayOffset = (m_DelayOffset + 1) % m_Delay.GetBufferLength();
 
 			if (m_Active)
@@ -66,12 +66,12 @@ public:
 					Buffer[i] += delayedSample;
 			}
 			else
-				m_Delay.Process(Buffer[i], false);
+				m_Delay.Process(Buffer[i]);
 		}
 	}
 
 private:
-	DelayFilter<float> m_Delay;
+	DelayFilter<T> m_Delay;
 	bool m_Active;
 	bool m_Wet;
 

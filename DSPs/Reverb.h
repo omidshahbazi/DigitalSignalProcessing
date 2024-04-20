@@ -62,7 +62,7 @@ public:
 	}
 
 private:
-	DelayFilter<float> m_Delay;
+	DelayFilter<T> m_Delay;
 };
 
 #endif

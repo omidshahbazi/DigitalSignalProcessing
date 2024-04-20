@@ -34,11 +34,11 @@ public:
 
 	T Process(T Value) override
 	{
-		double envelope = EnvelopeFollowerFilter<T>::Process(Value);
+		T envelope = EnvelopeFollowerFilter<T>::Process(Value);
 
 		if (envelope < m_Threshold)
 		{
-			double gainFactor = 1 - (envelope / m_Threshold);
+			T gainFactor = 1 - (envelope / m_Threshold);
 			// double gainFactor = Math::Clamp01(1.0 - ((envelope - m_Threshold) / (1 - m_Threshold)));
 
 			Value *= gainFactor;

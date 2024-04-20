@@ -68,11 +68,11 @@ public:
 		{
 			T output = Buffer[i];
 
-			float modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
 
 			for (uint8 j = 0; j < DELAY_STAGE_COUNT; ++j)
 			{
-				m_Delays[j].Process(output, false);
+				m_Delays[j].Process(output);
 
 				output += m_Delays[j].GetLerpedSample(modulationIndex, modulationIndex - (int32)modulationIndex);
 			}
@@ -85,7 +85,7 @@ public:
 
 private:
 	OscillatorFilter<T> m_Oscillator;
-	DelayFilter<float> m_Delays[DELAY_STAGE_COUNT];
+	DelayFilter<T> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 

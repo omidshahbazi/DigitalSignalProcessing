@@ -100,14 +100,16 @@ public:
 		m_BufferIndex = (m_BufferIndex + 1) % m_BufferLength;
 	}
 
+	T Process(T Value) override
+	{
+		return Process(Value, false);
+	}
+
 	T Process(T Value, bool Additive)
 	{
 		T delayedSample = GetCircularSample(m_BufferIndex);
 
-		m_Buffer[m_BufferIndex] = Value;
-
-		if (Additive)
-			m_Buffer[m_BufferIndex] += delayedSample;
+		m_Buffer[m_BufferIndex] = (Additive ? (Value + delayedSample) * 0.5F : Value);
 
 		MoveForward();
 
@@ -123,11 +125,6 @@ private:
 	T GetCircularSample(uint32 Index) const
 	{
 		return m_Buffer[Index % m_BufferLength] * m_Feedback;
-	}
-
-	T Process(T Value) override
-	{
-		return 0;
 	}
 
 private:

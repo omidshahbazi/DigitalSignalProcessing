@@ -47,7 +47,7 @@ public:
 private:
 	EnvelopeFollowerFilter<T> m_EnvelopeFollowerFilter;
 	uint32 m_MaxEnvelopSampleCount;
-	double m_EnvelopeSum;
+	T m_EnvelopeSum;
 	uint32 m_EnvelopeSampleCount;
 };
 #endif

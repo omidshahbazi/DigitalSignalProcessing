@@ -55,7 +55,7 @@ public:
 
 	T Process(T Value) override
 	{
-		double delta = (Value - m_CapacitorVoltage) * m_Alpha;
+		T delta = (Value - m_CapacitorVoltage) * m_Alpha;
 
 		m_CapacitorVoltage += delta;
 
