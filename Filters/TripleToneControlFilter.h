@@ -1,6 +1,6 @@
 #pragma once
-#ifndef THREE_TONE_CONTROL_FILTER_H
-#define THREE_TONE_CONTROL_FILTER_H
+#ifndef TRIPLE_TONE_CONTROL_FILTER_H
+#define TRIPLE_TONE_CONTROL_FILTER_H
 
 #include "../Math.h"
 #include "LowPassFilter.h"
@@ -8,12 +8,12 @@
 #include "HighPassFilter.h"
 
 template <typename T>
-class ThreeToneControlFilter : public Filter<T>
+class TripleToneControlFilter : public Filter<T>
 {
 #define MULTIPLIER 0.0495
 
 public:
-	ThreeToneControlFilter(uint32 SampleRate)
+	TripleToneControlFilter(uint32 SampleRate)
 		: m_LowTone(0),
 		  m_MidTone(0),
 		  m_HighTone(0),

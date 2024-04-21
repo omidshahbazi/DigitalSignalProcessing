@@ -7,6 +7,7 @@
 #include "../Math.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
+// TODO: Algorithm seems incorrect
 template <typename T>
 class Compressor : public IDSP<T>
 {
