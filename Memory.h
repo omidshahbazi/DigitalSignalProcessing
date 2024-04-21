@@ -37,7 +37,7 @@ public:
 	template <typename T>
 	static void Set(T *Memory, int32 Value, uint32 Count = 1)
 	{
-		memset(Memory, Value, sizeof(T) * Count);
+		memset(reinterpret_cast<void *>(Memory), Value, sizeof(T) * Count);
 	}
 
 	template <typename T>
