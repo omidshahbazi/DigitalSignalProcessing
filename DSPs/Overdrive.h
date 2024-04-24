@@ -11,10 +11,9 @@ class Overdrive : public IDSP<T>
 {
 public:
 	Overdrive(void)
-		: m_Gain(0),
-		  m_Drive(0),
-		  m_Factor(0),
-		  m_Multiplier(0)
+		: m_Drive(0),
+		  m_PreGain(0),
+		  m_PostGain(0)
 	{
 		SetDrive(1);
 	}
