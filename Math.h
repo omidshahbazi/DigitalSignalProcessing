@@ -67,6 +67,27 @@ public:
 	}
 
 	template <typename T>
+	static T SoftLimit(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		return Value * (27 + (Value * Value)) / (27 + (9 * Value * Value));
+	}
+
+	template <typename T>
+	static T SoftClip3(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		if (Value < -3)
+			return -1;
+		else if (Value > 3)
+			return 1;
+
+		return SoftLimit(Value);
+	}
+
+	template <typename T>
 	static T SoftClip(T Value, float Factor)
 	{
 		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
