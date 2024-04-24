@@ -67,99 +67,16 @@ public:
 	}
 
 	template <typename T>
-	static T SoftLimit(T Value)
+	static T SoftClip(T Value)
 	{
 		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
 
-		return Value * (27 + (Value * Value)) / (27 + (9 * Value * Value));
-	}
-
-	template <typename T>
-	static T SoftClip3(T Value)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		if (Value < -3)
+		if (Value < -1)
 			return -1;
-		else if (Value > 3)
+		else if (Value > 1)
 			return 1;
 
-		return SoftLimit(Value);
-	}
-
-	template <typename T>
-	static T SoftClip(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		return atan(Value) * Factor;
-	}
-
-	// Factor [0, 1]
-	template <typename T>
-	static T SymmetricalSoftClip(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		T absValue = abs(Value);
-
-		if (absValue < Factor)
-			return 2 * Value;
-
-		if (Factor <= absValue && absValue < Factor * 2)
-			return ((3 - pow(2 - (3 * absValue), 2)) / 3) * Sign(Value);
-
-		// if (Factor * 2 <= absValue)
-		return Sign(Value);
-	}
-
-	template <typename T>
-	static T HardClip(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		return (abs(Value) > Factor ? Sign(Value) : Value);
-	}
-
-	template <typename T>
-	static T ExponentialDiodClip(T Value)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		if (Value < 0)
-			Value = -1 + exp(Value);
-		else if (Value > 0)
-			Value = 1 - exp(-Value);
-		else
-			Value = 0;
-
-		return Value;
-	}
-
-	template <typename T>
-	static T ExponentialSaturation(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		// return pow(abs(Value), 2) * Math::Sign(Value) * Factor;
-
-		return exp(abs(Value)) * Math::Sign(Value) * 0.37 * Factor;
-	}
-
-	template <typename T>
-	static T AsymmetricSineSaturation(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		return sin(Value * HALF_PI_VALUE) * Factor;
-	}
-
-	template <typename T>
-	static T FoldbackDistortion(T Value, float Factor)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		return (abs(Value) > Factor ? Value : -1);
+		return atan(Value);
 	}
 
 public:
