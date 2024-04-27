@@ -124,6 +124,6 @@ private:
 	uint32 m_BufferLength;
 
 public:
-	static const int32 MAX_VALUE = 0x7FFFFFFF >> (sizeof(int32) - sizeof(T));
+	static const int32 MAX_VALUE = 0x7FFFFEF2 >> (sizeof(int32) - sizeof(T));
 };
 #endif

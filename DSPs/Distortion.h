@@ -12,30 +12,16 @@ class Distortion : public IDSP<T>
 {
 public:
 	Distortion(uint32 SampleRate)
-		: m_Gain(0),
-		  m_Rate(0),
-		  m_Factor(0),
-		  m_Multiplier(0)
+		: m_Rate(0),
+		  m_Gain(0),
+		  m_PreGain(0),
+		  m_PostGain(0)
 	{
-		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -0.8}, {-0.5, -0.8}, {0, 0}, {0.5, 0.8}, {1, 0.8}};
+		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -1}, {-0.5, -1}, {0, 0}, {0.5, 1}, {1, 1}};
 		m_WaveShaperFilter.SetTable(points, 5);
 
 		SetGain(1);
 		SetRate(1);
-	}
-
-	//[0, 1]
-	void SetGain(float Value)
-	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
-
-		m_Gain = Value;
-
-		m_Factor = Math::Lerp(1.0, 4, m_Gain);
-	}
-	float GetGain(void) const
-	{
-		return m_Gain;
 	}
 
 	//[0, 1]
@@ -45,27 +31,41 @@ public:
 
 		m_Rate = Value;
 
-		m_Multiplier = Math::Lerp(50.0, 400, m_Rate);
+		m_PreGain = Math::Lerp(1.0, 4, m_Rate);
 	}
 	float GetRate(void) const
 	{
 		return m_Rate;
 	}
 
+	//[0, 1]
+	void SetGain(float Value)
+	{
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+
+		m_Gain = Value;
+
+		m_PostGain = Math::Lerp(1.0, 2, m_Gain);
+	}
+	float GetGain(void) const
+	{
+		return m_Gain;
+	}
+
 	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = m_Factor * m_WaveShaperFilter.Process(Buffer[i] * m_Multiplier) / m_Multiplier;
+			Buffer[i] = m_PostGain * m_WaveShaperFilter.Process(Buffer[i] * m_PreGain);
 	}
 
 private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
 
-	float m_Gain;
 	float m_Rate;
+	float m_Gain;
 
-	float m_Factor;
-	float m_Multiplier;
+	float m_PreGain;
+	float m_PostGain;
 };
 
 #endif
