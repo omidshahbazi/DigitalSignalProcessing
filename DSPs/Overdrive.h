@@ -28,6 +28,8 @@ public:
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
 		m_Drive = Value;
+
+		m_PreGain = Math::Lerp(1.0, 2, m_Drive);
 	}
 	float GetDrive(void) const
 	{
@@ -40,6 +42,8 @@ public:
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
 		m_Gain = Value;
+
+		m_PostGain = Math::Lerp(0.5, 1, m_Gain);
 	}
 	float GetGain(void) const
 	{
@@ -51,7 +55,8 @@ public:
 		for (uint16 i = 0; i < Count; ++i)
 		{
 			Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
-			Buffer[i] = Math::SoftClip(Buffer[i] * (m_Drive + 1)) * (m_Gain + 1);
+			Buffer[i] += (1 - m_PostGain);
+			Buffer[i] = Math::SoftClip(Buffer[i] * m_PreGain) * m_PostGain;
 		}
 	}
 
@@ -59,6 +64,9 @@ private:
 	BandPassFilter<T> m_BandPassFilter;
 	float m_Drive;
 	float m_Gain;
+
+	float m_PreGain;
+	float m_PostGain;
 };
 
 #endif

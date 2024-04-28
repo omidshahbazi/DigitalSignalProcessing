@@ -78,7 +78,7 @@ public:
 protected:
 	T Process(T Value)
 	{
-		return m_BandPassFilter.Process(Value);
+		return m_BandPassFilter.Process(Value) * 0.8;
 	}
 
 private:

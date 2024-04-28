@@ -74,10 +74,8 @@ public:
 			{
 				m_Delays[j].Process(output);
 
-				output += m_Delays[j].GetLerpedSample(modulationIndex, modulationIndex - (int32)modulationIndex);
+				output = (output + m_Delays[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex))) * 0.5;
 			}
-
-			output /= DELAY_STAGE_COUNT;
 
 			Buffer[i] = Math::Lerp(Buffer[i], output, m_WetRate);
 		}

@@ -19,15 +19,15 @@ public:
 	}
 
 	//(0, ...]
-	void SetReplayMode(float Value)
+	void SetReplayMode(float RecordLineTime)
 	{
-		ASSERT(0 < Value, "Invalid Value");
+		ASSERT(0 < RecordLineTime, "Invalid RecordLineTime");
 
 		if (!m_FirstRecordIsDone)
 		{
 			m_FirstRecordIsDone = true;
 
-			m_Delay.SetTime(Value);
+			m_Delay.SetTime(RecordLineTime);
 		}
 
 		m_IsReplaying = true;
@@ -63,17 +63,21 @@ public:
 		for (uint16 i = 0; i < Count; ++i)
 		{
 			T input = Buffer[i];
-			T delayLine = m_Delay.GetSample();
+			T output = input;
 
 			if (m_IsReplaying)
 			{
 				if (m_FirstRecordIsDone)
+				{
+					output = (input + (m_Delay.GetSample() * m_Volume)) * 0.5;
+
 					m_Delay.MoveForward();
+				}
 			}
 			else
-				Buffer[i] = m_Delay.Process(input, m_FirstRecordIsDone);
+				output = m_Delay.Process(input, m_FirstRecordIsDone);
 
-			Buffer[i] = (input + (delayLine * m_Volume)) * 0.5;
+			Buffer[i] = output;
 		}
 	}
 

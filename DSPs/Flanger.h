@@ -82,7 +82,7 @@ public:
 
 			T modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
 
-			T delayedSample = m_Delay.GetLerpedSample(modulationIndex, modulationIndex - (int32)modulationIndex);
+			T delayedSample = m_Delay.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
 
 			Buffer[i] = Math::Lerp(Buffer[i], delayedSample, m_WetRate);
 		}

@@ -16,7 +16,8 @@ public:
 	Switch(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
 		: Control(HAL, Pin, IHAL::PinModes::Input, UpdateRate),
 		  m_TurnedOn(false),
-		  m_TurnedOnTime(0)
+		  m_TurnedOnTime(0),
+		  m_HeldTime(0)
 	{
 		ASSERT(HAL->IsADigitalPin(Pin), "Pin %i is not an digital pin", Pin);
 
@@ -43,22 +44,25 @@ public:
 		return m_TurnedOn;
 	}
 
-	float GetTurnedOnTime(void) const
+	float GetHeldTime(void) const
 	{
-		if (!m_TurnedOn)
-			return 0;
-
-		return GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;
+		return m_HeldTime;
 	}
 
 protected:
-	void Update(void) override
+	virtual void Update(void) override
 	{
 		bool newValue = DigitalRead();
 		if (m_TurnedOn == newValue)
-			return;
+		{
+			m_HeldTime = GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;
 
-		if (newValue)
+			return;
+		}
+
+		m_TurnedOn = newValue;
+
+		if (m_TurnedOn)
 		{
 			m_TurnedOnTime = GetHAL()->GetTimeSinceStartup();
 
@@ -66,17 +70,21 @@ protected:
 				m_OnTurnedOn();
 		}
 		else if (m_OnTurnedOff != nullptr)
-			m_OnTurnedOff(GetTurnedOnTime());
-
-		m_TurnedOn = newValue;
+			m_OnTurnedOff(m_HeldTime);
 
 		if (m_OnStateChanged != nullptr)
 			m_OnStateChanged(m_TurnedOn);
+
+		if (!m_TurnedOn)
+		{
+			m_HeldTime = 0;
+		}
 	}
 
 private:
 	bool m_TurnedOn;
 	float m_TurnedOnTime;
+	float m_HeldTime;
 	OnStateChangedEventHandler m_OnStateChanged;
 	TurnedOnEventHandler m_OnTurnedOn;
 	TurnedOffEventHandler m_OnTurnedOff;

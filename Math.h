@@ -61,6 +61,14 @@ public:
 	}
 
 	template <typename T>
+	static T Fraction(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		return Value - (int32)Value;
+	}
+
+	template <typename T>
 	static T Cube(T Value)
 	{
 		return (Value * Value) * Value;
