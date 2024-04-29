@@ -21,6 +21,7 @@ public:
 	{
 		m_EnvelopeFollowerFilter.SetAttackTime(0.015841);
 		m_EnvelopeFollowerFilter.SetReleaseTime(0.045401);
+		m_EnvelopeFollowerFilter.SetUseAbsoluteValue(false);
 	}
 
 	void ProcessBuffer(T *Buffer, uint16 Count) override

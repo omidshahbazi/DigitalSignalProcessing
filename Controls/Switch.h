@@ -53,6 +53,7 @@ protected:
 	virtual void Update(void) override
 	{
 		bool newValue = DigitalRead();
+
 		if (m_TurnedOn == newValue)
 		{
 			m_HeldTime = GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;

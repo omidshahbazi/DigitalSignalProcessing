@@ -17,12 +17,13 @@ public:
 
 		EnvelopeFollowerFilter<T>::SetAttackTime(0.02);
 		EnvelopeFollowerFilter<T>::SetReleaseTime(0.06);
+		EnvelopeFollowerFilter<T>::SetUseAbsoluteValue(false);
 	}
 
-	//[0, 1]
+	//[0dB, 80dB]
 	void SetThreshold(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 80, "Invalid Value");
 
 		m_Threshold = Value;
 	}

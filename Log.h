@@ -157,7 +157,7 @@ private:
 
 	static Types &GetMask(void)
 	{
-		static Types mask;
+		static Types mask = Types::None;
 
 		return mask;
 	}

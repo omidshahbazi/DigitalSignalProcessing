@@ -2,8 +2,6 @@
 #ifndef ENVELOPE_FOLLOWER_FILTER_H
 #define ENVELOPE_FOLLOWER_FILTER_H
 
-#define METHOD_2
-
 #include "Filter.h"
 #include "../Math.h"
 #include "../Debug.h"
@@ -16,84 +14,62 @@ public:
 		: m_SampleRate(SampleRate),
 		  m_AttackTime(0),
 		  m_ReleaseTime(0),
-		  m_AbsoluteValue(false),
-		  m_Attack(0),
-		  m_Release(0),
-		  m_Envelope(0)
+		  m_UseAbsoluteValue(false),
+		  m_AttackSlope(0),
+		  m_ReleaseSlope(0),
+		  m_Envelope(0.1)
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
 
-		SetAttackTime(0.00001);
-		SetReleaseTime(0.00001);
-		SetAbsoluteValue(false);
+		SetAttackTime(0.001);
+		SetReleaseTime(0.001);
+		SetUseAbsoluteValue(false);
 	}
 
-	//(0, 0.2]
+	//[0.001, 10]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 0.2, "Invalid Value");
+		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value");
 
 		m_AttackTime = Value;
 
-#if defined(METHOD_1)
-		m_Attack = exp(-1 / (m_AttackTime * m_SampleRate));
-#elif defined(METHOD_2)
-		m_Attack = pow(0.01, 1 / (m_AttackTime * m_SampleRate));
-#elif defined(METHOD_3)
-		m_Attack = exp(log(0.5) / (m_AttackTime * m_SampleRate));
-#endif
+		m_AttackSlope = expf(-(1.0F / m_SampleRate) / m_AttackTime);
 	}
 	float GetAttackTime(void) const
 	{
 		return m_AttackTime;
 	}
 
-	//(0, 0.2]
+	//[0.001, 10]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 0.2, "Invalid Value");
+		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value");
 
 		m_ReleaseTime = Value;
 
-#if defined(METHOD_1)
-		m_Release = exp(-1 / (m_ReleaseTime * m_SampleRate));
-#elif defined(METHOD_2)
-		m_Release = pow(0.01, 1 / (m_ReleaseTime * m_SampleRate));
-#elif defined(METHOD_3)
-		m_Release = exp(log(0.5) / (m_ReleaseTime * m_SampleRate));
-#endif
+		m_ReleaseSlope = expf(-(1.0F / m_SampleRate) / m_AttackTime);
 	}
 	float GetReleaseTime(void) const
 	{
 		return m_ReleaseTime;
 	}
 
-	void SetAbsoluteValue(bool Value)
+	void SetUseAbsoluteValue(bool Value)
 	{
-		m_AbsoluteValue = Value;
+		m_UseAbsoluteValue = Value;
 	}
-	float GetAbsoluteValue(void) const
+	float GetUseAbsoluteValue(void) const
 	{
-		return m_AbsoluteValue;
+		return m_UseAbsoluteValue;
 	}
 
 	T Process(T Value) override
 	{
-		Value = m_AbsoluteValue ? fabs(Value) : Value;
+		Value = m_UseAbsoluteValue ? fabs(Value) : Value;
 
-		double multiplier = 0;
-		if (Value > m_Envelope)
-			multiplier = m_Attack;
-		else
-			multiplier = m_Release;
+		float currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
 
-#if defined(METHOD_1)
-		m_Envelope += multiplier * (Value - m_Envelope);
-#elif defined(METHOD_2)
-		m_Envelope = multiplier * (m_Envelope - Value) + Value;
-#elif defined(METHOD_3)
-		m_Envelope = Math::Lerp(Value, m_Envelope, multiplier);
-#endif
+		m_Envelope = Math::Lerp(Value, m_Envelope, currentSlope);
 
 		return m_Envelope;
 	}
@@ -102,10 +78,11 @@ protected:
 	uint32 m_SampleRate;
 	float m_AttackTime;
 	float m_ReleaseTime;
-	bool m_AbsoluteValue;
+	bool m_UseAbsoluteValue;
 
-	double m_Attack;
-	double m_Release;
+	double m_RatioMultiplier;
+	double m_AttackSlope;
+	double m_ReleaseSlope;
 	double m_Envelope;
 };
 

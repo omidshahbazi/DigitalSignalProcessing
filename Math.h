@@ -5,6 +5,7 @@
 #include <cmath>
 #include <type_traits>
 
+// TODO: Find all of the cmath usages and them into this class
 class Math
 {
 public:
@@ -72,6 +73,54 @@ public:
 	static T Cube(T Value)
 	{
 		return (Value * Value) * Value;
+	}
+
+	// TODO: Needs to be tested
+	template <typename T>
+	static T Sawtooth(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		return 2 * (Value - floor(0.5 - Value));
+	}
+
+	template <typename T>
+	static T Log2(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		T frac;
+		int32 exp;
+		frac = frexpf(fabsf(Value), &exp);
+		Value = 1.23149591368684;
+		Value *= frac;
+		Value += -4.11852516267426;
+		Value *= frac;
+		Value += 6.02197014179219;
+		Value *= frac;
+		Value += -3.13396450166353;
+		Value += exp;
+		return Value;
+	}
+
+	template <typename T>
+	static T Log10(T Value)
+	{
+		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+
+		return Log2(Value) * 0.3010299956639812;
+	}
+
+	template <typename T>
+	static T Exponential(T Value)
+	{
+		return expf(Value);
+	}
+
+	template <typename T>
+	static T Power10(T Value)
+	{
+		return Exponential(2.302585092994046 * Value);
 	}
 
 	template <typename T>

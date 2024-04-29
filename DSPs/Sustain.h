@@ -76,8 +76,6 @@ private:
 	bool m_Wet;
 
 	uint32 m_DelayOffset;
-
-	static constexpr float MAX_DELAY_TIME = 10;
 };
 
 #endif

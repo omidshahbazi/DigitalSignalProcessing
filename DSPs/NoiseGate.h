@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-	//[0, 1]
+	//[0dB, 80dB]
 	void SetThreshold(float Value)
 	{
 		m_NoiseGateFilter.SetThreshold(Value);
