@@ -5,7 +5,6 @@
 #include <cmath>
 #include <type_traits>
 
-// TODO: Find all of the cmath usages and them into this class
 class Math
 {
 public:
