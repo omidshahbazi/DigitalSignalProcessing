@@ -47,13 +47,13 @@ protected:
 			if (0 < m_Value && m_Value < 1)
 				m_Value = Math::Clamp01(m_Filter.Process(m_Value));
 
-			if (abs(prevValue - m_Value) < 0.005F)
+			if (Math::Absolute(prevValue - m_Value) < 0.005F)
 				return;
 		}
 		else if (m_Value == prevValue)
 			return;
 
-		Log::WriteDebug("Potentiometer", "Potentiometer GPIOPins::Pin%i value: %f, diff %f", (uint8)GetPin(), m_Value, abs(prevValue - m_Value));
+		Log::WriteDebug("Potentiometer", "Potentiometer GPIOPins::Pin%i value: %f, diff %f", (uint8)GetPin(), m_Value, Math::Absolute(prevValue - m_Value));
 
 		if (m_OnChanged != nullptr)
 			m_OnChanged(m_Value);

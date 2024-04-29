@@ -28,7 +28,7 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			m_EnvelopeSum += abs(m_EnvelopeFollowerFilter.Process(Buffer[i]));
+			m_EnvelopeSum += Math::Absolute(m_EnvelopeFollowerFilter.Process(Buffer[i]));
 			if (++m_EnvelopeSampleCount == m_MaxEnvelopSampleCount)
 			{
 				float ratio = m_EnvelopeSum / m_EnvelopeSampleCount;

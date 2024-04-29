@@ -68,7 +68,7 @@ public:
 		{
 			T output = Buffer[i];
 
-			T modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
 
 			for (uint8 j = 0; j < DELAY_STAGE_COUNT; ++j)
 			{

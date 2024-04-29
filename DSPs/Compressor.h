@@ -35,7 +35,7 @@ public:
 	{
 		m_EnvelopeFollowerFilter.SetAttackTime(Value);
 
-		m_AttackSlope2 = expf(-((1 / m_SampleRate) / Value));
+		m_AttackSlope2 = Math::Exponential(-((1 / m_SampleRate) / Value));
 	}
 	float GetAttackTime(void) const
 	{

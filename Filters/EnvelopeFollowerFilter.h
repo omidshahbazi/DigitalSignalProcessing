@@ -33,7 +33,7 @@ public:
 
 		m_AttackTime = Value;
 
-		m_AttackSlope = expf(-(1.0F / m_SampleRate) / m_AttackTime);
+		m_AttackSlope = Math::Exponential(-(1.0F / m_SampleRate) / m_AttackTime);
 	}
 	float GetAttackTime(void) const
 	{
@@ -47,7 +47,7 @@ public:
 
 		m_ReleaseTime = Value;
 
-		m_ReleaseSlope = expf(-(1.0F / m_SampleRate) / m_AttackTime);
+		m_ReleaseSlope = Math::Exponential(-(1.0F / m_SampleRate) / m_AttackTime);
 	}
 	float GetReleaseTime(void) const
 	{
@@ -65,7 +65,7 @@ public:
 
 	T Process(T Value) override
 	{
-		Value = m_UseAbsoluteValue ? fabs(Value) : Value;
+		Value = m_UseAbsoluteValue ? Math::Absolute(Value) : Value;
 
 		float currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
 

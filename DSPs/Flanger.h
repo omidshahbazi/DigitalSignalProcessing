@@ -80,7 +80,7 @@ public:
 		{
 			m_Delay.Process(Buffer[i], true);
 
-			T modulationIndex = abs(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
 
 			T delayedSample = m_Delay.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
 

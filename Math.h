@@ -9,6 +9,36 @@
 class Math
 {
 public:
+	template <typename T>
+	static T Absolute(T Value)
+	{
+		return fabs(Value);
+	}
+
+	template <typename T, typename U>
+	static T Moderate(T X, U Y)
+	{
+		return fmod(X, Y);
+	}
+
+	template <typename T>
+	static int8 Sign(T Value)
+	{
+		return (0 < Value) - (Value < 0);
+	}
+
+	template <typename T, typename U>
+	static T Min(T A, U B)
+	{
+		return (A < B ? A : B);
+	}
+
+	template <typename T, typename U>
+	static T Max(T A, U B)
+	{
+		return (A > B ? A : B);
+	}
+
 	template <typename T, typename U, typename V>
 	static T Clamp(T Value, U Min, V Max)
 	{
@@ -43,24 +73,6 @@ public:
 		return (Min * (1 - Time)) + (Max * Time);
 	}
 
-	template <typename T, typename U>
-	static T Min(T A, U B)
-	{
-		return (A < B ? A : B);
-	}
-
-	template <typename T, typename U>
-	static T Max(T A, U B)
-	{
-		return (A > B ? A : B);
-	}
-
-	template <typename T>
-	static int8 Sign(T Value)
-	{
-		return (0 < Value) - (Value < 0);
-	}
-
 	template <typename T>
 	static T Fraction(T Value)
 	{
@@ -91,7 +103,7 @@ public:
 
 		T frac;
 		int32 exp;
-		frac = frexpf(fabsf(Value), &exp);
+		frac = frexpf(Absolute(Value), &exp);
 		Value = 1.23149591368684;
 		Value *= frac;
 		Value += -4.11852516267426;

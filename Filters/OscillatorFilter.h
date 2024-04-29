@@ -69,9 +69,9 @@ public:
 
 	T Process(void)
 	{
-		T value = m_Function(fmod(m_Phase + m_PhaseOffset, Math::TWO_PI_VALUE));
+		T value = m_Function(Math::Moderate(m_Phase + m_PhaseOffset, Math::TWO_PI_VALUE));
 
-		m_Phase = fmod(m_Phase + m_DeltaPhase, Math::TWO_PI_VALUE);
+		m_Phase = Math::Moderate(m_Phase + m_DeltaPhase, Math::TWO_PI_VALUE);
 
 		return value;
 	}

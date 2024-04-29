@@ -54,7 +54,7 @@ public:
 		SetBrightnessFunction(
 			[this, MinValue, MaxValue, Rate]()
 			{
-				float value = fmodf(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
+				float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
 
 				return ((int32)value == 0 ? MinValue : MaxValue);
 			});
@@ -73,7 +73,7 @@ public:
 		SetBrightnessFunction(
 			[this, MinValue, MaxValue, Rate]()
 			{
-				float value = fmodf(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
+				float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
 				if (value > 1)
 					value = 1 - (value - 1);
 
