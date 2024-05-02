@@ -24,6 +24,8 @@ public:
 protected:
 	void Update(void) override
 	{
+		Switch::Update();
+
 		if (GetTurnedOn() && m_OnHold != nullptr)
 			m_OnHold(GetHeldTime());
 	}
