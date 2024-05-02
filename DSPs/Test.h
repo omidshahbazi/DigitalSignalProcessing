@@ -5,38 +5,71 @@
 #include "IDSP.h"
 #include "../Filters/TripleToneControlFilter.h"
 
+#include "IDSP.h"
+#include "../Math.h"
+#include "../Debug.h"
+#include "../Filters/BandPassFilter.h"
+
 template <typename T>
 class Test : public IDSP<T>
 {
 public:
 	Test(uint32 SampleRate)
-		: m_TripleToneControlFilter(SampleRate)
+		: m_BandPassFilter(SampleRate),
+		  m_Drive(0),
+		  m_Gain(0)
 	{
+		m_BandPassFilter.SetFrequencies(100, 5 * KHz);
+
+		SetGain(1);
+		SetDrive(1);
 	}
 
-	void SetLowTone(float Value)
+	//[0, 1]
+	void SetDrive(float Value)
 	{
-		m_TripleToneControlFilter.SetLowTone(Value);
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+
+		m_Drive = Value;
+
+		m_PreGain = Math::Lerp(1.0, 2, m_Drive);
+	}
+	float GetDrive(void) const
+	{
+		return m_Drive;
 	}
 
-	void SetMidTone(float Value)
+	//[0, 1]
+	void SetGain(float Value)
 	{
-		m_TripleToneControlFilter.SetMidTone(Value);
-	}
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
-	void SetHighTone(float Value)
+		m_Gain = Value;
+
+		m_PostGain = Math::Lerp(0.5, 1, m_Gain);
+	}
+	float GetGain(void) const
 	{
-		m_TripleToneControlFilter.SetHighTone(Value);
+		return m_Gain;
 	}
 
 	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = m_TripleToneControlFilter.Process(Buffer[i]);
+		{
+			Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
+			Buffer[i] += (1 - m_PostGain);
+			Buffer[i] = Math::SoftClip(Buffer[i] * m_PreGain) * m_PostGain;
+		}
 	}
 
 private:
-	TripleToneControlFilter<T> m_TripleToneControlFilter;
+	BandPassFilter<T> m_BandPassFilter;
+	float m_Drive;
+	float m_Gain;
+
+	float m_PreGain;
+	float m_PostGain;
 };
 
 #endif

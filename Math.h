@@ -86,15 +86,6 @@ public:
 		return (Value * Value) * Value;
 	}
 
-	// TODO: Needs to be tested
-	template <typename T>
-	static T Sawtooth(T Value)
-	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
-
-		return 2 * (Value - floor(0.5 - Value));
-	}
-
 	template <typename T>
 	static T Log2(T Value)
 	{
