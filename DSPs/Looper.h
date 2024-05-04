@@ -69,7 +69,7 @@ public:
 			{
 				if (m_FirstRecordIsDone)
 				{
-					output = (input + (m_Delay.GetSample() * m_Volume)) * 0.5;
+					output = Math::Lerp(input, m_Delay.GetSample(), m_Volume);
 
 					m_Delay.MoveForward();
 				}
