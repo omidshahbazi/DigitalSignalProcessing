@@ -7,8 +7,9 @@ class IHAL
 public:
 	enum class PinModes
 	{
-		Input = 0,
-		Output,
+		AnalogInput = 0,
+		DigitalInput,
+		DigitalOutput,
 		PWM
 	};
 

@@ -14,7 +14,7 @@ public:
 
 public:
 	Switch(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
-		: Control(HAL, Pin, IHAL::PinModes::Input, UpdateRate),
+		: Control(HAL, Pin, IHAL::PinModes::DigitalInput, UpdateRate),
 		  m_TurnedOn(false),
 		  m_TurnedOnTime(0),
 		  m_HeldTime(0)

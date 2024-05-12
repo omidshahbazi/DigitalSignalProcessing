@@ -14,7 +14,7 @@ public:
 
 public:
 	Potentiometer(IHAL *HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false)
-		: Control(HAL, Pin, IHAL::PinModes::Input, UpdateRate),
+		: Control(HAL, Pin, IHAL::PinModes::AnalogInput, UpdateRate),
 		  m_Filter(1),
 		  m_FilterSwings(FilterSwings),
 		  m_Value(-1)
