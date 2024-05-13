@@ -32,3 +32,5 @@ typedef uint64_t uint64;
 
 #define MIN_FREQUENCY 20.0
 #define MAX_FREQUENCY 20.0 * KHz
+
+#define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
