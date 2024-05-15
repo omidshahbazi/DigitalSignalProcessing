@@ -14,9 +14,9 @@ public:
 	{
 	}
 
-	void SetOnRotatedListener(Rotary::RotatedEventHandler &&Listener)
+	void SetOnRotatedListener(Rotary::RotatedEventHandler Listener)
 	{
-		m_Rotary.SetOnRotatedListener(std::forward<Rotary::RotatedEventHandler &&>(Listener));
+		m_Rotary.SetOnRotatedListener(Listener);
 	}
 
 protected:

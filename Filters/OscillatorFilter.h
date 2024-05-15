@@ -5,13 +5,13 @@
 #include "Filter.h"
 #include "../Math.h"
 #include "../Debug.h"
-#include <functional>
+#include "../ContextCallback.h"
 
 template <typename T>
 class OscillatorFilter : public Filter<T>
 {
 public:
-	typedef std::function<T(T)> OscillatorFunction;
+	typedef ContextCallback<T, T> OscillatorFunction;
 
 public:
 	OscillatorFilter(uint32 SampleRate)
@@ -23,13 +23,7 @@ public:
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
 
-		SetFunction(
-			[](float value)
-			{
-				return sin(value);
-			});
-
-		SetFrequency(20);
+		SetFunction(DefaultFunction);
 	}
 
 	void SetFunction(OscillatorFunction &&Function)
@@ -74,6 +68,11 @@ public:
 		m_Phase = Math::Moderate(m_Phase + m_DeltaPhase, Math::TWO_PI_VALUE);
 
 		return value;
+	}
+
+	static T DefaultFunction(float Value)
+	{
+		return sin(Value);
 	}
 
 private:

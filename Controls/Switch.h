@@ -3,14 +3,13 @@
 #define SWITCH_H
 
 #include "Control.h"
-#include <functional>
 
 class Switch : public Control
 {
 public:
-	typedef std::function<void(bool)> OnStateChangedEventHandler;
-	typedef std::function<void(void)> TurnedOnEventHandler;
-	typedef std::function<void(float)> TurnedOffEventHandler;
+	typedef ContextCallback<void, bool> OnStateChangedEventHandler;
+	typedef ContextCallback<void> TurnedOnEventHandler;
+	typedef ContextCallback<void, float> TurnedOffEventHandler;
 
 public:
 	Switch(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
@@ -67,14 +66,12 @@ protected:
 		{
 			m_TurnedOnTime = GetHAL()->GetTimeSinceStartup();
 
-			if (m_OnTurnedOn != nullptr)
-				m_OnTurnedOn();
+			m_OnTurnedOn();
 		}
-		else if (m_OnTurnedOff != nullptr)
+		else
 			m_OnTurnedOff(m_HeldTime);
 
-		if (m_OnStateChanged != nullptr)
-			m_OnStateChanged(m_TurnedOn);
+		m_OnStateChanged(m_TurnedOn);
 
 		if (!m_TurnedOn)
 		{

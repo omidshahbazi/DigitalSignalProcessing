@@ -3,12 +3,11 @@
 #define BUTTON_H
 
 #include "Switch.h"
-#include <functional>
 
 class Button : public Switch
 {
 public:
-	typedef std::function<void(float)> HoldEventHandler;
+	typedef ContextCallback<void, float> HoldEventHandler;
 
 public:
 	Button(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
@@ -16,7 +15,7 @@ public:
 	{
 	}
 
-	void SetOnHoldListener(TurnedOffEventHandler &&Listener)
+	void SetOnHoldListener(HoldEventHandler &&Listener)
 	{
 		m_OnHold = Listener;
 	}
@@ -26,7 +25,7 @@ protected:
 	{
 		Switch::Update();
 
-		if (GetTurnedOn() && m_OnHold != nullptr)
+		if (GetTurnedOn())
 			m_OnHold(GetHeldTime());
 	}
 

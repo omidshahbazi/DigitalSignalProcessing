@@ -1,16 +1,14 @@
 #pragma once
 
-#include <inttypes.h>
+typedef char int8;
+typedef short int16;
+typedef int int32;
+typedef long long int64;
 
-typedef int8_t int8;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef int64_t int64;
-
-typedef uint8_t uint8;
-typedef uint16_t uint16;
+typedef unsigned char uint8;
+typedef unsigned short uint16;
 typedef unsigned int uint32;
-typedef uint64_t uint64;
+typedef unsigned long long uint64;
 
 #define KHz 1000
 #define MHz 1000 * KHz
@@ -34,3 +32,15 @@ typedef uint64_t uint64;
 #define MAX_FREQUENCY 20.0 * KHz
 
 #define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
+
+#ifdef DEBUG
+#ifdef ENABLE_TYPE_CHECK
+#include <type_traits>
+
+#define ARE_TYPES_THE_SAME(A, B) std::is_same<T, float>()
+#else
+#define ARE_TYPES_THE_SAME(A, B) true
+#endif
+#else
+#define ARE_TYPES_THE_SAME(A, B) true
+#endif

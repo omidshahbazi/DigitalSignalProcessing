@@ -5,12 +5,12 @@
 #include "../Debug.h"
 #include "../Math.h"
 #include "../IHAL.h"
-#include <functional>
+#include "../ContextCallback.h"
 
 class LEDBase
 {
 public:
-	typedef std::function<float(void)> BrightnessFunction;
+	typedef ContextCallback<float> BrightnessFunction;
 
 public:
 	LEDBase(IHAL *HAL)
@@ -19,10 +19,8 @@ public:
 		SetConstantBrighness(0);
 	}
 
-	void SetBrightnessFunction(BrightnessFunction &&Function)
+	void SetBrightnessFunction(BrightnessFunction Function)
 	{
-		ASSERT(Function != nullptr, "Invalid Function");
-
 		m_Function = Function;
 	}
 	float GetBrightness(void) const
@@ -34,11 +32,7 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
-		SetBrightnessFunction(
-			[Value]()
-			{
-				return Value;
-			});
+		SetBrightnessFunction({this, DefaultConstantBrighness});
 	}
 
 	void SetBlinkingBrighness(float Value, float Rate)
@@ -51,13 +45,7 @@ public:
 		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
 		ASSERT(0 < Rate, "Invalid Rate");
 
-		SetBrightnessFunction(
-			[this, MinValue, MaxValue, Rate]()
-			{
-				float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
-
-				return ((int32)value == 0 ? MinValue : MaxValue);
-			});
+		SetBrightnessFunction({this, DefaultBlinkingBrighness});
 	}
 
 	void SetFadingBrighness(float Value, float Rate)
@@ -70,15 +58,7 @@ public:
 		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
 		ASSERT(0 < Rate, "Invalid Rate");
 
-		SetBrightnessFunction(
-			[this, MinValue, MaxValue, Rate]()
-			{
-				float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * Rate, 2);
-				if (value > 1)
-					value = 1 - (value - 1);
-
-				return Math::Lerp(MinValue, MaxValue, value);
-			});
+		SetBrightnessFunction({this, DefaultFadingBrighness});
 	}
 
 	void Toggle(void)
@@ -86,9 +66,39 @@ public:
 		SetConstantBrighness(GetBrightness() == 0 ? 1 : 0);
 	}
 
+	static float DefaultConstantBrighness(void *Context)
+	{
+		return static_cast<LEDBase *>(Context)->m_DefaultValue;
+	}
+
+	static float DefaultBlinkingBrighness(void *Context)
+	{
+		LEDBase *led = static_cast<LEDBase *>(Context);
+
+		float value = Math::Moderate(led->m_HAL->GetTimeSinceStartup() * 2 * led->m_DefaultRate, 2);
+
+		return ((int32)value == 0 ? led->m_DefaultMinValue : led->m_DefaultMaxValue);
+	}
+
+	static float DefaultFadingBrighness(void *Context)
+	{
+		LEDBase *led = static_cast<LEDBase *>(Context);
+
+		float value = Math::Moderate(led->m_HAL->GetTimeSinceStartup() * 2 * led->m_DefaultRate, 2);
+		if (value > 1)
+			value = 1 - (value - 1);
+
+		return Math::Lerp(led->m_DefaultMinValue, led->m_DefaultMaxValue, value);
+	}
+
 private:
 	IHAL *m_HAL;
 	BrightnessFunction m_Function;
+
+	float m_DefaultValue;
+	float m_DefaultMinValue;
+	float m_DefaultMaxValue;
+	float m_DefaultRate;
 };
 
 #endif

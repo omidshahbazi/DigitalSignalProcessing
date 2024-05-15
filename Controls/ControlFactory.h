@@ -4,39 +4,38 @@
 
 #include "ControlBase.h"
 #include "../Memory.h"
-#include <vector>
-#include <algorithm>
 
 class ControlFactory
 {
+private:
+	static const uint8 MAX_CONTROL_COUNT = 31;
+
 public:
+	ControlFactory(void)
+		: m_ControlCount(0)
+	{
+	}
+
 	template <typename T, typename... ArgsT>
 	T *Create(ArgsT... Args)
 	{
 		T *control = Memory::Allocate<T>();
 		new (control) T(Args...);
 
-		m_Controls.push_back(control);
+		m_Controls[m_ControlCount++] = control;
 
 		return control;
 	}
 
-	template <typename T>
-	void Destroy(T *Control)
-	{
-		m_Controls.erase(std::find(m_Controls.begin, m_Controls.end, Control));
-
-		Memory::Deallocate(Control);
-	}
-
 	void Process(void)
 	{
-		for (ControlBase *control : m_Controls)
-			control->Process();
+		for (uint8 i = 0; i < m_ControlCount; ++i)
+			m_Controls[i]->Process();
 	}
 
 private:
-	std::vector<ControlBase *> m_Controls;
+	ControlBase *m_Controls[MAX_CONTROL_COUNT];
+	uint8 m_ControlCount;
 };
 
 #endif

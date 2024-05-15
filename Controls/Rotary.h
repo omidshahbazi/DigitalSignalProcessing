@@ -3,7 +3,6 @@
 #define ROTARY_H
 
 #include "Control.h"
-#include <functional>
 
 class RotaryButton;
 
@@ -12,7 +11,7 @@ class Rotary : public ControlBase
 	friend class RotaryButton;
 
 public:
-	typedef std::function<void(int8)> RotatedEventHandler;
+	typedef ContextCallback<void, int8> RotatedEventHandler;
 
 public:
 	Rotary(IHAL *HAL, uint8 LeftPin, uint8 RightPin, uint16 UpdateRate)
@@ -25,7 +24,7 @@ public:
 		ASSERT(HAL->IsADigitalPin(RightPin), "Pin %i is not an digital pin", RightPin);
 	}
 
-	void SetOnRotatedListener(RotatedEventHandler &&Listener)
+	void SetOnRotatedListener(RotatedEventHandler Listener)
 	{
 		m_OnRotated = Listener;
 	}
@@ -40,13 +39,11 @@ protected:
 		{
 			if (leftValue != rightValue)
 			{
-				if (m_OnRotated != nullptr)
-					m_OnRotated(1);
+				m_OnRotated(1);
 			}
 			else
 			{
-				if (m_OnRotated != nullptr)
-					m_OnRotated(-1);
+				m_OnRotated(-1);
 			}
 		}
 

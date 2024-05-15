@@ -3,6 +3,7 @@
 #define CONTROL_H
 
 #include "ControlBase.h"
+#include "../ContextCallback.h"
 
 class DualLED;
 class TripleLED;

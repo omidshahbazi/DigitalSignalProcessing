@@ -3,7 +3,6 @@
 #define Math_H
 
 #include <cmath>
-#include <type_traits>
 
 class Math
 {
@@ -65,7 +64,7 @@ public:
 	template <typename T, typename U, typename V>
 	static T Lerp(T Min, U Max, V Time)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		Time = Clamp01(Time);
 
@@ -75,7 +74,7 @@ public:
 	template <typename T>
 	static T Fraction(T Value)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		return Value - (int32)Value;
 	}
@@ -89,7 +88,7 @@ public:
 	template <typename T>
 	static T Log2(T Value)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		T frac;
 		int32 exp;
@@ -108,7 +107,7 @@ public:
 	template <typename T>
 	static T Log10(T Value)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		return Log2(Value) * 0.3010299956639812;
 	}
@@ -128,7 +127,7 @@ public:
 	template <typename T>
 	static T Power(T Value, int32 N)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		long *lp, l;
 		lp = (long *)(&Value);
@@ -143,7 +142,7 @@ public:
 	template <typename T>
 	static T Root(T Value, int32 N)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		long *lp, l;
 		lp = (long *)(&Value);
@@ -158,7 +157,7 @@ public:
 	template <typename T>
 	static T SoftClip(T Value)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		if (Value < -1)
 			return -1;
@@ -172,7 +171,7 @@ public:
 	template <typename T, typename U>
 	static T HardClip(T Value, U Factor)
 	{
-		static_assert(std::is_same<T, float>() || std::is_same<T, double>(), "T must be float or double");
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		//\arctan\left(\sqrt{1\ -\ \left(\sin x\right)^{3}}+\left(\left(f\ +\left(-\operatorname{sign}\left(f\right)\cdot10\right)\right)+\left(f\cdot\sin x\right)\right)\right)\cdot0.63
 

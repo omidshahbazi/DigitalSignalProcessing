@@ -5,12 +5,11 @@
 #include "Control.h"
 #include "../Log.h"
 #include "../Filters/BiquadFilter.h"
-#include <functional>
 
 class Potentiometer : public Control
 {
 public:
-	typedef std::function<void(float)> EventHandler;
+	typedef ContextCallback<void, float> EventHandler;
 
 public:
 	Potentiometer(IHAL *HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false)
@@ -30,7 +29,7 @@ public:
 		return m_Value;
 	}
 
-	void SetOnChangedListener(EventHandler &&Listener)
+	void SetOnChangedListener(EventHandler Listener)
 	{
 		m_OnChanged = Listener;
 	}
@@ -55,8 +54,7 @@ protected:
 
 		Log::WriteDebug("Potentiometer", "Potentiometer GPIOPins::Pin%i value: %f, diff %f", (uint8)GetPin(), m_Value, Math::Absolute(prevValue - m_Value));
 
-		if (m_OnChanged != nullptr)
-			m_OnChanged(m_Value);
+		m_OnChanged(m_Value);
 	}
 
 private:
