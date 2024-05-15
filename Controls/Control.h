@@ -6,11 +6,13 @@
 
 class DualLED;
 class TripleLED;
+class Rotary;
 
 class Control : public ControlBase
 {
 	friend class DualLED;
 	friend class TripleLED;
+	friend class Rotary;
 
 public:
 	Control(IHAL *HAL, uint8 Pin, IHAL::PinModes Mode, uint16 UpdateRate)

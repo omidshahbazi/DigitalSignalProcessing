@@ -15,7 +15,7 @@ public:
 		  m_FirstRecordIsDone(false),
 		  m_Volume(0)
 	{
-		SetVolume(1);
+		SetVolume(0.5);
 	}
 
 	//(0, ...]
