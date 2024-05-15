@@ -12,6 +12,11 @@ public:
 		GetHAL() = HAL;
 	}
 
+	static void EreasAll(void)
+	{
+		GetHAL()->EreasPersistentData();
+	}
+
 	static void SaveAll(void)
 	{
 		GetHAL()->SavePersistentData();
