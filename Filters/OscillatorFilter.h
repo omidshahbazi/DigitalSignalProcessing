@@ -23,10 +23,11 @@ public:
 	{
 		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
 
-		SetFunction(DefaultFunction);
+		SetFunction({this, [](void *Context, T Value)
+					 { return (T)sin(Value); }});
 	}
 
-	void SetFunction(OscillatorFunction &&Function)
+	void SetFunction(OscillatorFunction Function)
 	{
 		ASSERT(Function != nullptr, "Invalid Function");
 
@@ -70,9 +71,9 @@ public:
 		return value;
 	}
 
-	static T DefaultFunction(float Value)
+	static T DefaultFunction(T Value)
 	{
-		return sin(Value);
+		return;
 	}
 
 private:
