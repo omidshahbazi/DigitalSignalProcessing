@@ -37,6 +37,12 @@ public:
 
 	virtual void PWMWrite(uint8 Pin, float Value) = 0;
 
+	virtual void InitializePersistentData(uint16 ID) = 0;
+	virtual bool ContainsPersistentData(uint16 ID) = 0;
+	virtual void SetPersistentData(uint16 ID, const void *const Data, uint8 Size) = 0;
+	virtual void GetPersistentData(uint16 ID, void *Data, uint8 Size) = 0;
+	virtual void SavePersistentData(void) = 0;
+
 	virtual float GetTimeSinceStartup(void) const = 0;
 
 	virtual void Print(const char *Value) const = 0;

@@ -165,7 +165,7 @@ public:
 		else if (Value > 1)
 			return 1;
 
-		return atan(Value);
+		return Clamp(atan(Value), -1, 1);
 	}
 
 	// Factor: [8, 10000]

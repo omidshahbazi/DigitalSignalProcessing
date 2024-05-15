@@ -7,7 +7,7 @@
 #define STRINGIZE(Value) #Value
 #define STRINGIZE_NUMBER(Value) STRINGIZE(Value)
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #define ASSERT(Expression, Message, ...)                                                                \
 	do                                                                                                  \
 	{                                                                                                   \

@@ -41,7 +41,7 @@ public:
 	}
 
 	template <typename T>
-	static void Copy(const T *Source, T *Destination, uint32 Count = 1)
+	static void Copy(const T *const Source, T *Destination, uint32 Count = 1)
 	{
 		memcpy(Destination, Source, sizeof(T) * Count);
 	}
