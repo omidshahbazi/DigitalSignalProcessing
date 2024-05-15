@@ -32,7 +32,7 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = Math::Lerp(1.0, 2, m_Drive);
+		m_PreGain = Math::Lerp(1.0, 100, m_Drive);
 	}
 	float GetDrive(void) const
 	{
@@ -52,14 +52,13 @@ public:
 	{
 		return m_Gain;
 	}
-
+	// TODO: Finish this as Fuzz
 	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
-			Buffer[i] += (1 - m_PostGain);
-			Buffer[i] = Math::SoftClip(Buffer[i] * m_PreGain) * m_PostGain;
+			// Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
+			Buffer[i] = Math::HardClip(Buffer[i] * m_PreGain, 100) * m_PostGain;
 		}
 	}
 
