@@ -8,7 +8,6 @@
 #include "../Filters/WaveShaperFilter.h"
 #include "../Filters/BandPassFilter.h"
 
-// TODO: Debug this since it's not working well on the Daisy, but pretty fine on the ESP32
 template <typename T>
 class Distortion : public IDSP<T>
 {
