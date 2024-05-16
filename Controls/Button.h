@@ -15,7 +15,7 @@ public:
 	{
 	}
 
-	void SetOnHoldListener(HoldEventHandler &&Listener)
+	void SetOnHoldListener(HoldEventHandler Listener)
 	{
 		m_OnHold = Listener;
 	}

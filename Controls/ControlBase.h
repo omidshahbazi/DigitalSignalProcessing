@@ -6,10 +6,9 @@
 #include "../IHAL.h"
 #include "../Debug.h"
 
-class ControlFactory;
-
 class ControlBase
 {
+	template <uint8 MaxControlCount, uint8 ProcessRate>
 	friend class ControlFactory;
 
 public:

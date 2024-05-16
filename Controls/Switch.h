@@ -7,7 +7,7 @@
 class Switch : public Control
 {
 public:
-	typedef ContextCallback<void, bool> OnStateChangedEventHandler;
+	typedef ContextCallback<void, bool> StateChangedEventHandler;
 	typedef ContextCallback<void> TurnedOnEventHandler;
 	typedef ContextCallback<void, float> TurnedOffEventHandler;
 
@@ -23,17 +23,17 @@ public:
 		m_TurnedOn = DigitalRead();
 	}
 
-	void SetOnStateChangedListener(OnStateChangedEventHandler &&Listener)
+	void SetOnStateChangedListener(StateChangedEventHandler Listener)
 	{
 		m_OnStateChanged = Listener;
 	}
 
-	void SetOnTurnedOnListener(TurnedOnEventHandler &&Listener)
+	void SetOnTurnedOnListener(TurnedOnEventHandler Listener)
 	{
 		m_OnTurnedOn = Listener;
 	}
 
-	void SetOnTurnedOffListener(TurnedOffEventHandler &&Listener)
+	void SetOnTurnedOffListener(TurnedOffEventHandler Listener)
 	{
 		m_OnTurnedOff = Listener;
 	}
@@ -83,7 +83,7 @@ private:
 	bool m_TurnedOn;
 	float m_TurnedOnTime;
 	float m_HeldTime;
-	OnStateChangedEventHandler m_OnStateChanged;
+	StateChangedEventHandler m_OnStateChanged;
 	TurnedOnEventHandler m_OnTurnedOn;
 	TurnedOffEventHandler m_OnTurnedOff;
 };
