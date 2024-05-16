@@ -37,7 +37,7 @@ typedef unsigned long long uint64;
 #ifdef ENABLE_TYPE_CHECK
 #include <type_traits>
 
-#define ARE_TYPES_THE_SAME(A, B) std::is_same<T, float>()
+#define ARE_TYPES_THE_SAME(A, B) std::is_same<A, B>()
 #else
 #define ARE_TYPES_THE_SAME(A, B) true
 #endif
