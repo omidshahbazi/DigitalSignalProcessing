@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 #ifndef Math_H
 #define Math_H
 
@@ -59,6 +61,12 @@ public:
 	static T ClampExcluded0To1(T Value)
 	{
 		return Clamp(Value, EPSILON, 1);
+	}
+
+	template <typename T>
+	static T Map(T Value, T OldMin, T OldMax, T NewMin, T NewMax)
+	{
+		return (Value - OldMin) / (OldMax - OldMin) * (NewMax - NewMin) + NewMin;
 	}
 
 	template <typename T, typename U, typename V>
@@ -187,3 +195,4 @@ public:
 };
 
 #endif
+#pragma GCC pop_options

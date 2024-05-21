@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 #ifndef LOG_H
 #define LOG_H
 
@@ -164,3 +166,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options

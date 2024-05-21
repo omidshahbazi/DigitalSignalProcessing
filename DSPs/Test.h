@@ -52,7 +52,6 @@ public:
 	{
 		return m_Gain;
 	}
-	// TODO: Finish this as Fuzz
 	void ProcessBuffer(T *Buffer, uint16 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)

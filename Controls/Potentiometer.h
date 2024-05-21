@@ -22,6 +22,8 @@ public:
 
 		if (m_FilterSwings)
 			BiquadFilter<float>::SetLowPassFilterCoefficients(&m_Filter, UpdateRate, 0.5);
+
+		SetCalibrationValues(0, 1);
 	}
 
 	float GetValue(void) const
@@ -34,12 +36,18 @@ public:
 		m_OnChanged = Listener;
 	}
 
+	void SetCalibrationValues(float Min, float Max)
+	{
+		m_CalibrationMin = Min;
+		m_CalibrationMax = Max;
+	}
+
 protected:
 	void Update(void) override
 	{
 		float prevValue = m_Value;
 
-		m_Value = AnalogRead();
+		m_Value = Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0.0F, 1.0F);
 
 		if (m_FilterSwings)
 		{
@@ -61,6 +69,8 @@ private:
 	BiquadFilter<float> m_Filter;
 	bool m_FilterSwings;
 	float m_Value;
+	float m_CalibrationMin;
+	float m_CalibrationMax;
 	EventHandler m_OnChanged;
 };
 

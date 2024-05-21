@@ -8,14 +8,6 @@
 class DualLED : public ControlBase, public LEDBase
 {
 public:
-	struct Color
-	{
-	public:
-		float Red;
-		float Green;
-	};
-
-public:
 	DualLED(IHAL *HAL, uint8 RedPin, uint8 GreenPin, uint16 UpdateRate)
 		: ControlBase(HAL, UpdateRate),
 		  LEDBase(HAL),
@@ -30,8 +22,8 @@ public:
 	{
 		m_Color = Value;
 
-		m_Color.Red = Math::Clamp01(m_Color.Red);
-		m_Color.Green = Math::Clamp01(m_Color.Green);
+		m_Color.R = Math::Clamp(m_Color.R, 0, 255);
+		m_Color.G = Math::Clamp(m_Color.G, 0, 255);
 	}
 	const Color &GetColor(void) const
 	{
@@ -43,8 +35,8 @@ protected:
 	{
 		float multiplier = LEDBase::GetBrightness();
 
-		m_LEDRed.PWMWrite(m_Color.Red * multiplier);
-		m_LEDGreen.PWMWrite(m_Color.Green * multiplier);
+		m_LEDRed.PWMWrite((m_Color.R / 255.0) * multiplier);
+		m_LEDGreen.PWMWrite((m_Color.G / 255.0) * multiplier);
 	}
 
 private:
@@ -52,18 +44,5 @@ private:
 	Control m_LEDGreen;
 	Color m_Color;
 };
-
-#define DUAL_LED_RED \
-	{                \
-		1, 0         \
-	}
-#define DUAL_LED_GREEN \
-	{                  \
-		0, 1           \
-	}
-#define DUAL_LED_YELLOW \
-	{                   \
-		1, 1            \
-	}
 
 #endif

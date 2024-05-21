@@ -8,15 +8,6 @@
 class TripleLED : public ControlBase, public LEDBase
 {
 public:
-	struct Color
-	{
-	public:
-		float Red;
-		float Green;
-		float Blue;
-	};
-
-public:
 	TripleLED(IHAL *HAL, uint8 RedPin, uint8 GreenPin, uint8 BluePin, uint16 UpdateRate)
 		: ControlBase(HAL, UpdateRate),
 		  LEDBase(HAL),
@@ -33,9 +24,9 @@ public:
 	{
 		m_Color = Value;
 
-		m_Color.Red = Math::Clamp01(m_Color.Red);
-		m_Color.Green = Math::Clamp01(m_Color.Green);
-		m_Color.Blue = Math::Clamp01(m_Color.Blue);
+		m_Color.R = Math::Clamp(m_Color.R, 0, 255);
+		m_Color.G = Math::Clamp(m_Color.G, 0, 255);
+		m_Color.B = Math::Clamp(m_Color.B, 0, 255);
 	}
 	const Color &GetColor(void) const
 	{
@@ -47,9 +38,9 @@ protected:
 	{
 		float multiplier = LEDBase::GetBrightness();
 
-		m_LEDRed.PWMWrite(m_Color.Red * multiplier);
-		m_LEDGreen.PWMWrite(m_Color.Green * multiplier);
-		m_LEDBlue.PWMWrite(m_Color.Blue * multiplier);
+		m_LEDRed.PWMWrite((m_Color.R / 255.0) * multiplier);
+		m_LEDGreen.PWMWrite((m_Color.G / 255.0) * multiplier);
+		m_LEDBlue.PWMWrite((m_Color.B / 255.0) * multiplier);
 	}
 
 private:
@@ -58,34 +49,5 @@ private:
 	Control m_LEDBlue;
 	Color m_Color;
 };
-
-#define TRIPLE_LED_RED \
-	{                  \
-		1, 0, 0        \
-	}
-#define TRIPLE_LED_GREEN \
-	{                    \
-		0, 1, 0          \
-	}
-#define TRIPLE_LED_BLUE \
-	{                   \
-		0, 0, 1         \
-	}
-#define TRIPLE_LED_CYAN \
-	{                   \
-		0, 1, 1         \
-	}
-#define TRIPLE_LED_YELLOW \
-	{                     \
-		1, 1, 0           \
-	}
-#define TRIPLE_LED_MAGENTA \
-	{                      \
-		1, 0, 1            \
-	}
-#define TRIPLE_LED_WHITE \
-	{                    \
-		1, 1, 1          \
-	}
 
 #endif
