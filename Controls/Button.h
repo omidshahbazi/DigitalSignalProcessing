@@ -1,6 +1,8 @@
 #pragma once
 #ifndef BUTTON_H
 #define BUTTON_H
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 
 #include "Switch.h"
 
@@ -34,3 +36,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options

@@ -1,6 +1,8 @@
 #pragma once
 #ifndef CONTROL_BASE_H
 #define CONTROL_BASE_H
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 
 #include "../Common.h"
 #include "../IHAL.h"
@@ -88,3 +90,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options

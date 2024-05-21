@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 #ifndef MEMORY_H
 #define MEMORY_H
 
@@ -54,4 +56,6 @@ private:
 		return hal;
 	}
 };
+
 #endif
+#pragma GCC pop_options

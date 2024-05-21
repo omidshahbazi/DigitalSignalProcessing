@@ -1,6 +1,8 @@
 #pragma once
 #ifndef POTENTIOMETER_H
 #define POTENTIOMETER_H
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 
 #include "Control.h"
 #include "../Log.h"
@@ -75,3 +77,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options

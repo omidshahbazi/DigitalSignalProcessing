@@ -1,6 +1,8 @@
 #pragma once
 #ifndef SWITCH_H
 #define SWITCH_H
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 
 #include "Control.h"
 
@@ -89,3 +91,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options

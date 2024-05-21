@@ -1,6 +1,8 @@
 #pragma once
 #ifndef CONTROL_H
 #define CONTROL_H
+#pragma GCC push_options
+#pragma GCC optimize("Os")
 
 #include "ControlBase.h"
 #include "../ContextCallback.h"
@@ -58,3 +60,4 @@ private:
 };
 
 #endif
+#pragma GCC pop_options
