@@ -50,7 +50,7 @@ public:
 		return m_Gain;
 	}
 
-	void ProcessBuffer(T *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{

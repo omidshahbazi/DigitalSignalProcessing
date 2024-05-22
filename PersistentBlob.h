@@ -39,12 +39,19 @@ class PersistentBlob : PersistentBlobBase
 public:
 	PersistentBlob(uint16 ID)
 		: m_ID(ID),
-		  m_Data({})
+		  m_Data{}
+	{
+	}
+
+	void Initialize(const T &DefaultData = {})
 	{
 		if (GetHAL()->ContainsPersistentData(m_ID))
 			GetHAL()->GetPersistentData(m_ID, &m_Data, sizeof(T));
 		else
+		{
 			GetHAL()->InitializePersistentData(m_ID);
+			m_Data = DefaultData;
+		}
 	}
 
 	void Set(const T &Object)

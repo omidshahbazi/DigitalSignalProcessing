@@ -81,6 +81,27 @@ public:
 		return (uint16)(r | g | b);
 	}
 
+	static uint16 BlendR5G6B5(uint16 ColorA, uint16 ColorB, uint8 Alpha)
+	{
+		//   rrrrrggggggbbbbb
+		const uint16 MASK_RB = 63519;		// 0b1111100000011111
+		const uint16 MASK_G = 2016;			// 0b0000011111100000
+		const uint32 MASK_MUL_RB = 4065216; // 0b1111100000011111000000
+		const uint32 MASK_MUL_G = 129024;	// 0b0000011111100000000000
+		const uint16 MAX_ALPHA = 64;		// 6bits+1 with rounding
+
+		// alpha for foreground multiplication
+		// convert from 8bit to (6bit+1) with rounding
+		// will be in [0..64] inclusive
+		Alpha = (Alpha + 2) >> 2;
+		// "beta" for background multiplication; (6bit+1);
+		// will be in [0..64] inclusive
+		uint8 beta = MAX_ALPHA - Alpha;
+		// so (0..64)*alpha + (0..64)*beta always in 0..64
+
+		return (uint16)((((Alpha * (uint32)(ColorA & MASK_RB) + beta * (uint32)(ColorB & MASK_RB)) & MASK_MUL_RB) | ((Alpha * (ColorA & MASK_G) + beta * (ColorB & MASK_G)) & MASK_MUL_G)) >> 6);
+	}
+
 public:
 	uint8 R;
 	uint8 G;

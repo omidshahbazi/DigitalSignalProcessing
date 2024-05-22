@@ -59,7 +59,7 @@ public:
 		ASSERT(MIN_FREQUENCY <= Max && Max <= MAX_FREQUENCY, "Invalid Max");
 
 		m_Bandwidth = Max - Min;
-		m_CenterFrequency = m_Bandwidth / 2;
+		m_CenterFrequency = Min + (m_Bandwidth / 2);
 
 		Update();
 	}

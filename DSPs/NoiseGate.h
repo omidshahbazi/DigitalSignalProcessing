@@ -24,7 +24,7 @@ public:
 		return m_NoiseGateFilter.GetThreshold();
 	}
 
-	void ProcessBuffer(T *Buffer, uint16 Count) override
+	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] = m_NoiseGateFilter.Process(Buffer[i]);
