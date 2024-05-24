@@ -109,3 +109,15 @@ public:
 	uint8 B;
 	uint8 A;
 };
+
+uint16 GetStringLength(cstr Value)
+{
+	if (Value == nullptr)
+		return 0;
+
+	uint16 len = 0;
+	while (Value[len] != '\0')
+		++len;
+
+	return len;
+}
