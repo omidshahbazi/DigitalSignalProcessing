@@ -35,7 +35,7 @@ public:
 	}
 
 	template <typename... ArgsT>
-	static void Write(Types Type, const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void Write(Types Type, cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		if (GetHAL() == nullptr)
 			return;
@@ -82,67 +82,67 @@ public:
 	}
 
 	template <typename... ArgsT>
-	static void WriteDebug(const char *FormattedMessage, ArgsT... Args)
+	static void WriteDebug(cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Debug, nullptr, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteDebug(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void WriteDebug(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Debug, Tag, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteInfo(const char *FormattedMessage, ArgsT... Args)
+	static void WriteInfo(cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Info, nullptr, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteInfo(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void WriteInfo(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Info, Tag, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteWarning(const char *FormattedMessage, ArgsT... Args)
+	static void WriteWarning(cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Warning, nullptr, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteWarning(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void WriteWarning(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Warning, Tag, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteError(const char *FormattedMessage, ArgsT... Args)
+	static void WriteError(cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Error, nullptr, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteError(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void WriteError(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Error, Tag, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteCritical(const char *FormattedMessage, ArgsT... Args)
+	static void WriteCritical(cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Critical, nullptr, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void WriteCritical(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void WriteCritical(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		Write(Types::Critical, Tag, FormattedMessage, Args...);
 	}
 
 	template <typename... ArgsT>
-	static void Break(const char *Tag, const char *FormattedMessage, ArgsT... Args)
+	static void Break(cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		WriteCritical(Tag, FormattedMessage, Args...);
 

@@ -61,6 +61,11 @@ public:
 		GetHAL()->SetPersistentData(m_ID, &m_Data, sizeof(T));
 	}
 
+	T &Get(void)
+	{
+		return m_Data;
+	}
+
 	const T &Get(void) const
 	{
 		return m_Data;

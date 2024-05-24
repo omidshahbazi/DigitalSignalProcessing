@@ -11,6 +11,10 @@ template <typename T>
 class Chorus : public IDSP<T>
 {
 public:
+	static constexpr float MAX_DELAY_TIME = 0.025;
+	static constexpr float MAX_DEPTH = 100;
+
+public:
 	Chorus(uint32 SampleRate)
 		: m_Oscillator(SampleRate),
 		  m_Delay(SampleRate, MAX_DELAY_TIME * 2),
@@ -81,10 +85,6 @@ private:
 	DelayFilter<T> m_Delay;
 	float m_Depth;
 	float m_WetRate;
-
-public:
-	static constexpr float MAX_DELAY_TIME = 0.025;
-	static constexpr float MAX_DEPTH = 100;
 };
 
 #endif

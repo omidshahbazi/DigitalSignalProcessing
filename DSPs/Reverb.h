@@ -16,12 +16,7 @@ public:
 		SetFeedback(0.5);
 	}
 
-	float GetMaxDelayTime(void) const
-	{
-		return m_Delay.GetMaxTime();
-	}
-
-	//[0, GetMaxDelayTime()]
+	//[0, MaxDelayTime]
 	void SetDelayTime(float Value)
 	{
 		m_Delay.SetTime(Value);

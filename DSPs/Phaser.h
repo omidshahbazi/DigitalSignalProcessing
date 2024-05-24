@@ -12,7 +12,11 @@ template <typename T>
 class Phaser : public IDSP<T>
 {
 private:
-	static const uint8 DELAY_STAGE_COUNT = 2;
+	static constexpr uint8 DELAY_STAGE_COUNT = 2;
+
+public:
+	static constexpr float MAX_DELAY_TIME = 0.025;
+	static constexpr float MAX_DEPTH = 100;
 
 public:
 	Phaser(uint32 SampleRate)
@@ -86,10 +90,6 @@ private:
 	DelayFilter<T> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
-
-public:
-	static constexpr float MAX_DELAY_TIME = 0.025;
-	static constexpr float MAX_DEPTH = 100;
 };
 
 #endif

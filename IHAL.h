@@ -46,7 +46,7 @@ public:
 
 	virtual float GetTimeSinceStartup(void) const = 0;
 
-	virtual void Print(const char *Value) const = 0;
+	virtual void Print(cstr Value) const = 0;
 
 	virtual void Break(void) const = 0;
 

@@ -9,6 +9,12 @@
 class Math
 {
 public:
+	static constexpr double PI_VALUE = 3.14159265;
+	static constexpr double HALF_PI_VALUE = PI_VALUE / 2;
+	static constexpr double TWO_PI_VALUE = 2 * PI_VALUE;
+	static constexpr double EPSILON = 0.0001F;
+
+public:
 	template <typename T>
 	static T Absolute(T Value)
 	{
@@ -85,6 +91,17 @@ public:
 		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
 
 		return Value - (int32)Value;
+	}
+
+	template <typename T>
+	static T Wrap(T Value, T Min, T Max)
+	{
+		T rangeSize = Max - Min + 1;
+
+		if (Value < Min)
+			Value += rangeSize * ((Min - Value) / rangeSize + 1);
+
+		return Min + (Value - Min) % rangeSize;
 	}
 
 	template <typename T>
@@ -186,12 +203,6 @@ public:
 		// return atan(Root(1 - Power(Value, 3), 2) + Factor + (-Sign(Factor) * 10) + (Factor * Value)) * 0.63;
 		return atan(Root(1 - Power(Value, 3), 2));
 	}
-
-public:
-	static constexpr double PI_VALUE = 3.14159265;
-	static constexpr double HALF_PI_VALUE = PI_VALUE / 2;
-	static constexpr double TWO_PI_VALUE = 2 * PI_VALUE;
-	static constexpr double EPSILON = 0.0001F;
 };
 
 #endif
