@@ -1,8 +1,6 @@
 #pragma once
 #ifndef SINGLE_LED_H
 #define SINGLE_LED_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 #include "Control.h"
 #include "LEDBase.h"
@@ -24,4 +22,3 @@ protected:
 };
 
 #endif
-#pragma GCC pop_options

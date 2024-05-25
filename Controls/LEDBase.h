@@ -1,8 +1,6 @@
 #pragma once
 #ifndef LED_BASE_H
 #define LED_BASE_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 #include "../Debug.h"
 #include "../Math.h"
@@ -103,4 +101,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options

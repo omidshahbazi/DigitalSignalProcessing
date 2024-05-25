@@ -1,8 +1,6 @@
 #pragma once
 #ifndef TRIPLE_LED_H
 #define TRIPLE_LED_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 #include "Control.h"
 #include "LEDBase.h"
@@ -53,4 +51,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options

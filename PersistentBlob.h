@@ -1,6 +1,4 @@
 #pragma once
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 #ifndef PERSISTENT_BLOB_H
 #define PERSISTENT_BLOB_H
 
@@ -77,4 +75,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options

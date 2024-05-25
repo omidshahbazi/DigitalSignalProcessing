@@ -1,6 +1,4 @@
 #pragma once
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 #ifndef Math_H
 #define Math_H
 
@@ -206,4 +204,3 @@ public:
 };
 
 #endif
-#pragma GCC pop_options

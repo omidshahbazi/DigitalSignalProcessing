@@ -1,8 +1,6 @@
 #pragma once
 #ifndef ROTARY_BUTTON_H
 #define ROTARY_BUTTON_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 #include "Rotary.h"
 #include "Button.h"
@@ -34,4 +32,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options

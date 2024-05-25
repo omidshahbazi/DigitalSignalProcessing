@@ -1,8 +1,6 @@
 #pragma once
 #ifndef ROTARY_H
 #define ROTARY_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 #include "Control.h"
 
@@ -62,4 +60,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options

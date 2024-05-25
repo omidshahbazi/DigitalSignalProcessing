@@ -1,8 +1,6 @@
 #pragma once
 #ifndef CONTEXT_CALLBACK_H
 #define CONTEXT_CALLBACK_H
-#pragma GCC push_options
-#pragma GCC optimize("Os")
 
 template <typename ReturnType, typename... ArgTypes>
 class ContextCallback
@@ -153,4 +151,3 @@ private:
 };
 
 #endif
-#pragma GCC pop_options
