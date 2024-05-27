@@ -47,7 +47,7 @@ protected:
 	{
 		float prevValue = m_Value;
 
-		m_Value = Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0.0F, 1.0F);
+		m_Value = Math::Clamp01(Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0.0F, 1.0F));
 
 		if (m_FilterSwings)
 		{

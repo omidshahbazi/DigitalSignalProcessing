@@ -8,13 +8,16 @@
 class RotaryButton : public Button
 {
 public:
+	typedef Rotary::RotatedEventHandler RotatedEventHandler;
+
+public:
 	RotaryButton(IHAL *HAL, uint8 LeftPin, uint8 RightPin, uint8 ButtonPin, uint16 UpdateRate)
 		: Button(HAL, ButtonPin, UpdateRate),
 		  m_Rotary(HAL, LeftPin, RightPin, UpdateRate)
 	{
 	}
 
-	void SetOnRotatedListener(Rotary::RotatedEventHandler Listener)
+	void SetOnRotatedListener(RotatedEventHandler Listener)
 	{
 		m_Rotary.SetOnRotatedListener(Listener);
 	}

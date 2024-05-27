@@ -43,6 +43,12 @@ public:
 		return (A > B ? A : B);
 	}
 
+	template <typename T>
+	static T Ceil(T Value)
+	{
+		return ceil(Value);
+	}
+
 	template <typename T, typename U, typename V>
 	static T Clamp(T Value, U Min, V Max)
 	{
