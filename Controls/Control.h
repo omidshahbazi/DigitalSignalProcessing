@@ -18,7 +18,8 @@ class Control : public ControlBase
 public:
 	Control(IHAL *HAL, uint8 Pin, IHAL::PinModes Mode, uint16 UpdateRate)
 		: ControlBase(HAL, UpdateRate),
-		  m_Pin(Pin)
+		  m_Pin(Pin),
+		  m_State(0)
 	{
 		SetPinMode(m_Pin, Mode);
 	}
@@ -43,6 +44,13 @@ protected:
 		return ControlBase::DigitalRead(m_Pin);
 	}
 
+	uint8 DigitalStateRead(void)
+	{
+		m_State <<= 1;
+		m_State |= (DigitalRead() ? 1 : 0);
+		return m_State;
+	}
+
 	void DigitalWrite(bool Value)
 	{
 		ControlBase::DigitalWrite(m_Pin, Value);
@@ -55,6 +63,7 @@ protected:
 
 private:
 	uint8 m_Pin;
+	uint8 m_State;
 };
 
 #endif

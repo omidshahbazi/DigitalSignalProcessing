@@ -44,6 +44,7 @@ public:
 	virtual void EreasPersistentData(void) = 0;
 	virtual void SavePersistentData(void) = 0;
 
+	virtual uint32 GetTimeSinceStartupMs(void) const = 0;
 	virtual float GetTimeSinceStartup(void) const = 0;
 
 	virtual void Print(cstr Value) const = 0;

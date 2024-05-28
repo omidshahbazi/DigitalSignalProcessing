@@ -8,14 +8,14 @@
 
 class ControlBase
 {
-	template <uint8 MaxControlCount, uint8 ProcessRate>
+	template <uint8 MaxControlCount, uint16 ProcessRate>
 	friend class ControlFactory;
 
 public:
 	ControlBase(IHAL *HAL, uint16 UpdateRate)
 		: m_HAL(HAL),
 		  m_Enabled(true),
-		  m_UpdateRate(UpdateRate),
+		  m_UpdateStep(1000 / UpdateRate),
 		  m_NextUpdateTime(0)
 	{
 	}
@@ -72,10 +72,10 @@ private:
 		if (!m_Enabled)
 			return;
 
-		float time = m_HAL->GetTimeSinceStartup();
+		uint32 time = m_HAL->GetTimeSinceStartupMs();
 		if (time < m_NextUpdateTime)
 			return;
-		m_NextUpdateTime = time + (1.0F / m_UpdateRate);
+		m_NextUpdateTime = time + m_UpdateStep;
 
 		Update();
 	}
@@ -83,8 +83,8 @@ private:
 private:
 	IHAL *m_HAL;
 	bool m_Enabled;
-	uint16 m_UpdateRate;
-	float m_NextUpdateTime;
+	uint16 m_UpdateStep;
+	uint32 m_NextUpdateTime;
 };
 
 #endif

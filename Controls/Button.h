@@ -10,8 +10,8 @@ public:
 	typedef ContextCallback<void, float> HoldEventHandler;
 
 public:
-	Button(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
-		: Switch(HAL, Pin, UpdateRate)
+	Button(IHAL *HAL, uint8 Pin)
+		: Switch(HAL, Pin)
 	{
 	}
 

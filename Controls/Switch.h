@@ -12,8 +12,8 @@ public:
 	typedef ContextCallback<void, float> TurnedOffEventHandler;
 
 public:
-	Switch(IHAL *HAL, uint8 Pin, uint16 UpdateRate)
-		: Control(HAL, Pin, IHAL::PinModes::DigitalInput, UpdateRate),
+	Switch(IHAL *HAL, uint8 Pin)
+		: Control(HAL, Pin, IHAL::PinModes::DigitalInput, 1000),
 		  m_TurnedOn(false),
 		  m_TurnedOnTime(0),
 		  m_HeldTime(0)
@@ -51,7 +51,7 @@ public:
 protected:
 	virtual void Update(void) override
 	{
-		bool newValue = DigitalRead();
+		bool newValue = (DigitalStateRead() == 0b1111111);
 
 		if (m_TurnedOn == newValue)
 		{

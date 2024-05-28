@@ -11,7 +11,7 @@
 #include "Potentiometer.h"
 #include "RotaryButton.h"
 
-template <uint8 MaxControlCount, uint8 ProcessRate>
+template <uint8 MaxControlCount, uint16 ProcessRate>
 class ControlFactory
 {
 public:
@@ -49,14 +49,14 @@ public:
 	{
 		MarkGPIOAsUsed(Pin);
 
-		return Create<Button>(m_HAL, Pin, ProcessRate);
+		return Create<Button>(m_HAL, Pin);
 	}
 
 	Switch *CreateSwitch(uint8 Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
-		return Create<Switch>(m_HAL, Pin, ProcessRate);
+		return Create<Switch>(m_HAL, Pin);
 	}
 
 	Potentiometer *CreatePotentiometer(uint8 Pin, bool FilterSwings = false)
@@ -71,7 +71,7 @@ public:
 		MarkGPIOAsUsed(LeftPin);
 		MarkGPIOAsUsed(RightPin);
 
-		return Create<Rotary>(m_HAL, LeftPin, RightPin, ProcessRate);
+		return Create<Rotary>(m_HAL, LeftPin, RightPin);
 	}
 
 	RotaryButton *CreateRotaryButton(uint8 LeftPin, uint8 RightPin, uint8 ButtonPin)
@@ -80,7 +80,7 @@ public:
 		MarkGPIOAsUsed(RightPin);
 		MarkGPIOAsUsed(ButtonPin);
 
-		return Create<RotaryButton>(m_HAL, LeftPin, RightPin, ButtonPin, ProcessRate);
+		return Create<RotaryButton>(m_HAL, LeftPin, RightPin, ButtonPin);
 	}
 
 	void Process(void)
