@@ -8,7 +8,7 @@
 #include "../ContextCallback.h"
 
 template <typename T, uint32 SampleRate>
-class OscillatorFilter : public Filter<T>
+class OscillatorFilter : public Filter<T, SampleRate>
 {
 public:
 	typedef ContextCallback<T, T> OscillatorFunction;

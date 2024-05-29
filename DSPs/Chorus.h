@@ -11,7 +11,7 @@ template <typename T, uint32 SampleRate>
 class Chorus : public IDSP<T, SampleRate>
 {
 public:
-	static constexpr float MAX_DELAY_TIME = 0.025;
+	static constexpr uint8 MAX_DELAY_TIME = 1; // 0.025;
 	static constexpr float MAX_DEPTH = 100;
 
 public:

@@ -33,13 +33,13 @@ public:
 				ratio *= 125;
 				ratio = Math::Clamp01(ratio);
 
-				Wah<T>::SetRatio(ratio);
+				Wah<T, SampleRate>::SetRatio(ratio);
 
 				m_EnvelopeSum = 0;
 				m_EnvelopeSampleCount = 0;
 			}
 
-			Buffer[i] = Wah<T>::Process(Buffer[i]);
+			Buffer[i] = Wah<T, SampleRate>::Process(Buffer[i]);
 		}
 	}
 

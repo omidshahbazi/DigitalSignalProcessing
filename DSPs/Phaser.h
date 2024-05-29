@@ -15,7 +15,7 @@ private:
 	static constexpr uint8 DELAY_STAGE_COUNT = 2;
 
 public:
-	static constexpr float MAX_DELAY_TIME = 0.025;
+	static constexpr uint8 MAX_DELAY_TIME = 1; // 0.025;
 	static constexpr float MAX_DEPTH = 100;
 
 public:
