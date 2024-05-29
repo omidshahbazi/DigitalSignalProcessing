@@ -6,21 +6,18 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T>
-class EnvelopeFollowerFilter : public Filter<T>
+template <typename T, uint32 SampleRate>
+class EnvelopeFollowerFilter : public Filter<T, SampleRate>
 {
 public:
-	EnvelopeFollowerFilter(uint32 SampleRate)
-		: m_SampleRate(SampleRate),
-		  m_AttackTime(0),
+	EnvelopeFollowerFilter(void)
+		: m_AttackTime(0),
 		  m_ReleaseTime(0),
 		  m_UseAbsoluteValue(false),
 		  m_AttackSlope(0),
 		  m_ReleaseSlope(0),
 		  m_Envelope(0.1)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		SetAttackTime(0.001);
 		SetReleaseTime(0.001);
 		SetUseAbsoluteValue(false);
@@ -33,7 +30,7 @@ public:
 
 		m_AttackTime = Value;
 
-		m_AttackSlope = Math::Exponential(-(1.0F / m_SampleRate) / m_AttackTime);
+		m_AttackSlope = Math::Exponential(-(1.0F / SampleRate) / m_AttackTime);
 	}
 	float GetAttackTime(void) const
 	{
@@ -47,7 +44,7 @@ public:
 
 		m_ReleaseTime = Value;
 
-		m_ReleaseSlope = Math::Exponential(-(1.0F / m_SampleRate) / m_AttackTime);
+		m_ReleaseSlope = Math::Exponential(-(1.0F / SampleRate) / m_AttackTime);
 	}
 	float GetReleaseTime(void) const
 	{
@@ -75,7 +72,6 @@ public:
 	}
 
 protected:
-	uint32 m_SampleRate;
 	float m_AttackTime;
 	float m_ReleaseTime;
 	bool m_UseAbsoluteValue;

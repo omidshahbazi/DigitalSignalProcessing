@@ -7,24 +7,21 @@
 #include "../Debug.h"
 #include "../ContextCallback.h"
 
-template <typename T>
+template <typename T, uint32 SampleRate>
 class OscillatorFilter : public Filter<T>
 {
 public:
 	typedef ContextCallback<T, T> OscillatorFunction;
 
 public:
-	OscillatorFilter(uint32 SampleRate)
-		: m_SampleRate(SampleRate),
-		  m_Freuency(0),
+	OscillatorFilter(void)
+		: m_Freuency(0),
 		  m_PhaseOffset(0),
 		  m_DeltaPhase(0),
 		  m_Phase(0)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		SetFunction({this, [](void *Context, T Value)
-					 { return (T)sin(Value); }});
+					 { return Math::Sin(Value); }});
 	}
 
 	void SetFunction(OscillatorFunction Function)
@@ -41,7 +38,7 @@ public:
 
 		m_Freuency = Value;
 
-		m_DeltaPhase = Math::TWO_PI_VALUE * m_Freuency / m_SampleRate;
+		m_DeltaPhase = Math::TWO_PI_VALUE * m_Freuency / SampleRate;
 	}
 	float GetFrequency(void) const
 	{
@@ -77,7 +74,6 @@ public:
 	}
 
 private:
-	uint32 m_SampleRate;
 	float m_Freuency;
 	float m_PhaseOffset;
 	OscillatorFunction m_Function;

@@ -5,15 +5,10 @@
 #include "IDSP.h"
 #include "../Filters/NoiseGateFilter.h"
 
-template <typename T>
-class NoiseGate : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class NoiseGate : public IDSP<T, SampleRate>
 {
 public:
-	NoiseGate(uint32 SampleRate)
-		: m_NoiseGateFilter(SampleRate)
-	{
-	}
-
 	//[0dB, 80dB]
 	void SetThreshold(float Value)
 	{
@@ -31,7 +26,7 @@ public:
 	}
 
 private:
-	NoiseGateFilter<T> m_NoiseGateFilter;
+	NoiseGateFilter<T, SampleRate> m_NoiseGateFilter;
 };
 
 #endif

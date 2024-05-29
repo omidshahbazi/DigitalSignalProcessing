@@ -10,9 +10,11 @@
 // https://en.wikipedia.org/wiki/Digital_biquad_filter#Direct_form_2
 // https://www.earlevel.com/main/2012/11/26/biquad-c-source-code/
 // https://music-dsp.music.columbia.narkive.com/YF4UlHAc/auto-wah-implementation#post6
-template <typename T>
-class BiquadFilter : public Filter<T>
+template <typename T, uint8 StageCount>
+class BiquadFilter : public Filter<T, MIN_SAMPLE_RATE>
 {
+	static_assert(StageCount != 0, "StageCount cannot be 0");
+
 public:
 	struct Coefficients
 	{
@@ -40,13 +42,11 @@ private:
 	};
 
 public:
-	BiquadFilter(uint8 StageCount)
-		: m_StageCount(StageCount),
-		  m_Stages(nullptr)
+	BiquadFilter(void)
+		: m_Stages(nullptr)
 	{
-		ASSERT(m_StageCount != 0, "StageCount cannot be 0");
 
-		m_Stages = Memory::Allocate<Stage>(m_StageCount);
+		m_Stages = Memory::Allocate<Stage>(StageCount);
 	}
 
 	~BiquadFilter(void)
@@ -58,13 +58,13 @@ public:
 	{
 		ASSERT(Values != nullptr, "Values cannot be null");
 
-		for (uint8 i = 0; i < m_StageCount; ++i)
+		for (uint8 i = 0; i < StageCount; ++i)
 			m_Stages[i].Coeffs = Values[i];
 	}
 
 	void Reset(void)
 	{
-		for (uint8 i = 0; i < m_StageCount; ++i)
+		for (uint8 i = 0; i < StageCount; ++i)
 		{
 			Stage &stage = m_Stages[i];
 
@@ -78,7 +78,7 @@ public:
 		if (m_Stages == nullptr)
 			return Value;
 
-		for (uint8 i = 0; i < m_StageCount; ++i)
+		for (uint8 i = 0; i < StageCount; ++i)
 		{
 			T input = Value;
 
@@ -187,7 +187,6 @@ public:
 	}
 
 private:
-	uint8 m_StageCount;
 	Stage *m_Stages;
 };
 #endif

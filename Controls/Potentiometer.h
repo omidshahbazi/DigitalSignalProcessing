@@ -14,14 +14,13 @@ public:
 public:
 	Potentiometer(IHAL *HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false)
 		: Control(HAL, Pin, IHAL::PinModes::AnalogInput, UpdateRate),
-		  m_Filter(1),
 		  m_FilterSwings(FilterSwings),
 		  m_Value(-1)
 	{
 		ASSERT(HAL->IsAnAnaloglPin(Pin), "Pin %i is not an analog pin", Pin);
 
 		if (m_FilterSwings)
-			BiquadFilter<float>::SetLowPassFilterCoefficients(&m_Filter, UpdateRate, 0.5);
+			BiquadFilter<float, 1>::SetLowPassFilterCoefficients(&m_Filter, UpdateRate, 0.5);
 
 		SetCalibrationValues(0, 1);
 	}
@@ -47,7 +46,7 @@ protected:
 	{
 		float prevValue = m_Value;
 
-		m_Value = Math::Clamp01(Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0.0F, 1.0F));
+		m_Value = Math::Clamp01(Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0, 1));
 
 		if (m_FilterSwings)
 		{
@@ -66,7 +65,7 @@ protected:
 	}
 
 private:
-	BiquadFilter<float> m_Filter;
+	BiquadFilter<float, 1> m_Filter;
 	bool m_FilterSwings;
 	float m_Value;
 	float m_CalibrationMin;

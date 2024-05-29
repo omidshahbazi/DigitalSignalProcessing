@@ -6,7 +6,7 @@
 #include "../Math.h"
 
 template <typename T>
-class WaveShaperFilter : public Filter<T>
+class WaveShaperFilter : public Filter<T, MIN_SAMPLE_RATE>
 {
 public:
 	struct TablePoints

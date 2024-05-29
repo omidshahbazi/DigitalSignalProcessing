@@ -6,26 +6,24 @@
 #include "../Math.h"
 #include "../Memory.h"
 
-template <typename T>
-class DelayFilter : public Filter<T>
+template <typename T, uint32 SampleRate, uint16 MaxTime>
+class DelayFilter : public Filter<T, SampleRate>
 {
+	static_assert(0 < MaxTime, "Invalid MaxTime");
+
 public:
-	DelayFilter(uint32 SampleRate, float MaxTime)
-		: m_SampleRate(SampleRate),
-		  m_MaxTime(MaxTime),
-		  m_Time(0),
+	DelayFilter(void)
+		: m_Time(0),
 		  m_Feedback(0),
 		  m_OutputMixRate(0),
 		  m_Buffer(nullptr),
-		  m_TotalBufferLength(m_MaxTime * m_SampleRate),
+		  m_TotalBufferLength(MaxTime * SampleRate),
 		  m_BufferLength(0),
 		  m_BufferIndex(0)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
-		SetTime(m_MaxTime);
+		SetTime(MaxTime);
 		SetFeedback(1);
 		SetOutputMixRate(0.5);
 	}
@@ -35,19 +33,14 @@ public:
 		Memory::Deallocate(m_Buffer);
 	}
 
-	float GetMaxTime(void) const
-	{
-		return m_MaxTime;
-	}
-
 	//[0, MaxTime]
 	void SetTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= m_MaxTime, "Invalid Value");
+		ASSERT(0 <= Value && Value <= MaxTime, "Invalid Value");
 
 		m_Time = Value;
 
-		m_BufferLength = Math::Max(m_Time * m_SampleRate, 1);
+		m_BufferLength = Math::Max(m_Time * SampleRate, 1);
 	}
 	float GetTime(void) const
 	{
@@ -125,7 +118,7 @@ public:
 	{
 		Clear();
 
-		SetTime(m_MaxTime);
+		SetTime(MaxTime);
 
 		m_BufferIndex = 0;
 	}
@@ -137,8 +130,6 @@ private:
 	}
 
 private:
-	uint32 m_SampleRate;
-	float m_MaxTime;
 	float m_Time;
 	float m_Feedback;
 	float m_OutputMixRate;

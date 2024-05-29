@@ -5,12 +5,11 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Reverb : public IDSP<T>
+template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
+class Reverb : public IDSP<T, SampleRate>
 {
 public:
-	Reverb(uint32 SampleRate, float MaxDelayTime)
-		: m_Delay(SampleRate, MaxDelayTime)
+	Reverb(void)
 	{
 		SetDelayTime(0.5);
 		SetFeedback(0.5);
@@ -57,7 +56,7 @@ public:
 	}
 
 private:
-	DelayFilter<T> m_Delay;
+	DelayFilter<T, SampleRate, MaxDelayTime> m_Delay;
 };
 
 #endif

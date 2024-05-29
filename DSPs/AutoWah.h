@@ -6,16 +6,14 @@
 #include "../Math.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
-template <typename T>
-class AutoWah : private Wah<T>
+template <typename T, uint32 SampleRate>
+class AutoWah : private Wah<T, SampleRate>
 {
 #define ENVELOP_AVERAGE_DURATION 0.1
 
 public:
-	AutoWah(uint32 SampleRate)
-		: Wah<T>(SampleRate),
-		  m_EnvelopeFollowerFilter(SampleRate),
-		  m_MaxEnvelopSampleCount(ENVELOP_AVERAGE_DURATION * SampleRate),
+	AutoWah(void)
+		: m_MaxEnvelopSampleCount(ENVELOP_AVERAGE_DURATION * SampleRate),
 		  m_EnvelopeSum(0),
 		  m_EnvelopeSampleCount(0)
 	{
@@ -46,7 +44,7 @@ public:
 	}
 
 private:
-	EnvelopeFollowerFilter<T> m_EnvelopeFollowerFilter;
+	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	uint32 m_MaxEnvelopSampleCount;
 	T m_EnvelopeSum;
 	uint32 m_EnvelopeSampleCount;

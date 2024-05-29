@@ -7,23 +7,18 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Chorus : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Chorus : public IDSP<T, SampleRate>
 {
 public:
 	static constexpr float MAX_DELAY_TIME = 0.025;
 	static constexpr float MAX_DEPTH = 100;
 
 public:
-	Chorus(uint32 SampleRate)
-		: m_Oscillator(SampleRate),
-		  m_Delay(SampleRate, MAX_DELAY_TIME * 2),
-		  m_SampleRate(SampleRate),
-		  m_Depth(0),
+	Chorus(void)
+		: m_Depth(0),
 		  m_WetRate(0)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		SetDepth(1);
 		SetRate(1);
 		SetWetRate(0.5);
@@ -80,9 +75,8 @@ public:
 	}
 
 private:
-	uint32 m_SampleRate;
-	OscillatorFilter<T> m_Oscillator;
-	DelayFilter<T> m_Delay;
+	OscillatorFilter<T, SampleRate> m_Oscillator;
+	DelayFilter<T, SampleRate, MAX_DELAY_TIME * 2> m_Delay;
 	float m_Depth;
 	float m_WetRate;
 };

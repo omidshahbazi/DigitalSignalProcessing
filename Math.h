@@ -11,6 +11,8 @@ public:
 	static constexpr double HALF_PI_VALUE = PI_VALUE / 2;
 	static constexpr double TWO_PI_VALUE = 2 * PI_VALUE;
 	static constexpr double EPSILON = 0.0001F;
+	static constexpr double TO_RADIANS = PI_VALUE / 180;
+	static constexpr double TO_DEGREES = 180 / PI_VALUE;
 
 public:
 	template <typename T>
@@ -73,8 +75,19 @@ public:
 		return Clamp(Value, EPSILON, 1);
 	}
 
-	template <typename T>
-	static T Map(T Value, T OldMin, T OldMax, T NewMin, T NewMax)
+	template <typename T, typename U, typename V>
+	static T Wrap(T Value, U Min, V Max)
+	{
+		T rangeSize = Max - Min + 1;
+
+		if (Value < Min)
+			Value += rangeSize * ((Min - Value) / rangeSize + 1);
+
+		return Min + (Value - Min) % rangeSize;
+	}
+
+	template <typename T, typename U, typename V, typename W>
+	static T Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax)
 	{
 		return (Value - OldMin) / (OldMax - OldMin) * (NewMax - NewMin) + NewMin;
 	}
@@ -98,20 +111,21 @@ public:
 	}
 
 	template <typename T>
-	static T Wrap(T Value, T Min, T Max)
-	{
-		T rangeSize = Max - Min + 1;
-
-		if (Value < Min)
-			Value += rangeSize * ((Min - Value) / rangeSize + 1);
-
-		return Min + (Value - Min) % rangeSize;
-	}
-
-	template <typename T>
 	static T Cube(T Value)
 	{
 		return (Value * Value) * Value;
+	}
+
+	template <typename T>
+	static T Sin(T Value)
+	{
+		return (T)sin(Value);
+	}
+
+	template <typename T>
+	static T Cos(T Value)
+	{
+		return (T)cos(Value);
 	}
 
 	template <typename T>

@@ -5,13 +5,12 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Looper : public IDSP<T>
+template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
+class Looper : public IDSP<T, SampleRate>
 {
 public:
-	Looper(uint32 SampleRate, float MaxDelayTime)
-		: m_Delay(SampleRate, MaxDelayTime),
-		  m_IsReplaying(true),
+	Looper(void)
+		: m_IsReplaying(true),
 		  m_FirstRecordIsDone(false),
 		  m_Volume(0)
 	{
@@ -82,7 +81,7 @@ public:
 	}
 
 private:
-	DelayFilter<T> m_Delay;
+	DelayFilter<T, SampleRate, MaxDelayTime> m_Delay;
 	bool m_IsReplaying;
 	bool m_FirstRecordIsDone;
 	float m_Volume;

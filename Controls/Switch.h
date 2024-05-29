@@ -51,11 +51,12 @@ public:
 protected:
 	virtual void Update(void) override
 	{
-		bool newValue = (DigitalStateRead() == 0b1111111);
+		bool newValue = (DigitalStateRead() == 0b11111111);
 
 		if (m_TurnedOn == newValue)
 		{
-			m_HeldTime = GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;
+			if (m_TurnedOn)
+				m_HeldTime = GetHAL()->GetTimeSinceStartup() - m_TurnedOnTime;
 
 			return;
 		}
@@ -65,6 +66,7 @@ protected:
 		if (m_TurnedOn)
 		{
 			m_TurnedOnTime = GetHAL()->GetTimeSinceStartup();
+			m_HeldTime = 0;
 
 			m_OnTurnedOn();
 		}

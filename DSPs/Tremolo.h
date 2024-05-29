@@ -7,14 +7,13 @@
 #include "../Debug.h"
 #include "../Filters/OscillatorFilter.h"
 
-template <typename T>
-class Tremolo : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Tremolo : public IDSP<T, SampleRate>
 {
 
 public:
-	Tremolo(uint32 SampleRate)
-		: m_Oscillator(SampleRate),
-		  m_Depth(0)
+	Tremolo(void)
+		: m_Depth(0)
 	{
 		SetDepth(0.5);
 		SetRate(1);
@@ -55,7 +54,7 @@ public:
 	}
 
 private:
-	OscillatorFilter<T> m_Oscillator;
+	OscillatorFilter<T, SampleRate> m_Oscillator;
 	float m_Depth;
 };
 

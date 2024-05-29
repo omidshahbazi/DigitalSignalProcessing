@@ -7,17 +7,15 @@
 #include "BandPassFilter.h"
 #include "HighPassFilter.h"
 
-template <typename T>
-class DualToneControlFilter : public Filter<T>
+template <typename T, uint32 SampleRate>
+class DualToneControlFilter : public Filter<T, SampleRate>
 {
 #define MULTIPLIER 0.0495
 
 public:
-	DualToneControlFilter(uint32 SampleRate)
+	DualToneControlFilter(void)
 		: m_LowTone(0),
-		  m_HighTone(0),
-		  m_LowPassFilter(SampleRate),
-		  m_HighPassFilter(SampleRate)
+		  m_HighTone(0)
 	{
 		SetBorderFrequencies(1 * KHz, 5);
 	}
@@ -69,7 +67,7 @@ private:
 	float m_LowTone;
 	float m_HighTone;
 
-	LowPassFilter<T> m_LowPassFilter;
-	HighPassFilter<T> m_HighPassFilter;
+	LowPassFilter<T, SampleRate> m_LowPassFilter;
+	HighPassFilter<T, SampleRate> m_HighPassFilter;
 };
 #endif

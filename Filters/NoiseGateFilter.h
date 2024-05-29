@@ -6,18 +6,17 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T>
-class NoiseGateFilter : private EnvelopeFollowerFilter<T>
+template <typename T, uint32 SampleRate>
+class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 {
 public:
-	NoiseGateFilter(uint32 SampleRate)
-		: EnvelopeFollowerFilter<T>(SampleRate)
+	NoiseGateFilter(void)
 	{
 		SetThreshold(0);
 
-		EnvelopeFollowerFilter<T>::SetAttackTime(0.02);
-		EnvelopeFollowerFilter<T>::SetReleaseTime(0.06);
-		EnvelopeFollowerFilter<T>::SetUseAbsoluteValue(false);
+		EnvelopeFollowerFilter<T, SampleRate>::SetAttackTime(0.02);
+		EnvelopeFollowerFilter<T, SampleRate>::SetReleaseTime(0.06);
+		EnvelopeFollowerFilter<T, SampleRate>::SetUseAbsoluteValue(false);
 	}
 
 	//[0dB, 80dB]
@@ -35,7 +34,7 @@ public:
 
 	T Process(T Value) override
 	{
-		T envelope = EnvelopeFollowerFilter<T>::Process(Value);
+		T envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Value);
 
 		if (envelope < m_Threshold)
 		{

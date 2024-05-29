@@ -8,13 +8,12 @@
 #include "../Filters/WaveShaperFilter.h"
 #include "../Filters/BandPassFilter.h"
 
-template <typename T>
-class Distortion : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Distortion : public IDSP<T, SampleRate>
 {
 public:
-	Distortion(uint32 SampleRate)
-		: m_BandPassFilter(SampleRate),
-		  m_Rate(0),
+	Distortion(void)
+		: m_Rate(0),
 		  m_Gain(0),
 		  m_PreGain(0),
 		  m_PostGain(0)
@@ -68,7 +67,7 @@ public:
 
 private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
-	BandPassFilter<T> m_BandPassFilter;
+	BandPassFilter<T, SampleRate> m_BandPassFilter;
 
 	float m_Rate;
 	float m_Gain;

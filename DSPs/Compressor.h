@@ -8,14 +8,12 @@
 #include "../Filters/EnvelopeFollowerFilter.h"
 
 // TODO: Algorithm seems incorrect
-template <typename T>
-class Compressor : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Compressor : public IDSP<T, SampleRate>
 {
 public:
-	Compressor(uint32 SampleRate)
-		: m_EnvelopeFollowerFilter(SampleRate),
-		  m_SampleRate(SampleRate),
-		  m_Ratio(0),
+	Compressor(void)
+		: m_Ratio(0),
 		  m_Threshold(0),
 		  m_AttackSlope2(0),
 		  m_RatioMultipler(0),
@@ -35,7 +33,7 @@ public:
 	{
 		m_EnvelopeFollowerFilter.SetAttackTime(Value);
 
-		m_AttackSlope2 = Math::Exponential(-((1 / m_SampleRate) / Value));
+		m_AttackSlope2 = Math::Exponential(-((1 / SampleRate) / Value));
 	}
 	float GetAttackTime(void) const
 	{
@@ -99,8 +97,7 @@ public:
 	}
 
 private:
-	EnvelopeFollowerFilter<T> m_EnvelopeFollowerFilter;
-	uint32 m_SampleRate;
+	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	float m_Ratio;
 	float m_Threshold;
 

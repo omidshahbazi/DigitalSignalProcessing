@@ -8,8 +8,8 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Phaser : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Phaser : public IDSP<T, SampleRate>
 {
 private:
 	static constexpr uint8 DELAY_STAGE_COUNT = 2;
@@ -19,10 +19,8 @@ public:
 	static constexpr float MAX_DEPTH = 100;
 
 public:
-	Phaser(uint32 SampleRate)
-		: m_Oscillator(SampleRate),
-		  m_Delays{{SampleRate, MAX_DELAY_TIME * 2}, {SampleRate, MAX_DELAY_TIME * 2}},
-		  m_Depth(0),
+	Phaser(void)
+		: m_Depth(0),
 		  m_WetRate(0)
 	{
 		SetDepth(1);
@@ -86,8 +84,8 @@ public:
 	}
 
 private:
-	OscillatorFilter<T> m_Oscillator;
-	DelayFilter<T> m_Delays[DELAY_STAGE_COUNT];
+	OscillatorFilter<T, SampleRate> m_Oscillator;
+	DelayFilter<T, SampleRate, MAX_DELAY_TIME * 2> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 };

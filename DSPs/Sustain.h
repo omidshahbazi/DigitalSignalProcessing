@@ -5,13 +5,12 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Sustain : public IDSP<T>
+template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
+class Sustain : public IDSP<T, SampleRate>
 {
 public:
-	Sustain(uint32 SampleRate, float MaxDelayTime)
-		: m_Delay(SampleRate, MaxDelayTime),
-		  m_Active(false),
+	Sustain(void)
+		: m_Active(false),
 		  m_Wet(false)
 	{
 		SetFeedback(1);
@@ -71,7 +70,7 @@ public:
 	}
 
 private:
-	DelayFilter<T> m_Delay;
+	DelayFilter<T, SampleRate, MaxDelayTime> m_Delay;
 	bool m_Active;
 	bool m_Wet;
 

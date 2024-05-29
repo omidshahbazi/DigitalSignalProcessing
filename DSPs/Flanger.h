@@ -7,23 +7,18 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T>
-class Flanger : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Flanger : public IDSP<T, SampleRate>
 {
 public:
 	static constexpr float MAX_DELAY_TIME = 0.025;
 	static constexpr float MAX_DEPTH = 100;
 
 public:
-	Flanger(uint32 SampleRate)
-		: m_Oscillator(SampleRate),
-		  m_Delay(SampleRate, MAX_DELAY_TIME * 2),
-		  m_SampleRate(SampleRate),
-		  m_Depth(0),
+	Flanger(void)
+		: m_Depth(0),
 		  m_WetRate(0)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		SetDepth(1);
 		SetRate(1);
 		SetFeedback(0.5);
@@ -93,9 +88,8 @@ public:
 	}
 
 private:
-	uint32 m_SampleRate;
-	OscillatorFilter<T> m_Oscillator;
-	DelayFilter<T> m_Delay;
+	OscillatorFilter<T, SampleRate> m_Oscillator;
+	DelayFilter<T, SampleRate, MAX_DELAY_TIME * 2> m_Delay;
 	float m_Depth;
 	float m_WetRate;
 };

@@ -6,19 +6,15 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T>
-class BandPassFilter : private BiquadFilter<T>
+template <typename T, uint32 SampleRate>
+class BandPassFilter : private BiquadFilter<T, 1>
 {
 public:
-	BandPassFilter(uint32 SampleRate)
-		: BiquadFilter<T>(1),
-		  m_SampleRate(SampleRate),
-		  m_CenterFrequency(1),
+	BandPassFilter(void)
+		: m_CenterFrequency(1),
 		  m_Bandwidth(1),
 		  m_Resonance(1)
 	{
-		ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
-
 		SetFrequencies(1950, 2050);
 		SetResonance(1);
 	}
@@ -79,17 +75,16 @@ public:
 
 	T Process(T Value) override
 	{
-		return BiquadFilter<T>::Process(Value);
+		return BiquadFilter<T, 1>::Process(Value);
 	}
 
 private:
 	void Update(void)
 	{
-		BiquadFilter<T>::SetBandPassFilterCoefficients(this, m_SampleRate, m_CenterFrequency, m_Bandwidth, m_Resonance);
+		BiquadFilter<T, 1>::SetBandPassFilterCoefficients(this, SampleRate, m_CenterFrequency, m_Bandwidth, m_Resonance);
 	}
 
 private:
-	uint32 m_SampleRate;
 	float m_CenterFrequency;
 	float m_Bandwidth;
 	float m_Resonance;

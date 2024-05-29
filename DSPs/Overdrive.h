@@ -7,13 +7,12 @@
 #include "../Debug.h"
 #include "../Filters/BandPassFilter.h"
 
-template <typename T>
-class Overdrive : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Overdrive : public IDSP<T, SampleRate>
 {
 public:
-	Overdrive(uint32 SampleRate)
-		: m_BandPassFilter(SampleRate),
-		  m_Drive(0),
+	Overdrive(void)
+		: m_Drive(0),
 		  m_Gain(0)
 	{
 		m_BandPassFilter.SetFrequencies(100, 5 * KHz);
@@ -61,7 +60,7 @@ public:
 	}
 
 private:
-	BandPassFilter<T> m_BandPassFilter;
+	BandPassFilter<T, SampleRate> m_BandPassFilter;
 	float m_Drive;
 	float m_Gain;
 

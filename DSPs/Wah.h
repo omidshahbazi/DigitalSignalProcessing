@@ -5,8 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/BandPassFilter.h"
 
-template <typename T>
-class Wah : public IDSP<T>
+template <typename T, uint32 SampleRate>
+class Wah : public IDSP<T, SampleRate>
 {
 private:
 	struct FrequencyRange
@@ -33,8 +33,7 @@ public:
 	};
 
 public:
-	Wah(uint32 SampleRate)
-		: m_BandPassFilter(SampleRate)
+	Wah(void)
 	{
 		SetType(Types::CryBaby);
 	}
@@ -82,7 +81,7 @@ protected:
 	}
 
 private:
-	BandPassFilter<T> m_BandPassFilter;
+	BandPassFilter<T, SampleRate> m_BandPassFilter;
 	Types m_Type;
 	float m_Ratio;
 };

@@ -6,14 +6,12 @@
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
 
-template <typename T>
-class SingleToneControlFilter : public Filter<T>
+template <typename T, uint32 SampleRate>
+class SingleToneControlFilter : public Filter<T, SampleRate>
 {
 public:
-	SingleToneControlFilter(uint32 SampleRate)
-		: m_LowPassFilter(SampleRate),
-		  m_HighPassFilter(SampleRate),
-		  m_Tone(1)
+	SingleToneControlFilter(void)
+		: m_Tone(1)
 	{
 		m_LowPassFilter.SetCutoffFrequency(408.0895981378369);	// Emulate big muff R39k and C10nF
 		m_HighPassFilter.SetCutoffFrequency(1476.390939459707); // Emulate big muff R22k and C4.9nF
@@ -39,7 +37,7 @@ public:
 private:
 	float m_Tone;
 
-	LowPassFilter m_LowPassFilter;
-	HighPassFilter m_HighPassFilter;
+	LowPassFilter<T, SampleRate> m_LowPassFilter;
+	HighPassFilter<T, SampleRate> m_HighPassFilter;
 };
 #endif
