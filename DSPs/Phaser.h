@@ -15,7 +15,7 @@ private:
 	static constexpr uint8 DELAY_STAGE_COUNT = 2;
 
 public:
-	static constexpr uint8 MAX_DELAY_TIME = 1; // 0.025;
+	static constexpr uint8 MAX_DELAY_TIME = 1; // 0.025 * 2;
 	static constexpr float MAX_DEPTH = 100;
 
 public:
@@ -85,7 +85,7 @@ public:
 
 private:
 	OscillatorFilter<T, SampleRate> m_Oscillator;
-	DelayFilter<T, SampleRate, MAX_DELAY_TIME * 2> m_Delays[DELAY_STAGE_COUNT];
+	DelayFilter<T, SampleRate, MAX_DELAY_TIME> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 };
