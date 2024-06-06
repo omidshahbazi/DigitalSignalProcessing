@@ -18,7 +18,7 @@ public:
 		  m_MidTone(0),
 		  m_HighTone(0)
 	{
-		SetBorderFrequencies(150, 5 * KHz, 5);
+		SetBorderFrequencies(150, 5 * KHz);
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]

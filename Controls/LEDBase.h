@@ -14,7 +14,11 @@ public:
 
 public:
 	LEDBase(IHAL *HAL)
-		: m_HAL(HAL)
+		: m_HAL(HAL),
+		  m_DefaultValue(0),
+		  m_DefaultMinValue(0),
+		  m_DefaultMaxValue(0),
+		  m_DefaultRate(0)
 	{
 		SetConstantBrighness(0);
 	}
@@ -34,6 +38,8 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
+		m_DefaultValue = Value;
+
 		SetBrightnessFunction({this,
 							   [](void *Context)
 							   {
@@ -50,6 +56,10 @@ public:
 		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
 		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
 		ASSERT(0 < Rate, "Invalid Rate");
+
+		m_DefaultMinValue = MinValue;
+		m_DefaultMaxValue = MaxValue;
+		m_DefaultRate = Rate;
 
 		SetBrightnessFunction({this,
 							   [](void *Context)
@@ -71,6 +81,10 @@ public:
 		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
 		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
 		ASSERT(0 < Rate, "Invalid Rate");
+
+		m_DefaultMinValue = MinValue;
+		m_DefaultMaxValue = MaxValue;
+		m_DefaultRate = Rate;
 
 		SetBrightnessFunction({this,
 							   [](void *Context)

@@ -25,11 +25,11 @@ private:
 		{20, 20 * KHz, 7.9, 500, 19 * KHz}}; // Full Range 20Hz - 20kHz 7.9
 
 public:
-	enum Types
+	enum class Types
 	{
 		CryBaby = 0,
-		// Boutique = 1,
-		// FullRange = 2
+		// Boutique,
+		// FullRange
 	};
 
 public:
@@ -42,7 +42,7 @@ public:
 	{
 		m_Type = Value;
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[m_Type];
+		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
 		m_BandPassFilter.SetFrequencies(freqRange.Min, freqRange.Max);
 		m_BandPassFilter.SetResonance(freqRange.Resonance);
@@ -59,7 +59,7 @@ public:
 
 		m_Ratio = Value;
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[m_Type];
+		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
 		m_BandPassFilter.SetCenterFrequency(Math::Lerp(freqRange.Low, freqRange.High, m_Ratio));
 	}

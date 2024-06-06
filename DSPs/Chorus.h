@@ -11,7 +11,7 @@ template <typename T, uint32 SampleRate>
 class Chorus : public IDSP<T, SampleRate>
 {
 public:
-	static constexpr uint8 MAX_DELAY_TIME = 1; // 0.025 * 2;
+	static constexpr uint8 MAX_DELAY_TIME = 1;
 	static constexpr float MAX_DEPTH = 100;
 
 public:
@@ -19,6 +19,8 @@ public:
 		: m_Depth(0),
 		  m_WetRate(0)
 	{
+		m_Delay.SetTime(0.05);
+
 		SetDepth(1);
 		SetRate(1);
 		SetWetRate(0.5);

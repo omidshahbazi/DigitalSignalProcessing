@@ -16,8 +16,8 @@ public:
 public:
 	Rotary(IHAL *HAL, uint8 LeftPin, uint8 RightPin)
 		: ControlBase(HAL, 1000),
-		  m_LeftControl(HAL, LeftPin, IHAL::PinModes::DigitalInput, 0),
-		  m_RightControl(HAL, RightPin, IHAL::PinModes::DigitalInput, 0)
+		  m_LeftControl(HAL, LeftPin, IHAL::PinModes::DigitalInput, 1),
+		  m_RightControl(HAL, RightPin, IHAL::PinModes::DigitalInput, 1)
 	{
 		ASSERT(HAL->IsADigitalPin(LeftPin), "Pin %i is not an digital pin", LeftPin);
 		ASSERT(HAL->IsADigitalPin(RightPin), "Pin %i is not an digital pin", RightPin);
