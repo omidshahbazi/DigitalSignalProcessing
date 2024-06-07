@@ -17,7 +17,7 @@ public:
 	{
 		m_BandPassFilter.SetFrequencies(100, 5 * KHz);
 
-		SetGain(1);
+		SetGain(0);
 		SetDrive(1);
 	}
 
@@ -28,7 +28,7 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = Math::Lerp(1.0, 2, m_Drive);
+		m_PreGain = Math::dbToMultiplier(Math::Lerp(2.0, 10, m_Drive));
 	}
 	float GetDrive(void) const
 	{
@@ -53,8 +53,7 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
-			Buffer[i] += (1 - m_PostGain);
+			Buffer[i] = m_BandPassFilter.Process(Buffer[i]);
 			Buffer[i] = Math::SoftClip(Buffer[i] * m_PreGain) * m_PostGain;
 		}
 	}
