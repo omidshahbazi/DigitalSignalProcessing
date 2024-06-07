@@ -10,12 +10,12 @@
 template <typename T, uint32 SampleRate>
 class DualToneControlFilter : public Filter<T, SampleRate>
 {
-#define MULTIPLIER 0.0495
-
 public:
 	DualToneControlFilter(void)
 		: m_LowTone(0),
-		  m_HighTone(0)
+		  m_HighTone(0),
+		  m_LowToneMultiplier(0),
+		  m_HighToneMultiplier(0)
 	{
 		SetBorderFrequencies(1 * KHz, 5);
 	}
@@ -39,6 +39,7 @@ public:
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
 
 		m_LowTone = Value;
+		m_LowToneMultiplier = Math::dbToMultiplier(m_LowTone);
 	}
 	float GetLowTone(void) const
 	{
@@ -51,6 +52,7 @@ public:
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
 
 		m_HighTone = Value;
+		m_MidToneMultiplier = Math::dbToMultiplier(m_MidTone);
 	}
 	float GetHighTone(void) const
 	{
@@ -59,8 +61,8 @@ public:
 
 	T Process(T Value) override
 	{
-		return (m_LowPassFilter.Process(Value) * (1 + (m_LowTone * MULTIPLIER))) +
-			   (m_HighPassFilter.Process(Value) * (1 + (m_HighTone * MULTIPLIER)));
+		return (m_LowPassFilter.Process(Value) * m_LowToneMultiplier) +
+			   (m_HighPassFilter.Process(Value) * m_HighToneMultiplier);
 	}
 
 private:
@@ -69,5 +71,8 @@ private:
 
 	LowPassFilter<T, SampleRate> m_LowPassFilter;
 	HighPassFilter<T, SampleRate> m_HighPassFilter;
+
+	float m_LowToneMultiplier;
+	float m_HighToneMultiplier;
 };
 #endif

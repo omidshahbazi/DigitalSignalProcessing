@@ -13,7 +13,7 @@ class Distortion : public IDSP<T, SampleRate>
 {
 public:
 	Distortion(void)
-		: m_Rate(0),
+		: m_Level(0),
 		  m_Gain(0),
 		  m_PreGain(0),
 		  m_PostGain(0)
@@ -23,32 +23,32 @@ public:
 
 		m_BandPassFilter.SetFrequencies(150, 2 * KHz);
 
-		SetGain(1);
-		SetRate(1);
+		SetLevel(1);
+		SetGain(0);
 	}
 
 	//[0, 1]
-	void SetRate(float Value)
+	void SetLevel(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
 
-		m_Rate = Value;
+		m_Level = Value;
 
-		m_PreGain = Math::Lerp(1.0, 4, m_Rate);
+		m_PreGain = 1 + Math::dbToMultiplier(Math::Lerp(0, 100, m_Level));
 	}
-	float GetRate(void) const
+	float GetLevel(void) const
 	{
-		return m_Rate;
+		return m_Level;
 	}
 
-	//[0, 1]
+	//[-10dB, 10dB]
 	void SetGain(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(-10 <= Value && Value <= 10, "Invalid Value");
 
 		m_Gain = Value;
 
-		m_PostGain = Math::Lerp(0.5, 1, m_Gain);
+		m_PostGain = 1 + Math::dbToMultiplier(Value);
 	}
 	float GetGain(void) const
 	{
@@ -59,8 +59,8 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			Buffer[i] = m_BandPassFilter.Process(Buffer[i]) * 40;
-			Buffer[i] += (1 - m_PostGain);
+			Buffer[i] = m_BandPassFilter.Process(Buffer[i]);
+			// Buffer[i] += (1 - m_PostGain);
 			Buffer[i] = m_WaveShaperFilter.Process(Buffer[i] * m_PreGain) * m_PostGain;
 		}
 	}
@@ -69,7 +69,7 @@ private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
 	BandPassFilter<T, SampleRate> m_BandPassFilter;
 
-	float m_Rate;
+	float m_Level;
 	float m_Gain;
 
 	float m_PreGain;

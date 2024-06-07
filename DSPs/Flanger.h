@@ -11,10 +11,6 @@ template <typename T, uint32 SampleRate>
 class Flanger : public IDSP<T, SampleRate>
 {
 public:
-	static constexpr uint8 MAX_DELAY_TIME = 1;
-	static constexpr float MAX_DEPTH = 100;
-
-public:
 	Flanger(void)
 		: m_Depth(0),
 		  m_WetRate(0)
@@ -27,10 +23,10 @@ public:
 		SetWetRate(0.5);
 	}
 
-	//[0, MAX_DEPTH]
+	//[0, 100]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= MAX_DEPTH, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 100, "Invalid Value");
 
 		m_Depth = Value;
 	}
@@ -91,7 +87,7 @@ public:
 
 private:
 	OscillatorFilter<T, SampleRate> m_Oscillator;
-	DelayFilter<T, SampleRate, MAX_DELAY_TIME> m_Delay;
+	DelayFilter<T, SampleRate, 1> m_Delay;
 	float m_Depth;
 	float m_WetRate;
 };

@@ -221,6 +221,14 @@ public:
 		// return atan(Root(1 - Power(Value, 3), 2) + Factor + (-Sign(Factor) * 10) + (Factor * Value)) * 0.63;
 		return atan(Root(1 - Power(Value, 3), 2));
 	}
+
+	template <typename T>
+	static T dbToMultiplier(T dB)
+	{
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+
+		return pow(10, dB / 20);
+	}
 };
 
 #endif

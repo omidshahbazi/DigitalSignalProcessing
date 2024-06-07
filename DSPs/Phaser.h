@@ -15,25 +15,22 @@ private:
 	static constexpr uint8 DELAY_STAGE_COUNT = 2;
 
 public:
-	static constexpr uint8 MAX_DELAY_TIME = 1;
-	static constexpr float MAX_DEPTH = 100;
-
-public:
 	Phaser(void)
 		: m_Depth(0),
 		  m_WetRate(0)
 	{
-		m_Delay.SetTime(0.05);
+		for (uint8 i = 0; i < DELAY_STAGE_COUNT; ++i)
+			m_Delays[i].SetTime(0.05);
 
 		SetDepth(1);
 		SetRate(1);
 		SetWetRate(0.5);
 	}
 
-	//[0, MAX_DEPTH]
+	//[0, 100]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= MAX_DEPTH, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 100, "Invalid Value");
 
 		m_Depth = Value;
 	}
@@ -87,7 +84,7 @@ public:
 
 private:
 	OscillatorFilter<T, SampleRate> m_Oscillator;
-	DelayFilter<T, SampleRate, MAX_DELAY_TIME> m_Delays[DELAY_STAGE_COUNT];
+	DelayFilter<T, SampleRate, 1> m_Delays[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 };
