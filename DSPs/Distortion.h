@@ -18,12 +18,13 @@ public:
 		  m_PreGain(0),
 		  m_PostGain(0)
 	{
-		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -1}, {-0.5, -1}, {0, 0}, {0.5, 1}, {1, 1}};
+		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -1}, {-0.3, -1}, {0, 0}, {0.3, 1}, {1, 1}};
 		m_WaveShaperFilter.SetTable(points, 5);
 
-		m_BandPassFilter.SetFrequencies(150, 2 * KHz);
+		m_BandPassFilter.SetFrequencies(150, 1 * KHz);
+		// m_BandPassFilter.SetResonance(4000);
 
-		SetLevel(1);
+		SetLevel(0);
 		SetGain(0);
 	}
 
@@ -34,7 +35,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = 1 + Math::dbToMultiplier(Math::Lerp(0, 100, m_Level));
+		m_PreGain = Math::dbToMultiplier(Math::Lerp(10.0, 30, m_Level));
 	}
 	float GetLevel(void) const
 	{
@@ -48,7 +49,7 @@ public:
 
 		m_Gain = Value;
 
-		m_PostGain = 1 + Math::dbToMultiplier(Value);
+		m_PostGain = Math::dbToMultiplier(Value);
 	}
 	float GetGain(void) const
 	{
@@ -60,8 +61,8 @@ public:
 		for (uint16 i = 0; i < Count; ++i)
 		{
 			Buffer[i] = m_BandPassFilter.Process(Buffer[i]);
-			// Buffer[i] += (1 - m_PostGain);
 			Buffer[i] = m_WaveShaperFilter.Process(Buffer[i] * m_PreGain) * m_PostGain;
+			Buffer[i] = Math::Clamp(Buffer[i], -1, 1);
 		}
 	}
 
