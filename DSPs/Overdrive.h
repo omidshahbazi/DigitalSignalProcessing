@@ -3,9 +3,9 @@
 #define OVERDRIVE_H
 
 #include "IDSP.h"
+#include "../Filters/LowPassFilter.h"
 #include "../Math.h"
 #include "../Debug.h"
-#include "../Filters/BandPassFilter.h"
 
 template <typename T, uint32 SampleRate>
 class Overdrive : public IDSP<T, SampleRate>
@@ -13,12 +13,15 @@ class Overdrive : public IDSP<T, SampleRate>
 public:
 	Overdrive(void)
 		: m_Drive(0),
-		  m_Gain(0)
+		  m_Gain(0),
+		  m_PreGain(0),
+		  m_PostGain(0)
 	{
-		m_BandPassFilter.SetFrequencies(100, 5 * KHz);
+		m_Filter.SetCutoffFrequency(3 * KHz);
+		m_Filter.SetResonance(2);
 
-		SetGain(0);
 		SetDrive(1);
+		SetGain(0);
 	}
 
 	//[0, 1]
@@ -28,21 +31,21 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = Math::dbToMultiplier(Math::Lerp(2.0, 10, m_Drive));
+		m_PreGain = Math::Lerp(1.0, 4, m_Drive);
 	}
 	float GetDrive(void) const
 	{
 		return m_Drive;
 	}
 
-	//[0, 1]
+	//[-6dB, 6dB]
 	void SetGain(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(-6 <= Value && Value <= 6, "Invalid Value");
 
 		m_Gain = Value;
 
-		m_PostGain = Math::Lerp(0.5, 1, m_Gain);
+		m_PostGain = Math::dbToMultiplier(Value);
 	}
 	float GetGain(void) const
 	{
@@ -53,13 +56,23 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			Buffer[i] = m_BandPassFilter.Process(Buffer[i]);
-			Buffer[i] = Math::SoftClip(Buffer[i] * m_PreGain) * m_PostGain;
+			T value = Buffer[i];
+
+			value = m_Filter.Process(value);
+
+			value = Math::SoftClip(value * m_PreGain);
+
+			value *= m_PostGain;
+
+			value = Math::Clamp(value, -1, 1);
+
+			Buffer[i] = value;
 		}
 	}
 
 private:
-	BandPassFilter<T, SampleRate> m_BandPassFilter;
+	LowPassFilter<T, SampleRate> m_Filter;
+
 	float m_Drive;
 	float m_Gain;
 

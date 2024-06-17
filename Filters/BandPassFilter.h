@@ -59,10 +59,12 @@ public:
 		Update();
 	}
 
-	//(0, 4000]
+	// [0.1, 10] Common [0.7, 1]
+	// - Values less than 0.7 result in a broader bandwidth and less peak resonance, making the filter less selective.
+	// - Values greater than 1 increase resonance, creating a sharper peak around the center frequency, which can lead to more pronounced resonance or oscillations.
 	void SetResonance(float Value)
 	{
-		ASSERT(0 < Value && Value <= 4000, "Invalid Value");
+		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
 
 		m_Resonance = Value;
 

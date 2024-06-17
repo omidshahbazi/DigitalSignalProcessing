@@ -4,6 +4,7 @@
 
 #include "Filter.h"
 #include "../Math.h"
+#include "../Debug.h"
 
 template <typename T>
 class WaveShaperFilter : public Filter<T, MIN_SAMPLE_RATE>

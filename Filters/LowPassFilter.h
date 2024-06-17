@@ -32,10 +32,12 @@ public:
 		return m_CutoffFrequency;
 	}
 
-	//(0, 4000]
+	// [0.1, 10] Common [0.7, 1]
+	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
+	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
 	void SetResonance(float Value)
 	{
-		ASSERT(0 < Value && Value <= 4000, "Invalid Value");
+		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
 
 		m_Resonance = Value;
 

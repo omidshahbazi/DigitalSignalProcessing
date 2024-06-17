@@ -3,6 +3,7 @@
 #define Math_H
 
 #include <cmath>
+#include <limits>
 
 class Math
 {
@@ -10,11 +11,19 @@ public:
 	static constexpr double PI_VALUE = 3.14159265;
 	static constexpr double HALF_PI_VALUE = PI_VALUE / 2;
 	static constexpr double TWO_PI_VALUE = 2 * PI_VALUE;
-	static constexpr double EPSILON = 0.0001F;
+	static constexpr double EPSILON = std::numeric_limits<float>::epsilon();
 	static constexpr double TO_RADIANS = PI_VALUE / 180;
 	static constexpr double TO_DEGREES = 180 / PI_VALUE;
 
 public:
+	template <typename T>
+	static bool IsNAN(T Value)
+	{
+		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+
+		return (Value != Value);
+	}
+
 	template <typename T>
 	static T Absolute(T Value)
 	{
@@ -158,7 +167,22 @@ public:
 	template <typename T>
 	static T Exponential(T Value)
 	{
-		return expf(Value);
+		// return expf(Value);
+
+		Value = 1 + Value / 1024.0;
+
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+		Value *= Value;
+
+		return Value;
 	}
 
 	template <typename T>
@@ -201,11 +225,6 @@ public:
 	static T SoftClip(T Value)
 	{
 		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
-
-		if (Value < -1)
-			return -1;
-		else if (Value > 1)
-			return 1;
 
 		return Clamp(atan(Value), -1, 1);
 	}
