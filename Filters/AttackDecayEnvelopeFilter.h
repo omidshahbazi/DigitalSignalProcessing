@@ -173,7 +173,7 @@ public:
 			if ((m_CurrSegment == Segments::Attack && prevRawValue >= 1) ||
 				(m_CurrSegment == Segments::Decay && prevRawValue <= 0))
 			{
-				m_CurrSegment = (Segments)Math::Wrap((uint8)m_CurrSegment + 1, (uint8)Segments::Idle, (uint8)Segments::COUNT - 1);
+				m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
 
 				m_CurveValue = 0;
 			}

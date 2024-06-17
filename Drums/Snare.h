@@ -12,24 +12,24 @@ class Snare : public DrumsPart<T, SampleRate>
 public:
 	Snare(void)
 	{
-		m_SnareEnvelope.SetAttackTime(0.01);
-		m_SnareEnvelope.SetDecayTime(0.2);
-		m_SnareEnvelope.SetMaxValue(1);
-		m_SnareEnvelope.SetMinValue(0);
+		m_Envelope.SetAttackTime(0.01);
+		m_Envelope.SetDecayTime(0.2);
+		m_Envelope.SetMaxValue(1);
+		m_Envelope.SetMinValue(0);
 	}
 
 	void Beat(void) override
 	{
-		m_SnareEnvelope.Trigger();
+		m_Envelope.Trigger();
 	}
 
 	T Process(void) override
 	{
-		return m_WhiteNoiseFilter.Process() * m_SnareEnvelope.Process();
+		return m_WhiteNoiseFilter.Process() * m_Envelope.Process();
 	}
 
 private:
-	AttackDecayEnvelopeFilter<T, SampleRate> m_SnareEnvelope;
+	AttackDecayEnvelopeFilter<T, SampleRate> m_Envelope;
 	WhiteNoiseFilter<T, SampleRate> m_WhiteNoiseFilter;
 };
 

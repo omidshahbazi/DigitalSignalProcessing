@@ -20,8 +20,7 @@ public:
 		  m_DeltaPhase(0),
 		  m_Phase(0)
 	{
-		SetFunction({this, [](void *Context, T Value)
-					 { return Math::Sin(Value); }});
+		SetSineWaveFunction();
 	}
 
 	void SetFunction(OscillatorFunction Function)
@@ -31,6 +30,39 @@ public:
 		m_Function = Function;
 	}
 
+	void SetSineWaveFunction(void)
+	{
+		SetFunction({this, [](void *Context, T Value)
+					 { return (T)Math::Sin(Value * Math::TWO_PI_VALUE); }});
+	}
+
+	void SetTriangleWaveFunction(void)
+	{
+		SetFunction({this, [](void *Context, T Value)
+					 {
+						 T t = -1 + (2 * Value);
+						 return (T)(2 * (Math::Absolute(t) - 0.5));
+					 }});
+	}
+
+	void SetSawtoothWaveFunction(void)
+	{
+		SetFunction({this, [](void *Context, T Value)
+					 { return -1 * ((Value * 2) - 1); }});
+	}
+
+	void SetRampWaveFunction(void)
+	{
+		SetFunction({this, [](void *Context, T Value)
+					 { return (Value * 2) - 1; }});
+	}
+
+	void SetSquareWaveFunction(void)
+	{
+		SetFunction({this, [](void *Context, T Value)
+					 { return (T)(Value < 1 ? 1 : -1); }});
+	}
+
 	//(0, MAX_FREQUENCY]
 	void SetFrequency(float Value)
 	{
@@ -38,7 +70,7 @@ public:
 
 		m_Freuency = Value;
 
-		m_DeltaPhase = Math::TWO_PI_VALUE * m_Freuency / SampleRate;
+		m_DeltaPhase = m_Freuency / SampleRate;
 	}
 	float GetFrequency(void) const
 	{
@@ -61,9 +93,9 @@ public:
 
 	T Process(void)
 	{
-		T value = m_Function(Math::Moderate(m_Phase + m_PhaseOffset, Math::TWO_PI_VALUE));
+		T value = m_Function(Math::Moderate(m_Phase + m_PhaseOffset, 1));
 
-		m_Phase = Math::Moderate(m_Phase + m_DeltaPhase, Math::TWO_PI_VALUE);
+		m_Phase = Math::Moderate(m_Phase + m_DeltaPhase, 1);
 
 		return value;
 	}
