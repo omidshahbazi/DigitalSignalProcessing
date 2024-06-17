@@ -19,7 +19,7 @@ public:
 	template <typename T>
 	static bool IsNAN(T Value)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		return (Value != Value);
 	}
@@ -104,7 +104,7 @@ public:
 	template <typename T, typename U, typename V>
 	static T Lerp(T Min, U Max, V Time)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		Time = Clamp01(Time);
 
@@ -114,7 +114,7 @@ public:
 	template <typename T>
 	static T Fraction(T Value)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		return Value - (int32)Value;
 	}
@@ -140,7 +140,7 @@ public:
 	template <typename T>
 	static T Log2(T Value)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		T frac;
 		int32 exp;
@@ -159,7 +159,7 @@ public:
 	template <typename T>
 	static T Log10(T Value)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		return Log2(Value) * 0.3010299956639812;
 	}
@@ -194,7 +194,7 @@ public:
 	template <typename T>
 	static T Power(T Value, int32 N)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		long *lp, l;
 		lp = (long *)(&Value);
@@ -209,7 +209,7 @@ public:
 	template <typename T>
 	static T Root(T Value, int32 N)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		long *lp, l;
 		lp = (long *)(&Value);
@@ -224,7 +224,7 @@ public:
 	template <typename T>
 	static T SoftClip(T Value)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		return Clamp(atan(Value), -1, 1);
 	}
@@ -233,7 +233,7 @@ public:
 	template <typename T, typename U>
 	static T HardClip(T Value, U Factor)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		//\arctan\left(\sqrt{1\ -\ \left(\sin x\right)^{3}}+\left(\left(f\ +\left(-\operatorname{sign}\left(f\right)\cdot10\right)\right)+\left(f\cdot\sin x\right)\right)\right)\cdot0.63
 
@@ -244,7 +244,7 @@ public:
 	template <typename T>
 	static T dbToMultiplier(T dB)
 	{
-		static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
+		ASSERT_ON_FLOATING_TYPE(T);
 
 		return pow(10, dB / 20);
 	}

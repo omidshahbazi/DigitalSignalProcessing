@@ -7,8 +7,8 @@
 template <typename T, uint32 SampleRate>
 class Filter
 {
-	static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double");
-	static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate");
+	ASSERT_ON_FLOATING_TYPE(T);
+	ASSERT_ON_SAMPLE_RATE(SampleRate);
 
 public:
 	virtual T Process(T Value) = 0;

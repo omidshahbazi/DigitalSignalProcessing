@@ -1,38 +1,31 @@
 #pragma once
-#ifndef DRUM_MATCHINE_H
-#define DRUM_MATCHINE_H
+#ifndef SNARE_H
+#define SNARE_H
 
-#include "IDSP.h"
+#include "DrumsPart.h"
 #include "../Filters/AttackDecayEnvelopeFilter.h"
 #include "../Filters/WhiteNoiseFilter.h"
 
 template <typename T, uint32 SampleRate>
-class DrumMachine : public IDSP<T, SampleRate>
+class Snare : public DrumsPart<T, SampleRate>
 {
 public:
-	DrumMachine(void)
+	Snare(void)
 	{
 		m_SnareEnvelope.SetAttackTime(0.01);
 		m_SnareEnvelope.SetDecayTime(0.2);
 		m_SnareEnvelope.SetMaxValue(1);
 		m_SnareEnvelope.SetMinValue(0);
+	}
 
+	void Beat(void) override
+	{
 		m_SnareEnvelope.Trigger();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	T Process(void) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
-		{
-			T snr_env_out = m_SnareEnvelope.Process();
-
-			// Get the next snare sample
-			T noise_out = m_WhiteNoiseFilter.Process();
-			// Set the sample to the correct volume
-			noise_out *= snr_env_out;
-
-			Buffer[i] = noise_out;
-		}
+		return m_WhiteNoiseFilter.Process() * m_SnareEnvelope.Process();
 	}
 
 private:
