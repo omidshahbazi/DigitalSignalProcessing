@@ -3,8 +3,10 @@
 #define DRUMS_MATCHINE_H
 
 #include "../IHAL.h"
-#include "Snare.h"
 #include "Kick.h"
+#include "Snare.h"
+#include "HiHat.h"
+#include "Tom.h"
 
 template <typename T, uint32 SampleRate>
 class DrumsMachine
@@ -26,11 +28,13 @@ public:
 	enum class Notes
 	{
 		Kick = 0b00000001,
-		Snare = 0b00000010
+		Snare = 0b00000010,
+		HiHat = 0b00000100,
+		Tom = 0b00001000
 	};
 
 private:
-	static constexpr uint8 NOTES_COUNT = 2;
+	static constexpr uint8 NOTES_COUNT = 4;
 
 public:
 	DrumsMachine(IHAL *HAL)
@@ -46,15 +50,11 @@ public:
 	{
 		SetBeatsPerMinute(60);
 
-		m_Parts[(uint8)Notes::Kick - 1] = &m_Kick;
-		m_Parts[(uint8)Notes::Snare - 1] = &m_Snare;
-
-		static Notes notes[4];
-		notes[0] = Notes::Kick | Notes::Snare;
-		notes[1] = Notes::Snare;
-		notes[2] = Notes::Kick | Notes::Snare;
-		notes[3] = Notes::Snare;
-		SetNotes(notes, 4);
+		uint8 index = 0;
+		m_Parts[index++] = &m_Kick;
+		m_Parts[index++] = &m_Snare;
+		m_Parts[index++] = &m_HiHat;
+		m_Parts[index++] = &m_Tom;
 	}
 
 	void SetNoteDuration(NoteDurations Value)
@@ -119,11 +119,10 @@ public:
 	}
 
 private:
-	void
-	UpdateData(void)
+	void UpdateData(void)
 	{
 		m_BeatTime = 60 * 1000 / (m_BeatsPerMinute * (uint8)m_NoteDuration);
-		m_NextBeatTime = 0;
+		m_NextBeatTime = m_HAL->GetTimeSinceStartupMs() + m_BeatTime;
 	}
 
 private:
@@ -139,6 +138,8 @@ private:
 
 	Kick<T, SampleRate> m_Kick;
 	Snare<T, SampleRate> m_Snare;
+	HiHat<T, SampleRate> m_HiHat;
+	Tom<T, SampleRate> m_Tom;
 };
 
 #endif

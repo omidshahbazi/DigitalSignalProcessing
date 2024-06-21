@@ -3,8 +3,9 @@
 #define KICK_H
 
 #include "DrumsPart.h"
-#include "../Filters/AttackDecayEnvelopeFilter.h"
+#include "../Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
 #include "../Filters/OscillatorFilter.h"
+#include "../Filters/WhiteNoiseFilter.h"
 
 template <typename T, uint32 SampleRate>
 class Kick : public DrumsPart<T, SampleRate>
@@ -12,35 +13,42 @@ class Kick : public DrumsPart<T, SampleRate>
 public:
 	Kick(void)
 	{
-		m_PitchEnvelope.SetAttackTime(0.01);
-		m_PitchEnvelope.SetDecayTime(0.05);
-		m_PitchEnvelope.SetMaxValue(400);
-		m_PitchEnvelope.SetMinValue(50);
+		m_Envelope.SetAttackTime(0.0001);
+		m_Envelope.SetDecayTime(0.2);
+		m_Envelope.SetSustainTime(0.1);
+		m_Envelope.SetSustainLevel(1);
+		m_Envelope.SetReleaseTime(0.2);
+		m_Envelope.SetMinValue(0);
+		m_Envelope.SetMaxValue(1);
 
-		m_VolumeEnvelope.SetAttackTime(0.01);
-		m_VolumeEnvelope.SetDecayTime(1);
-		m_VolumeEnvelope.SetMaxValue(1);
-		m_VolumeEnvelope.SetMinValue(0);
+		m_FrequencyEnvelope.SetAttackTime(0.0001);
+		m_FrequencyEnvelope.SetDecayTime(0.02);
+		m_FrequencyEnvelope.SetSustainTime(0.0001);
+		m_FrequencyEnvelope.SetSustainLevel(1);
+		m_FrequencyEnvelope.SetReleaseTime(0.02);
+		m_FrequencyEnvelope.SetMinValue(60);
+		m_FrequencyEnvelope.SetMaxValue(100);
 
-		m_Oscillator.SetTriangleWaveFunction();
+		m_Oscillator.SetFrequency(80);
 	}
 
 	void Beat(void) override
 	{
-		m_PitchEnvelope.Trigger();
-		m_VolumeEnvelope.Trigger();
+		m_Envelope.Trigger();
+		m_FrequencyEnvelope.Trigger();
+		m_Oscillator.Reset();
 	}
 
 	T Process(void) override
 	{
-		m_Oscillator.SetFrequency(m_PitchEnvelope.Process());
+		m_Oscillator.SetFrequency(m_FrequencyEnvelope.Process());
 
-		return m_Oscillator.Process() * m_VolumeEnvelope.Process();
+		return m_Envelope.Process() * m_Oscillator.Process();
 	}
 
 private:
-	AttackDecayEnvelopeFilter<T, SampleRate> m_PitchEnvelope;
-	AttackDecayEnvelopeFilter<T, SampleRate> m_VolumeEnvelope;
+	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;
+	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_FrequencyEnvelope;
 	OscillatorFilter<T, SampleRate> m_Oscillator;
 };
 

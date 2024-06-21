@@ -86,6 +86,11 @@ public:
 		return m_PhaseOffset;
 	}
 
+	void Reset(void)
+	{
+		m_Phase = 0;
+	}
+
 	T Process(T Value) override
 	{
 		return Process();
@@ -98,11 +103,6 @@ public:
 		m_Phase = Math::Moderate(m_Phase + m_DeltaPhase, 1);
 
 		return value;
-	}
-
-	static T DefaultFunction(T Value)
-	{
-		return;
 	}
 
 private:

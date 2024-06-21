@@ -25,20 +25,21 @@ public:
 		  m_SegmentTime{},
 		  m_MinValue(0),
 		  m_MaxValue(1),
-		  m_RawValue(0.00001),
-		  m_TriggerValue(0),
 		  m_Curve(0),
-		  m_CurveValue(0)
+		  m_CurveValue(0),
+		  m_TriggerValue(0),
+		  m_RawValue(0.00001)
 	{
-		m_SegmentTime[(uint8)Segments::Idle] = 0.05f;
+		m_SegmentTime[(uint8)Segments::Idle] = 0.05;
+
 		SetAttackTime(0.05);
 		SetDecayTime(0.05);
 	}
 
-	//[0, 1]
+	//(0, 1]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 < Value && Value <= 1, "Invalid Value");
 
 		m_SegmentTime[(uint8)Segments::Attack] = Value;
 	}
@@ -47,10 +48,10 @@ public:
 		return m_SegmentTime[(uint8)Segments::Attack];
 	}
 
-	//[0, 1]
+	//(0, 1]
 	void SetDecayTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 < Value && Value <= 1, "Invalid Value");
 
 		m_SegmentTime[(uint8)Segments::Decay] = Value;
 	}
@@ -95,7 +96,7 @@ public:
 
 	float GetValue(void) const
 	{
-		return (m_RawValue * (m_MaxValue - m_MinValue)) + m_MinValue;
+		return Math::Lerp(m_MinValue, m_MaxValue, m_RawValue);
 	}
 
 	void Trigger(void)
@@ -168,15 +169,14 @@ public:
 				m_RawValue = 0;
 		}
 
-		if (m_CurrSegment != Segments::Idle)
-		{
-			if ((m_CurrSegment == Segments::Attack && prevRawValue >= 1) ||
-				(m_CurrSegment == Segments::Decay && prevRawValue <= 0))
-			{
-				m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
+		m_RawValue = Math::Clamp01(m_RawValue);
 
-				m_CurveValue = 0;
-			}
+		if ((m_CurrSegment == Segments::Attack && prevRawValue >= 1) ||
+			(m_CurrSegment == Segments::Decay && prevRawValue <= 0))
+		{
+			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
+
+			m_CurveValue = 0;
 		}
 
 		if (m_CurrSegment == Segments::Idle)
@@ -190,10 +190,10 @@ private:
 	float m_SegmentTime[(uint8)Segments::COUNT];
 	float m_MinValue;
 	float m_MaxValue;
-	float m_RawValue;
-	float m_TriggerValue;
 	float m_Curve;
 	float m_CurveValue;
+	float m_TriggerValue;
+	float m_RawValue;
 };
 
 #endif
