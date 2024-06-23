@@ -49,6 +49,11 @@ public:
 		return m_Delay.GetOutputMixRate();
 	}
 
+	void Reset(void)
+	{
+		m_Delay.Reset();
+	}
+
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)

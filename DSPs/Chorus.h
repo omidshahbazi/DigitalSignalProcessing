@@ -58,6 +58,11 @@ public:
 		return m_WetRate;
 	}
 
+	void Reset(void)
+	{
+		m_Delay.Reset();
+	}
+
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)

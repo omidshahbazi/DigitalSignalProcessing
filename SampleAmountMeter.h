@@ -5,77 +5,70 @@
 #include "Math.h"
 #include "Log.h"
 
+template <typename T, uint16 SampleCount>
 class SampleAmountMeter
 {
 public:
 	SampleAmountMeter(void)
-		: m_SampleCount(0),
-		  m_SampleSum(0),
-		  m_Average(0),
-		  m_Min(0),
-		  m_Max(0),
-		  m_AbsoluteMax(0)
+		: m_Buffer{},
+		  m_BufferIndex(0)
 	{
 	}
 
-	void Record(float Value)
+	void Record(T Value)
 	{
-		++m_SampleCount;
-
-		m_SampleSum += Value;
-
-		m_Average = m_SampleSum / m_SampleCount;
-
-		if (Value < m_Min)
-			m_Min = Value;
-		else if (Value > m_Max)
-			m_Max = Value;
-
-		if (Math::Absolute(Value) > m_AbsoluteMax)
-			m_AbsoluteMax = Math::Absolute(Value);
+		m_Buffer[m_BufferIndex] = Value;
+		m_BufferIndex = Math::Wrap(m_BufferIndex + 1, 0, SampleCount - 1);
 	}
 
-	float GetAverage(void) const
+	T GetAverage(void) const
 	{
-		return m_Average;
+		double sum = 0;
+		for (uint16 i = 0; i < SampleCount; ++i)
+			sum += m_Buffer[i];
+
+		return sum / SampleCount;
 	}
 
-	float GetMin(void) const
+	T GetMin(void) const
 	{
-		return m_Min;
+		T min = 1;
+		for (uint16 i = 0; i < SampleCount; ++i)
+			if (min > m_Buffer[i])
+				min = m_Buffer[i];
+
+		return min;
 	}
 
-	float GetMax(void) const
+	T GetMax(void) const
 	{
-		return m_Max;
+		T max = -1;
+		for (uint16 i = 0; i < SampleCount; ++i)
+			if (max < m_Buffer[i])
+				max = m_Buffer[i];
+
+		return max;
 	}
 
-	float GetAbsoluteMax(void) const
+	T GetAbsoluteMax(void) const
 	{
-		return m_AbsoluteMax;
+		return Math::Max(GetMax(), Math::Absolute(GetMin()));
 	}
 
 	void Reset(void)
 	{
-		m_SampleCount = 0;
-		m_SampleSum = 0;
-		m_Average = 0;
-		m_Min = __FLT_MAX__;
-		m_Max = __FLT_MIN__;
-		m_AbsoluteMax = __FLT_MIN__;
+		Memory::Set(m_Buffer, 0, SampleCount);
+
+		m_BufferIndex = 0;
 	}
 
 	void Print(void) const
 	{
-		Log::WriteInfo("Samples Min: %f Max: %f Average: %f Absolute Max: %f", m_Min, m_Max, m_Average, m_AbsoluteMax);
+		Log::WriteInfo("Samples Min: %f Max: %f Average: %f Absolute Max: %f", GetMin(), GetMax(), GetAverage(), GetAbsoluteMax());
 	}
 
 private:
-	uint32 m_SampleCount;
-	double m_SampleSum;
-	float m_Average;
-	float m_Min;
-	float m_Max;
-	float m_AbsoluteMax;
+	T m_Buffer[SampleCount];
+	uint16 m_BufferIndex;
 };
 #endif

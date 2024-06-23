@@ -12,7 +12,13 @@ class RMSCalculatorFilter : private DelayFilter<T, SampleRate, 1>
 public:
 	RMSCalculatorFilter(void)
 	{
-		DelayFilter<T, SampleRate, 1>::SetTime(BufferLength / SampleRate);
+		DelayFilter<T, SampleRate, 1>::SetTime((float)BufferLength / SampleRate);
+	}
+
+	void ProcessBuffer(T *Buffer, uint8 Count)
+	{
+		for (uint16 i = 0; i < Count; ++i)
+			Process(Buffer[i]);
 	}
 
 	T Process(T Value) override

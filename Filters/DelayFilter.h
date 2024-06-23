@@ -109,16 +109,9 @@ public:
 		return Math::Lerp(Value, delayedSample, m_OutputMixRate);
 	}
 
-	void Clear(void)
-	{
-		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
-	}
-
 	void Reset(void)
 	{
-		Clear();
-
-		SetTime(MaxTime);
+		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
 
 		m_BufferIndex = 0;
 	}

@@ -40,6 +40,7 @@ public:
 	void Clear(void)
 	{
 		m_Delay.Reset();
+		m_Delay.SetTime(MaxDelayTime);
 
 		m_IsReplaying = true;
 		m_FirstRecordIsDone = false;

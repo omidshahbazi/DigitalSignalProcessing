@@ -125,7 +125,7 @@ public:
 			Parts parts = m_Pattern[m_PatternIndex];
 			m_PatternIndex = Math::Moderate(m_PatternIndex + 1, m_PatternLength);
 
-			for (uint8 i = 0; i < sizeof(uint8) * 8; ++i)
+			for (uint8 i = 0; i < NOTES_COUNT; ++i)
 			{
 				uint8 id = (1 << i);
 
@@ -144,11 +144,21 @@ public:
 
 	T Process(void)
 	{
+		uint8 enabledCount = 0;
 		T samplesSum = 0;
-		for (uint8 j = 0; j < NOTES_COUNT; ++j)
-			samplesSum += m_Parts[j]->Process();
 
-		return samplesSum / NOTES_COUNT;
+		for (uint8 i = 0; i < NOTES_COUNT; ++i)
+		{
+			uint8 id = (1 << i);
+
+			if (((uint8)m_EnabledParts & id) == 0)
+				continue;
+
+			++enabledCount;
+			samplesSum += m_Parts[i]->Process();
+		}
+
+		return samplesSum / enabledCount;
 	}
 
 private:
