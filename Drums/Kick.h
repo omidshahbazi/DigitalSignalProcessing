@@ -15,9 +15,9 @@ public:
 	{
 		m_Envelope.SetAttackTime(0.0001);
 		m_Envelope.SetDecayTime(0.2);
-		m_Envelope.SetSustainTime(0.1);
+		m_Envelope.SetSustainTime(0.2);
 		m_Envelope.SetSustainLevel(1);
-		m_Envelope.SetReleaseTime(0.2);
+		m_Envelope.SetReleaseTime(0.4);
 		m_Envelope.SetMinValue(0);
 		m_Envelope.SetMaxValue(1);
 
@@ -27,7 +27,7 @@ public:
 		m_FrequencyEnvelope.SetSustainLevel(1);
 		m_FrequencyEnvelope.SetReleaseTime(0.02);
 		m_FrequencyEnvelope.SetMinValue(60);
-		m_FrequencyEnvelope.SetMaxValue(100);
+		m_FrequencyEnvelope.SetMaxValue(140);
 
 		m_Oscillator.SetFrequency(80);
 	}

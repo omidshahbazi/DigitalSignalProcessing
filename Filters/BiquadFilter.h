@@ -4,7 +4,6 @@
 
 #include "Filter.h"
 #include "../Math.h"
-#include "../Memory.h"
 #include "../Debug.h"
 
 template <typename T, uint8_t StageCount>
@@ -33,11 +32,8 @@ private:
 
 public:
 	BiquadFilter()
-		: m_Stages(Memory::Allocate<Stage>(StageCount)) {}
-
-	~BiquadFilter()
+		: m_Stages{}
 	{
-		Memory::Deallocate(m_Stages);
 	}
 
 	void SetCoefficients(const Coefficients *Values)
@@ -233,7 +229,7 @@ public:
 	}
 
 private:
-	Stage *m_Stages;
+	Stage m_Stages[StageCount];
 };
 
 #endif
