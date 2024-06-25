@@ -118,8 +118,8 @@ public:
 
 	T Process(void)
 	{
-		float beginValue;
-		float endValue;
+		float beginValue = 0;
+		float endValue = 0;
 
 		uint32 sampleCount = (uint32)(m_SegmentTime[(uint8)m_CurrSegment] * SampleRate);
 

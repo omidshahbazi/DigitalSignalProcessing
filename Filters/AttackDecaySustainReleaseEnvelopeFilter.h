@@ -174,8 +174,8 @@ public:
 		const bool isAutoReleaseMode = (GetSustainTime() != 0);
 		const bool bypassRelease = (GetReleaseTime() == 0);
 
-		float beginValue;
-		float endValue;
+		float beginValue = 0;
+		float endValue = 0;
 
 		switch (m_CurrSegment)
 		{

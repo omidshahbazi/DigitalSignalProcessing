@@ -207,6 +207,12 @@ public:
 	}
 
 	template <typename T>
+	static constexpr bool IsPowerOfTwo(T Value)
+	{
+		return (Value != 0) && ((Value & (Value - 1)) == 0);
+	}
+
+	template <typename T>
 	static T Root(T Value, int32 N)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
