@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <limits>
+#include "Common.h"
 
 class Math
 {

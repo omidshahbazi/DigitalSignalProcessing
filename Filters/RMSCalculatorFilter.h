@@ -4,15 +4,15 @@
 
 #include "DelayFilter.h"
 
-template <typename T, uint32 SampleRate, uint16 BufferLength>
+template <typename T, uint32 SampleRate, uint16 SampleCount>
 class RMSCalculatorFilter : private DelayFilter<T, SampleRate, 1>
 {
-	static_assert(0 < BufferLength, "Invalid MaxTime");
+	static_assert(0 < SampleCount, "Invalid MaxTime");
 
 public:
 	RMSCalculatorFilter(void)
 	{
-		DelayFilter<T, SampleRate, 1>::SetTime((float)BufferLength / SampleRate);
+		DelayFilter<T, SampleRate, 1>::SetTime((float)SampleCount / SampleRate);
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count)
@@ -30,14 +30,14 @@ public:
 	{
 		T sumSquares = 0;
 
-		for (uint16 i = 0; i < BufferLength; ++i)
+		for (uint16 i = 0; i < SampleCount; ++i)
 		{
 			T sample = DelayFilter<T, SampleRate, 1>::GetSample(i);
 
 			sumSquares += sample * sample;
 		}
 
-		return Math::Root(sumSquares / BufferLength, 2);
+		return Math::Root(sumSquares / SampleCount, 2);
 	}
 
 	T CalculateInverse(void)
