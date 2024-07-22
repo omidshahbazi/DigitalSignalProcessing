@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
-template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
+template <typename T, uint32 SampleRate, uint16 MaxTime>
 class Looper : public IDSP<T, SampleRate>
 {
 public:
@@ -17,10 +17,10 @@ public:
 		SetVolume(0.5);
 	}
 
-	//(0, ...]
+	//(0, MaxTime]
 	void SetReplayMode(float RecordLineTime)
 	{
-		ASSERT(0 < RecordLineTime, "Invalid RecordLineTime");
+		ASSERT(0 < RecordLineTime && RecordLineTime <= MaxTime, "Invalid RecordLineTime");
 
 		if (!m_FirstRecordIsDone)
 		{
@@ -40,10 +40,15 @@ public:
 	void Clear(void)
 	{
 		m_Delay.Reset();
-		m_Delay.SetTime(MaxDelayTime);
+		m_Delay.SetTime(MaxTime);
 
 		m_IsReplaying = true;
 		m_FirstRecordIsDone = false;
+	}
+
+	float GetMaxTime(void) const
+	{
+		return m_Delay.GetTime();
 	}
 
 	//[0, 1]
@@ -71,6 +76,7 @@ public:
 				{
 					output = Math::Lerp(input, m_Delay.GetSample(), m_Volume);
 
+					output = m_Delay.GetSample();
 					m_Delay.MoveForward();
 				}
 			}
@@ -82,7 +88,7 @@ public:
 	}
 
 private:
-	DelayFilter<T, SampleRate, MaxDelayTime> m_Delay;
+	DelayFilter<T, SampleRate, MaxTime> m_Delay;
 	bool m_IsReplaying;
 	bool m_FirstRecordIsDone;
 	float m_Volume;

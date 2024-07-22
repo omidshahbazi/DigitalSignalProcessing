@@ -16,10 +16,12 @@ public:
 		: m_Time(0),
 		  m_Feedback(0),
 		  m_OutputMixRate(0),
+		  m_Reverse(false),
 		  m_Buffer(nullptr),
 		  m_TotalBufferLength(MaxTime * SampleRate),
 		  m_BufferLength(0),
-		  m_BufferIndex(0)
+		  m_WriteBufferIndex(0),
+		  m_ReadBufferIndex(0)
 	{
 		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
@@ -71,6 +73,15 @@ public:
 		return m_OutputMixRate;
 	}
 
+	void SetReverse(bool Value)
+	{
+		m_Reverse = Value;
+	}
+	bool GetReverse(void) const
+	{
+		return m_Reverse;
+	}
+
 	uint32 GetBufferLength(void) const
 	{
 		return m_BufferLength;
@@ -78,19 +89,20 @@ public:
 
 	T GetSample(uint32 Offset = 0) const
 	{
-		return GetCircularSample(m_BufferIndex + Offset);
+		return GetCircularSample(m_ReadBufferIndex + Offset);
 	}
 
 	T GetLerpedSample(uint32 Offset, float Fraction) const
 	{
-		uint32 index = m_BufferIndex + Offset;
+		uint32 index = m_ReadBufferIndex + Offset;
 
 		return Math::Lerp(GetCircularSample(index), GetCircularSample(index + 1), Fraction);
 	}
 
 	void MoveForward(void)
 	{
-		m_BufferIndex = (m_BufferIndex + 1) % m_BufferLength;
+		m_WriteBufferIndex = Math::Wrap(m_WriteBufferIndex + 1, 0, m_BufferLength - 1);
+		m_ReadBufferIndex = Math::Wrap(m_ReadBufferIndex + (m_Reverse ? -1 : 1), 0, m_BufferLength - 1);
 	}
 
 	T Process(T Value) override
@@ -100,9 +112,9 @@ public:
 
 	T Process(T Value, bool Additive)
 	{
-		T delayedSample = GetCircularSample(m_BufferIndex);
+		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 
-		m_Buffer[m_BufferIndex] = (Additive ? (Value + delayedSample) * 0.5F : Value);
+		m_Buffer[m_WriteBufferIndex] = (Additive ? (Value + delayedSample) * 0.5F : Value);
 
 		MoveForward();
 
@@ -113,24 +125,27 @@ public:
 	{
 		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
 
-		m_BufferIndex = 0;
+		m_WriteBufferIndex = 0;
+		m_ReadBufferIndex = 0;
 	}
 
 private:
 	T GetCircularSample(uint32 Index) const
 	{
-		return m_Buffer[Index % m_BufferLength] * m_Feedback;
+		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * m_Feedback;
 	}
 
 private:
 	float m_Time;
 	float m_Feedback;
 	float m_OutputMixRate;
+	bool m_Reverse;
 
 	T *m_Buffer;
 	uint32 m_TotalBufferLength;
 	uint32 m_BufferLength;
-	uint32 m_BufferIndex;
+	uint32 m_WriteBufferIndex;
+	uint32 m_ReadBufferIndex;
 };
 
 #endif
