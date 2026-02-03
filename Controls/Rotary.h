@@ -14,13 +14,13 @@ public:
 	typedef ContextCallback<void, int8> RotatedEventHandler;
 
 public:
-	Rotary(IHAL *HAL, uint8 LeftPin, uint8 RightPin)
+	Rotary(IHAL *HAL, uint8 APin, uint8 BPin)
 		: ControlBase(HAL, 1000),
-		  m_LeftControl(HAL, LeftPin, IHAL::PinModes::DigitalInput, 1),
-		  m_RightControl(HAL, RightPin, IHAL::PinModes::DigitalInput, 1)
+		  m_AControl(HAL, APin, IHAL::PinModes::DigitalInput, 1),
+		  m_BControl(HAL, BPin, IHAL::PinModes::DigitalInput, 1)
 	{
-		ASSERT(HAL->IsADigitalPin(LeftPin), "Pin %i is not an digital pin", LeftPin);
-		ASSERT(HAL->IsADigitalPin(RightPin), "Pin %i is not an digital pin", RightPin);
+		ASSERT(HAL->IsADigitalPin(APin), "Pin %i is not an digital pin", APin);
+		ASSERT(HAL->IsADigitalPin(BPin), "Pin %i is not an digital pin", BPin);
 	}
 
 	void SetOnRotatedListener(RotatedEventHandler Listener)
@@ -31,18 +31,18 @@ public:
 protected:
 	virtual void Update(void) override
 	{
-		uint8 leftState = m_LeftControl.DigitalStateRead();
-		uint8 rightState = m_RightControl.DigitalStateRead();
+		uint8 aState = m_AControl.DigitalStateRead();
+		uint8 bState = m_BControl.DigitalStateRead();
 
-		if (((rightState & 0b11) == 0b10) && ((leftState & 0b11) == 0b00))
-			m_OnRotated(1);
-		else if (((leftState & 0b11) == 0b10) && ((rightState & 0b11) == 0b00))
+		if (((bState & 0b11) == 0b10) && ((aState & 0b11) == 0b00))
 			m_OnRotated(-1);
+		else if (((aState & 0b11) == 0b10) && ((bState & 0b11) == 0b00))
+			m_OnRotated(1);
 	}
 
 private:
-	Control m_LeftControl;
-	Control m_RightControl;
+	Control m_AControl;
+	Control m_BControl;
 
 	RotatedEventHandler m_OnRotated;
 };

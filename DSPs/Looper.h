@@ -5,6 +5,8 @@
 #include "IDSP.h"
 #include "../Filters/DelayFilter.h"
 
+//How it should work
+//https://www.youtube.com/watch?v=b-tNt3fUVAY
 template <typename T, uint32 SampleRate, uint16 MaxTime>
 class Looper : public IDSP<T, SampleRate>
 {

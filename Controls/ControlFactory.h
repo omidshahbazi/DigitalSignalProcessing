@@ -74,13 +74,13 @@ public:
 		return Create<Rotary>(m_HAL, LeftPin, RightPin);
 	}
 
-	RotaryButton *CreateRotaryButton(uint8 LeftPin, uint8 RightPin, uint8 ButtonPin)
+	RotaryButton *CreateRotaryButton(uint8 APin, uint8 BPin, uint8 ButtonPin)
 	{
-		MarkGPIOAsUsed(LeftPin);
-		MarkGPIOAsUsed(RightPin);
+		MarkGPIOAsUsed(APin);
+		MarkGPIOAsUsed(BPin);
 		MarkGPIOAsUsed(ButtonPin);
 
-		return Create<RotaryButton>(m_HAL, LeftPin, RightPin, ButtonPin);
+		return Create<RotaryButton>(m_HAL, APin, BPin, ButtonPin);
 	}
 
 	void Process(void)
@@ -103,7 +103,7 @@ private:
 
 	void MarkGPIOAsUsed(uint8 Pin)
 	{
-		ASSERT(!m_UsedGPIOs[Pin], "GPIOPin%i is already in use", Pin);
+		//ASSERT(!m_UsedGPIOs[Pin], "GPIOPin%i is already in use", Pin);
 
 		m_UsedGPIOs[Pin] = true;
 	}
