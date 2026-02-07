@@ -229,6 +229,12 @@ public:
 	}
 
 	template <typename T>
+	static T SquareRoot(T Value)
+	{
+		return Root(Value, 2);
+	}
+
+	template <typename T>
 	static T SoftClip(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
@@ -245,7 +251,7 @@ public:
 		//\arctan\left(\sqrt{1\ -\ \left(\sin x\right)^{3}}+\left(\left(f\ +\left(-\operatorname{sign}\left(f\right)\cdot10\right)\right)+\left(f\cdot\sin x\right)\right)\right)\cdot0.63
 
 		// return atan(Root(1 - Power(Value, 3), 2) + Factor + (-Sign(Factor) * 10) + (Factor * Value)) * 0.63;
-		return atan(Root(1 - Power(Value, 3), 2));
+		return atan(SquareRoot(1 - Power(Value, 3)));
 	}
 
 	template <typename T>
@@ -254,6 +260,12 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return pow(10, dB / 20);
+	}
+
+	template <typename T, typename U, typename V>
+	static T FrequencyLerp(T Min, U Max, V Time)
+	{
+		return Min * Power(Max / Min, Time);
 	}
 };
 

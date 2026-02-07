@@ -52,11 +52,16 @@ public:
 		}
 	}
 
+	void Flush()
+	{
+		GetHAL()->SetPersistentData(m_ID, &m_Data, sizeof(T));
+	}
+
 	void Set(const T &Object)
 	{
 		m_Data = Object;
 
-		GetHAL()->SetPersistentData(m_ID, &m_Data, sizeof(T));
+		Flush();
 	}
 
 	T &Get(void)

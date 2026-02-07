@@ -7,7 +7,7 @@
 #include "../Debug.h"
 
 template <typename T, uint32 SampleRate>
-class BandStopFilter : private BiquadFilter<T, 1>
+class BandStopFilter : private BiquadFilter<T, 1, SampleRate>
 {
 public:
 	BandStopFilter(void)
@@ -55,14 +55,12 @@ public:
 		ASSERT(MIN_FREQUENCY <= Max && Max <= MAX_FREQUENCY, "Invalid Max");
 
 		m_Bandwidth = Max - Min;
-		m_CenterFrequency = Min + (m_Bandwidth / 2);
+		m_CenterFrequency = Math::FrequencyLerp(Min, Max, 0.5);
 
 		Update();
 	}
 
-	// [0.1, 10] Common [0.7, 1]
-	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
-	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
+	// [0.1, 10]
 	void SetResonance(float Value)
 	{
 		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
@@ -78,13 +76,13 @@ public:
 
 	T Process(T Value) override
 	{
-		return BiquadFilter<T, 1>::Process(Value);
+		return BiquadFilter<T, 1, SampleRate>::Process(Value);
 	}
 
 private:
 	void Update(void)
 	{
-		BiquadFilter<T, 1>::SetBandStopFilterCoefficients(this, SampleRate, m_CenterFrequency, m_Bandwidth, m_Resonance);
+		BiquadFilter<T, 1, SampleRate>::SetBandStopFilterCoefficients(this, m_CenterFrequency, m_Bandwidth, m_Resonance);
 	}
 
 private:

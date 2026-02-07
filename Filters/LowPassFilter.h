@@ -7,7 +7,7 @@
 #include "../Debug.h"
 
 template <typename T, uint32 SampleRate>
-class LowPassFilter : private BiquadFilter<T, 1>
+class LowPassFilter : private BiquadFilter<T, 1, SampleRate>
 {
 public:
 	LowPassFilter(void)
@@ -32,9 +32,7 @@ public:
 		return m_CutoffFrequency;
 	}
 
-	// [0.1, 10] Common [0.7, 1]
-	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
-	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
+	// [0.1, 10]
 	void SetResonance(float Value)
 	{
 		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
@@ -50,13 +48,13 @@ public:
 
 	T Process(T Value) override
 	{
-		return BiquadFilter<T, 1>::Process(Value);
+		return BiquadFilter<T, 1, SampleRate>::Process(Value);
 	}
 
 private:
 	void Update(void)
 	{
-		BiquadFilter<T, 1>::SetLowPassFilterCoefficients(this, SampleRate, m_CutoffFrequency, m_Resonance);
+		BiquadFilter<T, 1, SampleRate>::SetLowPassFilterCoefficients(this, m_CutoffFrequency, m_Resonance);
 	}
 
 private:

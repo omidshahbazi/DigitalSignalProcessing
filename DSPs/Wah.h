@@ -12,40 +12,36 @@ private:
 	struct FrequencyRange
 	{
 	public:
-		float Min;
-		float Max;
-		float Resonance;
-		float Low;
-		float High;
+		float FrequencyMin;
+		float FrequencyMax;
+		float ResonanceMin;
+		float ResonanceMax;
 	};
 
 	const FrequencyRange FREQUENCY_RANGES[3] = {
-		{175, 2.5 * KHz, 7.9, 175, 2 * KHz}, // Cry Baby 175Hz - 2500Hz 7.9
-		{100, 5 * KHz, 9, 10, 4 * KHz},		 // Boutique 100Hz - 5000Hz 8-10
-		{20, 20 * KHz, 7.9, 7.9, 19 * KHz}}; // Full Range 20Hz - 20kHz 7.9
+		{400, 2.1 * KHz, 2, 4.5},	// Classic
+		{300, 1.2 * KHz, 2, 4.5},	// Deep
+		{500, 3.0 * KHz, 2, 4.5}};	// Sharp
 
 public:
 	enum class Types
 	{
-		CryBaby = 0,
-		// Boutique,
-		// FullRange
+		Classic = 0,
+		Deep,
+		Sharp
 	};
 
 public:
 	Wah(void)
 	{
-		SetType(Types::CryBaby);
+		SetType(Types::Classic);
 	}
 
 	void SetType(Types Value)
 	{
 		m_Type = Value;
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
-
-		m_BandPassFilter.SetFrequencies(freqRange.Min, freqRange.Max);
-		m_BandPassFilter.SetResonance(freqRange.Resonance);
+		SetRatio(m_Ratio);
 	}
 	Types GetType(void) const
 	{
@@ -61,7 +57,8 @@ public:
 
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
-		m_BandPassFilter.SetCenterFrequency(Math::Lerp(freqRange.Low, freqRange.High, m_Ratio));
+		m_BandPassFilter.SetCenterFrequency(Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio));
+		m_BandPassFilter.SetResonance(Math::Lerp(freqRange.ResonanceMin, freqRange.ResonanceMax, m_Ratio));
 	}
 	float GetRatio(void) const
 	{

@@ -37,7 +37,7 @@ public:
 			sumSquares += sample * sample;
 		}
 
-		return Math::Root(sumSquares / SampleCount, 2);
+		return Math::SquareRoot(sumSquares / SampleCount);
 	}
 
 	T CalculateInverse(void)
