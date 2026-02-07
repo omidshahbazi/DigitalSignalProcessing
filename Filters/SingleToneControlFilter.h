@@ -20,7 +20,7 @@ public:
 	//[0, 1]
 	void SetTone(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Tone = Value;
 	}

@@ -114,7 +114,7 @@ private:
 	static uint16 FindMaxIndex(const T *const Buffer, uint16 Length)
 	{
 		ASSERT(Buffer != nullptr, "Invalid Buffer");
-		ASSERT(Length > 0, "Invalid Length");
+		ASSERT(Length > 0, "Invalid Length %f", Length);
 
 		uint16 maxIndex = 0;
 		T maxValue = Buffer[0];

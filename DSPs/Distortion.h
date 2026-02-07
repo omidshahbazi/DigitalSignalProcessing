@@ -31,7 +31,7 @@ public:
 	//[0, 1]
 	void SetLevel(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Level = Value;
 
@@ -45,7 +45,7 @@ public:
 	//[-20dB, 10dB]
 	void SetGain(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 10, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 

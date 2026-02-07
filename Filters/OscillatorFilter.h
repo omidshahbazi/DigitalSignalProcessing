@@ -66,7 +66,7 @@ public:
 	//(0, MAX_FREQUENCY]
 	void SetFrequency(float Value)
 	{
-		ASSERT(0 < Value && Value <= MAX_FREQUENCY, "Invalid Value");
+		ASSERT(0 < Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_Freuency = Value;
 

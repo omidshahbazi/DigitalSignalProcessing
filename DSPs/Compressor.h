@@ -53,7 +53,7 @@ public:
 	//[1, 40]
 	void SetRatio(float Value)
 	{
-		ASSERT(1 <= Value && Value <= 40, "Invalid Value");
+		ASSERT(1 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_Ratio = Value;
 
@@ -67,7 +67,7 @@ public:
 	//[-80dB, 0dB]
 	void SetThreshold(float Value)
 	{
-		ASSERT(-80 <= Value && Value <= 0, "Invalid Value");
+		ASSERT(-80 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
 

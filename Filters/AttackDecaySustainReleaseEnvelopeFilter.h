@@ -45,7 +45,7 @@ public:
 	// 0: Bypass
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Attack] = Value;
 	}
@@ -58,7 +58,7 @@ public:
 	// 0: Bypass
 	void SetDecayTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Decay] = Value;
 	}
@@ -71,7 +71,7 @@ public:
 	// Positive: Auto Release Mode
 	void SetSustainTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Sustain] = Value;
 	}
@@ -83,7 +83,7 @@ public:
 	//[0, 1]
 	void SetSustainLevel(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SustainLevel = Value;
 	}
@@ -96,7 +96,7 @@ public:
 	// 0: Bypass
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Release] = Value;
 	}
@@ -110,7 +110,7 @@ public:
 	// Positive: Log Curve
 	void SetCurve(float Value)
 	{
-		ASSERT(0 <= Value, "Invalid Value");
+		ASSERT(0 <= Value, "Invalid Value %f", Value);
 
 		m_Curve = Value;
 	}

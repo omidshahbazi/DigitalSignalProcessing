@@ -28,7 +28,7 @@ public:
 	//[0, 1]
 	void SetFeedback(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Delay.SetFeedback(Value);
 	}
@@ -40,7 +40,7 @@ public:
 	//[0, 1]
 	void SetWetRate(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Delay.SetOutputMixRate(Value);
 	}

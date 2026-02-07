@@ -21,7 +21,7 @@ public:
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
 	void SetCutoffFrequency(float Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value");
+		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_CutoffFrequency = Value;
 
@@ -35,7 +35,7 @@ public:
 	// [0.1, 10]
 	void SetResonance(float Value)
 	{
-		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
+		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_Resonance = Value;
 

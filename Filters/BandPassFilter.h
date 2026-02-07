@@ -22,7 +22,7 @@ public:
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
 	void SetCenterFrequency(float Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value");
+		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_CenterFrequency = Value;
 
@@ -36,7 +36,7 @@ public:
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
 	void SetBandwidth(float Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value");
+		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_Bandwidth = Value;
 
@@ -50,8 +50,8 @@ public:
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
 	void SetFrequencies(float Min, float Max)
 	{
-		ASSERT(MIN_FREQUENCY <= Min && Min <= MAX_FREQUENCY, "Invalid Min");
-		ASSERT(MIN_FREQUENCY <= Max && Max <= MAX_FREQUENCY, "Invalid Max");
+		ASSERT(MIN_FREQUENCY <= Min && Min <= MAX_FREQUENCY, "Invalid Min %f", Min);
+		ASSERT(MIN_FREQUENCY <= Max && Max <= MAX_FREQUENCY, "Invalid Max %f", Max);
 
 		m_Bandwidth = Max - Min;
 		m_CenterFrequency = Math::FrequencyLerp(Min, Max, 0.5);
@@ -62,7 +62,7 @@ public:
 	// [0.1, 10]
 	void SetResonance(float Value)
 	{
-		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value");
+		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_Resonance = Value;
 

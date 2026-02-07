@@ -55,7 +55,7 @@ protected:
 	//[0, 1]
 	void PWMWrite(uint8 Pin, float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_HAL->PWMWrite(Pin, Value);
 	}

@@ -38,7 +38,7 @@ public:
 	//[0, MaxTime]
 	void SetTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= MaxTime, "Invalid Value");
+		ASSERT(0 <= Value && Value <= MaxTime, "Invalid Value %f", Value);
 
 		m_Time = Value;
 
@@ -52,7 +52,7 @@ public:
 	//[0, 1]
 	void SetFeedback(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Feedback = Value;
 	}
@@ -64,7 +64,7 @@ public:
 	//[0, 1]
 	void SetOutputMixRate(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_OutputMixRate = Value;
 	}

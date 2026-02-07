@@ -39,7 +39,7 @@ public:
 	//(0, 1]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 1, "Invalid Value");
+		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Attack] = Value;
 	}
@@ -51,7 +51,7 @@ public:
 	//(0, 1]
 	void SetDecayTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 1, "Invalid Value");
+		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Decay] = Value;
 	}
@@ -65,7 +65,7 @@ public:
 	// Positive: Log Curve
 	void SetCurve(float Value)
 	{
-		ASSERT(0 <= Value, "Invalid Value");
+		ASSERT(0 <= Value, "Invalid Value %f", Value);
 
 		m_Curve = Value;
 	}

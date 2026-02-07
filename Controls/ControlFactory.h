@@ -103,7 +103,7 @@ private:
 
 	void MarkGPIOAsUsed(uint8 Pin)
 	{
-		//ASSERT(!m_UsedGPIOs[Pin], "GPIOPin%i is already in use", Pin);
+		ASSERT(!m_UsedGPIOs[Pin], "GPIOPin%i is already in use", Pin);
 
 		m_UsedGPIOs[Pin] = true;
 	}

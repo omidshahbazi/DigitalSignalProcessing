@@ -27,7 +27,7 @@ public:
 	void SetTable(const TablePoints *Table, uint8 Length)
 	{
 		ASSERT(Table != nullptr, "Invalid Table");
-		ASSERT(Length > 1, "Invalid Length");
+		ASSERT(Length > 1, "Invalid Length %f", Length);
 
 		m_Table = Table;
 		m_Length = Length;

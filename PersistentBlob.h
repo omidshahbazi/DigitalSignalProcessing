@@ -43,6 +43,7 @@ public:
 
 	void Initialize(const T &DefaultData = {})
 	{
+		Log::WriteWarning("Save-PersistentBlob::Initialize");
 		if (GetHAL()->ContainsPersistentData(m_ID))
 			GetHAL()->GetPersistentData(m_ID, &m_Data, sizeof(T));
 		else
@@ -54,11 +55,13 @@ public:
 
 	void Flush()
 	{
+		Log::WriteWarning("Save-PersistentBlob::Flush");
 		GetHAL()->SetPersistentData(m_ID, &m_Data, sizeof(T));
 	}
 
 	void Set(const T &Object)
 	{
+		Log::WriteWarning("Save-PersistentBlob::Set");
 		m_Data = Object;
 
 		Flush();

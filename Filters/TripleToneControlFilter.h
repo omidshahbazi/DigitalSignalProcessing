@@ -30,9 +30,9 @@ public:
 		const float LowMidThreshold = Threshold * 10;
 		const float MidHighThreshold = (Threshold * 0.1) * KHz;
 
-		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid");
-		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh");
-		ASSERT(MIN_FREQUENCY <= LowMid - LowMidThreshold, "Invalid Threshold");
+		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid %f", LowMid);
+		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh %f", MidHigh);
+		ASSERT(MIN_FREQUENCY <= LowMid - LowMidThreshold, "Invalid Threshold %f", Threshold);
 
 		m_LowPassFilter.SetCutoffFrequency(LowMid);
 		m_BandPassFilter.SetFrequencies(LowMid - LowMidThreshold, MidHigh);
@@ -42,7 +42,7 @@ public:
 	//[-20dB, 20dB]
 	void SetLowTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
 		m_LowToneMultiplier = Math::dbToMultiplier(m_LowTone);
@@ -55,7 +55,7 @@ public:
 	//[-20dB, 20dB]
 	void SetMidTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_MidTone = Value;
 		m_MidToneMultiplier = Math::dbToMultiplier(m_MidTone);
@@ -68,7 +68,7 @@ public:
 	//[-20dB, 20dB]
 	void SetHighTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
 		m_HighToneMultiplier = Math::dbToMultiplier(m_HighTone);

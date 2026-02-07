@@ -26,7 +26,7 @@ public:
 	//[0, 100]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 100, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 100, "Invalid Value %f", Value);
 
 		m_Depth = Value;
 	}
@@ -38,7 +38,7 @@ public:
 	//(0.01, 4]
 	void SetRate(float Value)
 	{
-		ASSERT(0 < Value && Value <= 4, "Invalid Value");
+		ASSERT(0 < Value && Value <= 4, "Invalid Value %f", Value);
 
 		m_Oscillator.SetFrequency(Value);
 	}
@@ -50,7 +50,7 @@ public:
 	//[0, 1]
 	void SetFeedback(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Delay.SetFeedback(Value);
 	}
@@ -62,7 +62,7 @@ public:
 	//[0, 1]
 	void SetWetRate(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_WetRate = Value;
 	}

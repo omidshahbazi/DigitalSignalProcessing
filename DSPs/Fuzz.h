@@ -29,7 +29,7 @@ public:
 	//[0, 1]
 	void SetTone(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Tone = Value;
 
@@ -44,7 +44,7 @@ public:
 	//[0, 1]
 	void SetLevel(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Level = Value;
 
@@ -58,7 +58,7 @@ public:
 	//[0, 1]
 	void SetWetRate(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_WetRate = Value;
 	}

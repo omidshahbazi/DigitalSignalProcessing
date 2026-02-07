@@ -22,7 +22,7 @@ public:
 	//[0dB, 80dB]
 	void SetThreshold(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 80, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 80, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
 	}

@@ -36,7 +36,7 @@ public:
 
 	void SetConstantBrighness(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_DefaultValue = Value;
 
@@ -53,9 +53,9 @@ public:
 	}
 	void SetBlinkingBrighness(float MinValue, float MaxValue, float Rate)
 	{
-		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
-		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
-		ASSERT(0 < Rate, "Invalid Rate");
+		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue %f", MinValue);
+		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue %f", MaxValue);
+		ASSERT(0 < Rate, "Invalid Rate %f", Rate);
 
 		m_DefaultMinValue = MinValue;
 		m_DefaultMaxValue = MaxValue;
@@ -78,9 +78,9 @@ public:
 	}
 	void SetFadingBrighness(float MinValue, float MaxValue, float Rate)
 	{
-		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue");
-		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue");
-		ASSERT(0 < Rate, "Invalid Rate");
+		ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue %f", MinValue);
+		ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue %f", MaxValue);
+		ASSERT(0 < Rate, "Invalid Rate %f", Rate);
 
 		m_DefaultMinValue = MinValue;
 		m_DefaultMaxValue = MaxValue;

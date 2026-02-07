@@ -26,7 +26,7 @@ public:
 	//[0.001, 10]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value");
+		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_AttackTime = Value;
 
@@ -40,7 +40,7 @@ public:
 	//[0.001, 10]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value");
+		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_ReleaseTime = Value;
 

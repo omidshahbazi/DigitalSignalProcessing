@@ -27,7 +27,7 @@ public:
 	//[0, 1]
 	void SetDrive(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Drive = Value;
 
@@ -41,7 +41,7 @@ public:
 	//[-6dB, 6dB]
 	void SetGain(float Value)
 	{
-		ASSERT(-6 <= Value && Value <= 6, "Invalid Value");
+		ASSERT(-6 <= Value && Value <= 6, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 

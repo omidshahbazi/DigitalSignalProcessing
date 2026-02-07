@@ -22,7 +22,7 @@ public:
 	//(0, MaxTime]
 	void SetReplayMode(float RecordLineTime)
 	{
-		ASSERT(0 < RecordLineTime && RecordLineTime <= MaxTime, "Invalid RecordLineTime");
+		ASSERT(0 < RecordLineTime && RecordLineTime <= MaxTime, "Invalid RecordLineTime %f", RecordLineTime);
 
 		if (!m_FirstRecordIsDone)
 		{
@@ -56,7 +56,7 @@ public:
 	//[0, 1]
 	void SetVolume(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value");
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Volume = Value;
 	}

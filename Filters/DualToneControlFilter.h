@@ -26,8 +26,8 @@ public:
 	{
 		const float LowHighThreshold = Threshold * 10;
 
-		ASSERT(MIN_FREQUENCY <= LowHigh && LowHigh <= MAX_FREQUENCY, "Invalid LowHigh");
-		ASSERT(MIN_FREQUENCY <= LowHigh - LowHighThreshold, "Invalid Threshold");
+		ASSERT(MIN_FREQUENCY <= LowHigh && LowHigh <= MAX_FREQUENCY, "Invalid LowHigh %f", LowHigh);
+		ASSERT(MIN_FREQUENCY <= LowHigh - LowHighThreshold, "Invalid Threshold %f", Threshold);
 
 		m_LowPassFilter.SetCutoffFrequency(LowHigh);
 		m_HighPassFilter.SetCutoffFrequency(LowHigh - LowHighThreshold);
@@ -36,7 +36,7 @@ public:
 	//[-20dB, 20dB]
 	void SetLowTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
 		m_LowToneMultiplier = Math::dbToMultiplier(m_LowTone);
@@ -49,7 +49,7 @@ public:
 	//[-20dB, 20dB]
 	void SetHighTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value");
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
 		m_MidToneMultiplier = Math::dbToMultiplier(m_MidTone);

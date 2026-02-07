@@ -88,8 +88,8 @@ public:
 	static void SetLowPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 
@@ -124,8 +124,8 @@ public:
 	static void SetHighPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 
@@ -163,9 +163,9 @@ public:
 	static void SetBandPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency");
-		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency %f", CenterFrequency);
+		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth %f", Bandwidth);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 
@@ -202,9 +202,9 @@ public:
 	static void SetBandStopFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency");
-		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency %f", CenterFrequency);
+		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth %f", Bandwidth);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 
@@ -241,9 +241,9 @@ public:
 	static void SetPeakingEQCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency");
-		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
@@ -280,9 +280,9 @@ public:
 	static void SetLowShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency");
-		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
@@ -321,9 +321,9 @@ public:
 	static void SetHighShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency");
-		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain");
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance");
+		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
+		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
