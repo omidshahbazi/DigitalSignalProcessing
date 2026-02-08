@@ -3,7 +3,7 @@
 #define LOOPER_H
 
 #include "IDSP.h"
-#include "../Filters/DelayFilter.h"
+#include "../Filters/BufferFilter.h"
 
 //How it should work
 //https://www.youtube.com/watch?v=b-tNt3fUVAY
@@ -11,89 +11,108 @@ template <typename T, uint32 SampleRate, uint16 MaxTime>
 class Looper : public IDSP<T, SampleRate>
 {
 public:
+
+public:
 	Looper(void)
-		: m_IsReplaying(true),
-		  m_FirstRecordIsDone(false),
-		  m_Volume(0)
+		: m_IsPlaying(true),
+		  m_IsRecording(false),
+		  m_MasterLineIsRecorded(false)
 	{
-		SetVolume(0.5);
+		SetOutputMixRate(0.5);
 	}
 
-	//(0, MaxTime]
-	void SetReplayMode(float RecordLineTime)
+	void SetPlaying(bool Value)
 	{
-		ASSERT(0 < RecordLineTime && RecordLineTime <= MaxTime, "Invalid RecordLineTime %f", RecordLineTime);
+		m_IsPlaying = Value;
+	}
+	bool GetPlaying(void) const
+	{
+		return m_IsPlaying;
+	}
 
-		if (!m_FirstRecordIsDone)
+	void SetRecording(bool Value)
+	{
+		if (m_IsRecording && !Value)
 		{
-			m_FirstRecordIsDone = true;
+			m_MasterLineIsRecorded = true;
 
-			m_Delay.SetTime(RecordLineTime);
+			m_Buffer.HookTime();
 		}
 
-		m_IsReplaying = true;
+		m_Buffer.CopyTo(m_UndoBuffer);
+		
+		m_IsRecording = Value;
+	}
+	bool GetRecording(void) const
+	{
+		return m_IsRecording;
 	}
 
-	void SetRecordMode(void)
+	void SetReverse(bool Value)
 	{
-		m_IsReplaying = false;
+		m_Buffer.SetReverse(Value);
+	}
+	bool GetReverse(void) const
+	{
+		return m_Buffer.GetReverse();
+	}
+
+	void Undo(void)
+	{
+		m_UndoBuffer.CopyTo(m_Buffer);
 	}
 
 	void Clear(void)
 	{
-		m_Delay.Reset();
-		m_Delay.SetTime(MaxTime);
+		m_UndoBuffer.Reset();
 
-		m_IsReplaying = true;
-		m_FirstRecordIsDone = false;
-	}
+		m_Buffer.Reset();
+		m_Buffer.SetTime(MaxTime);
 
-	float GetMaxTime(void) const
-	{
-		return m_Delay.GetTime();
+		m_IsPlaying = true;
+		m_MasterLineIsRecorded = false;
 	}
 
 	//[0, 1]
-	void SetVolume(float Value)
+	void SetOutputMixRate(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_Volume = Value;
+		m_Buffer.SetOutputMixRate(Value);
 	}
-	float GetVolume(void) const
+	float GetOutputMixRate(void) const
 	{
-		return m_Volume;
+		return m_Buffer.GetOutputMixRate();
+	}
+
+	//[-20dB, -0.5dB]
+	void SetOverdubLevel(float Value)
+	{
+		ASSERT(-20 <= Value && Value <= -0.5, "Invalid Value %f", Value);
+
+		m_Buffer.SetFeedback(Value);
+	}
+	float GetOverdubLevel(void) const
+	{
+		return m_Buffer.GetFeedback();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			T input = Buffer[i];
-			T output = input;
-
-			if (m_IsReplaying)
-			{
-				if (m_FirstRecordIsDone)
-				{
-					output = Math::Lerp(input, m_Delay.GetSample(), m_Volume);
-
-					output = m_Delay.GetSample();
-					m_Delay.MoveForward();
-				}
-			}
-			else
-				output = m_Delay.Process(input, m_FirstRecordIsDone);
-
-			Buffer[i] = output;
-		}
+		if (m_IsPlaying)
+			for (uint16 i = 0; i < Count; ++i)
+				Buffer[i] = m_Buffer.Process(Buffer[i]);
+		else
+			for (uint16 i = 0; i < Count; ++i)
+				Buffer[i] = m_Buffer.Record(Buffer[i]);
 	}
 
 private:
-	DelayFilter<T, SampleRate, MaxTime> m_Delay;
-	bool m_IsReplaying;
-	bool m_FirstRecordIsDone;
-	float m_Volume;
+	BufferFilter<T, SampleRate, MaxTime> m_UndoBuffer;
+	BufferFilter<T, SampleRate, MaxTime> m_Buffer;
+	bool m_IsPlaying;
+	bool m_IsRecording;
+	bool m_MasterLineIsRecorded;
 };
 
 #endif

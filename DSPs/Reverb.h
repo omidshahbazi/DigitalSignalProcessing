@@ -3,7 +3,7 @@
 #define REVERB_H
 
 #include "IDSP.h"
-#include "../Filters/DelayFilter.h"
+#include "../Filters/BufferFilter.h"
 
 template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
 class Reverb : public IDSP<T, SampleRate>
@@ -12,29 +12,29 @@ public:
 	Reverb(void)
 	{
 		SetDelayTime(0.5);
-		SetFeedback(0.5);
+		SetFeedback(-6.02);
 	}
 
 	//[0, MaxDelayTime]
 	void SetDelayTime(float Value)
 	{
-		m_Delay.SetTime(Value);
+		m_Buffer.SetTime(Value);
 	}
 	float GetDelayTime(void) const
 	{
-		return m_Delay.GetTime();
+		return m_Buffer.GetTime();
 	}
 
-	//[0, 1]
+	//[-20dB, 0dB]
 	void SetFeedback(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT(-20 <= Value && Value <= 0, "Invalid Value %f", Value);
 
-		m_Delay.SetFeedback(Value);
+		m_Buffer.SetFeedback(Value);
 	}
 	float GetFeedback(void) const
 	{
-		return m_Delay.GetFeedback();
+		return m_Buffer.GetFeedback();
 	}
 
 	//[0, 1]
@@ -42,26 +42,26 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_Delay.SetOutputMixRate(Value);
+		m_Buffer.SetOutputMixRate(Value);
 	}
 	float GetWetRate(void) const
 	{
-		return m_Delay.GetOutputMixRate();
+		return m_Buffer.GetOutputMixRate();
 	}
 
 	void Reset(void)
 	{
-		m_Delay.Reset();
+		m_Buffer.Reset();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = m_Delay.Process(Buffer[i], true);
+			Buffer[i] = m_Buffer.Record(Buffer[i]);
 	}
 
 private:
-	DelayFilter<T, SampleRate, MaxDelayTime> m_Delay;
+	BufferFilter<T, SampleRate, MaxDelayTime> m_Buffer;
 };
 
 #endif

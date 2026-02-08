@@ -6,7 +6,7 @@
 #include "../Math.h"
 #include "../Debug.h"
 #include "../Filters/OscillatorFilter.h"
-#include "../Filters/DelayFilter.h"
+#include "../Filters/BufferFilter.h"
 
 template <typename T, uint32 SampleRate>
 class Phaser : public IDSP<T, SampleRate>
@@ -20,7 +20,10 @@ public:
 		  m_WetRate(0)
 	{
 		for (uint8 i = 0; i < DELAY_STAGE_COUNT; ++i)
-			m_Delays[i].SetTime(0.05);
+		{
+			m_Buffers[i].SetFeedback(-120);
+			m_Buffers[i].SetTime(0.05);
+		}
 
 		SetDepth(1);
 		SetRate(1);
@@ -66,7 +69,7 @@ public:
 	void Reset(void)
 	{
 		for (uint8 j = 0; j < DELAY_STAGE_COUNT; ++j)
-			m_Delays[j].Reset();
+			m_Buffers[j].Reset();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
@@ -79,9 +82,9 @@ public:
 
 			for (uint8 j = 0; j < DELAY_STAGE_COUNT; ++j)
 			{
-				m_Delays[j].Process(output);
+				m_Buffers[j].Record(output);
 
-				output = (output + m_Delays[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex))) * 0.5;
+				output = (output + m_Buffers[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex))) * 0.5;
 			}
 
 			Buffer[i] = Math::Lerp(Buffer[i], output, m_WetRate);
@@ -90,7 +93,7 @@ public:
 
 private:
 	OscillatorFilter<T, SampleRate> m_Oscillator;
-	DelayFilter<T, SampleRate, 1> m_Delays[DELAY_STAGE_COUNT];
+	BufferFilter<T, SampleRate, 1> m_Buffers[DELAY_STAGE_COUNT];
 	float m_Depth;
 	float m_WetRate;
 };

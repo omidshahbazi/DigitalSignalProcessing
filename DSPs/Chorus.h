@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Math.h"
 #include "../Filters/OscillatorFilter.h"
-#include "../Filters/DelayFilter.h"
+#include "../Filters/BufferFilter.h"
 
 template <typename T, uint32 SampleRate>
 class Chorus : public IDSP<T, SampleRate>
@@ -15,7 +15,7 @@ public:
 		: m_Depth(0),
 		  m_WetRate(0)
 	{
-		m_Delay.SetTime(0.05);
+		m_Buffer.SetTime(0.05);
 
 		SetDepth(1);
 		SetRate(1);
@@ -60,26 +60,26 @@ public:
 
 	void Reset(void)
 	{
-		m_Delay.Reset();
+		m_Buffer.Reset();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			m_Delay.Process(Buffer[i]);
+			m_Buffer.Record(Buffer[i]);
 
 			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
 
-			T delayedSample = m_Delay.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
+			T delayedSample = m_Buffer.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
 
 			Buffer[i] = Math::Lerp(Buffer[i], delayedSample, m_WetRate);
 		}
 	}
 
-private:
+protected:
 	OscillatorFilter<T, SampleRate> m_Oscillator;
-	DelayFilter<T, SampleRate, 1> m_Delay;
+	BufferFilter<T, SampleRate, 1> m_Buffer;
 	float m_Depth;
 	float m_WetRate;
 };
