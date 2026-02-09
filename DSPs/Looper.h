@@ -5,8 +5,6 @@
 #include "IDSP.h"
 #include "../Filters/BufferFilter.h"
 
-//How it should work
-//https://www.youtube.com/watch?v=b-tNt3fUVAY
 template <typename T, uint32 SampleRate, uint16 MaxTime>
 class Looper : public IDSP<T, SampleRate>
 {
@@ -32,6 +30,8 @@ public:
 
 	void SetRecording(bool Value)
 	{
+		ASSERT(m_IsPlaying, "Must be in Playing state to record");
+
 		if (m_IsRecording && !Value)
 		{
 			m_MasterLineIsRecorded = true;
