@@ -32,6 +32,9 @@ public:
 
 	virtual bool IsAPWMPin(uint8 Pin) const = 0;
 
+	virtual bool IsInInputMode(uint8 Pin) const = 0;
+	virtual bool IsInOutputMode(uint8 Pin) const = 0;
+
 	virtual void SetPinMode(uint8 Pin, PinModes Mode) = 0;
 
 	virtual void SetPWMResolution(uint8 Value) = 0;
@@ -60,7 +63,7 @@ public:
 
 	virtual void Delay(uint16 Ms) const = 0;
 
-	virtual IUSBInterface* GetUSBInterface(void) = 0;
+	virtual IUSBInterface *GetUSBInterface(void) = 0;
 };
 
 #endif
