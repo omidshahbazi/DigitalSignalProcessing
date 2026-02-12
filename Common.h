@@ -103,6 +103,11 @@ public:
 		return (uint16)((((Alpha * (uint32)(ColorA & MASK_RB) + beta * (uint32)(ColorB & MASK_RB)) & MASK_MUL_RB) | ((Alpha * (ColorA & MASK_G) + beta * (ColorB & MASK_G)) & MASK_MUL_G)) >> 6);
 	}
 
+	static uint8 CombineAlphaValues(uint8 A, uint8 B)
+	{
+		return (uint8)(255 * (A / 255.F) * (B / 255.F));
+	}
+
 public:
 	uint8 R;
 	uint8 G;
