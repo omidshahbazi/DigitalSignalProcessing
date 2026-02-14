@@ -48,7 +48,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = Math::dbToMultiplier(Math::Lerp(10.0, 30, m_Level));
+		m_PreGain = Math::dBToLinear(Math::Lerp(10.0, 30, m_Level));
 	}
 	float GetLevel(void) const
 	{

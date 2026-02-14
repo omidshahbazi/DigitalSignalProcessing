@@ -45,7 +45,7 @@ public:
 
 		m_Gain = Value;
 
-		m_PostGain = Math::dbToMultiplier(Value);
+		m_PostGain = Math::dBToLinear(Value);
 	}
 	float GetGain(void) const
 	{

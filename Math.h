@@ -255,11 +255,19 @@ public:
 	}
 
 	template <typename T>
-	static T dbToMultiplier(T dB)
+	static T dBToLinear(T dB)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return pow(10, dB / 20);
+	}
+
+	template <typename T>
+	static T LinearTodB(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return 20 * Log10(Value + EPSILON);
 	}
 
 	template <typename T, typename U, typename V>

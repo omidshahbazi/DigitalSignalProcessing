@@ -12,17 +12,40 @@ class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 public:
 	NoiseGateFilter(void)
 	{
-		SetThreshold(0);
-
-		EnvelopeFollowerFilter<T, SampleRate>::SetAttackTime(0.02);
-		EnvelopeFollowerFilter<T, SampleRate>::SetReleaseTime(0.06);
-		EnvelopeFollowerFilter<T, SampleRate>::SetUseAbsoluteValue(false);
+		SetThreshold(-65);
+		SetAttackTime(0.02);
+		SetReleaseTime(0.07);
+		EnvelopeFollowerFilter<T, SampleRate>::SetUseAbsoluteValue(true);
 	}
 
-	//[0dB, 80dB]
+	//[0.0001, 0.1]
+	void SetAttackTime(float Value)
+	{
+		ASSERT(0.0001 <= Value && Value <= 0.1, "Invalid Value %f", Value);
+
+		EnvelopeFollowerFilter<T, SampleRate>::SetAttackTime(Value);
+	}
+	float GetAttackTime(void) const
+	{
+		return EnvelopeFollowerFilter<T, SampleRate>::GetAttackTime();
+	}
+
+	//[0.01, 2]
+	void SetReleaseTime(float Value)
+	{
+		ASSERT(0.01 <= Value && Value <= 2, "Invalid Value %f", Value);
+
+		EnvelopeFollowerFilter<T, SampleRate>::SetReleaseTime(Value);
+	}
+	float GetReleaseTime(void) const
+	{
+		return EnvelopeFollowerFilter<T, SampleRate>::GetReleaseTime();
+	}
+
+	//[-90dB, 0dB]
 	void SetThreshold(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 80, "Invalid Value %f", Value);
+		ASSERT(-90 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
 	}
@@ -36,15 +59,9 @@ public:
 	{
 		T envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Value);
 
-		if (envelope < m_Threshold)
-		{
-			T gainFactor = 1 - (envelope / m_Threshold);
-			// double gainFactor = Math::Clamp01(1.0 - ((envelope - m_Threshold) / (1 - m_Threshold)));
+		T targetGain = (envelope > m_Threshold) ? 1.0 : 0.0;
 
-			Value *= gainFactor;
-		}
-
-		return Value;
+		return Value * targetGain;
 	}
 
 private:

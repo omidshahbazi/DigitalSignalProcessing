@@ -19,14 +19,14 @@ public:
 		  m_Envelope(0.1)
 	{
 		SetAttackTime(0.001);
-		SetReleaseTime(0.001);
+		SetReleaseTime(0.01);
 		SetUseAbsoluteValue(false);
 	}
 
-	//[0.001, 10]
+	//[0.0001, 0.5]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value %f", Value);
+		ASSERT(0.0001 <= Value && Value <= 0.5, "Invalid Value %f", Value);
 
 		m_AttackTime = Value;
 
@@ -37,14 +37,14 @@ public:
 		return m_AttackTime;
 	}
 
-	//[0.001, 10]
+	//[0.005, 5]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0.001 <= Value && Value <= 10, "Invalid Value %f", Value);
+		ASSERT(0.005 <= Value && Value <= 5, "Invalid Value %f", Value);
 
 		m_ReleaseTime = Value;
-
-		m_ReleaseSlope = Math::Exponential(-(1.0F / SampleRate) / m_AttackTime);
+		
+		m_ReleaseSlope = Math::Exponential(-(1.0F / SampleRate) / m_ReleaseTime);
 	}
 	float GetReleaseTime(void) const
 	{
@@ -68,7 +68,7 @@ public:
 
 		m_Envelope = Math::Lerp(Value, m_Envelope, currentSlope);
 
-		return m_Envelope;
+		return Math::LinearTodB(m_Envelope);
 	}
 
 protected:

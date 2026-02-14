@@ -146,7 +146,7 @@ public:
 private:
 	T GetCircularSample(uint32 Index) const
 	{
-		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * Math::dbToMultiplier(m_Feedback);
+		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * Math::dBToLinear(m_Feedback);
 	}
 
 private:
