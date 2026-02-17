@@ -84,7 +84,7 @@ public:
 		{
 			T envelope = m_EnvelopeFollowerFilter.Process(Buffer[i]);
 
-			m_LastGain = ((m_AttackSlope2 * m_LastGain) + (m_RatioMultipler * Math::Max((20 * Math::Log10(envelope)) - m_Threshold, 0)));
+			// m_LastGain = ((m_AttackSlope2 * m_LastGain) + (m_RatioMultipler * Math::Max((20 * Math::Log10(envelope)) - m_Threshold, 0)));
 
 			float gain = Math::Power10(0.05 * m_LastGain);
 

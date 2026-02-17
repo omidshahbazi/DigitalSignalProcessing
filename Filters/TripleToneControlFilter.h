@@ -45,7 +45,7 @@ public:
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
-		m_LowToneMultiplier = Math::dbToMultiplier(m_LowTone);
+		m_LowToneMultiplier = Math::dBToLinear(m_LowTone);
 	}
 	float GetLowTone(void) const
 	{
@@ -58,7 +58,7 @@ public:
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_MidTone = Value;
-		m_MidToneMultiplier = Math::dbToMultiplier(m_MidTone);
+		m_MidToneMultiplier = Math::dBToLinear(m_MidTone);
 	}
 	float GetMidTone(void) const
 	{
@@ -71,7 +71,7 @@ public:
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
-		m_HighToneMultiplier = Math::dbToMultiplier(m_HighTone);
+		m_HighToneMultiplier = Math::dBToLinear(m_HighTone);
 	}
 	float GetHighTone(void) const
 	{

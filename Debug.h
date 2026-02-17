@@ -4,7 +4,9 @@
 
 #include "Log.h"
 
+#ifndef STRINGIZE
 #define STRINGIZE(Value) #Value
+#endif
 #define STRINGIZE_NUMBER(Value) STRINGIZE(Value)
 
 #ifdef DEBUG
@@ -34,7 +36,5 @@
 		Expression;                      \
 	} while (false)
 #endif
-
-#define CHECK_CALL(Expression) ASSERT(Expression, "CallFailed")
 
 #endif

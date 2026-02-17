@@ -49,9 +49,14 @@ public:
 		return m_Time;
 	}
 
-	void HookTime(void)
+	void SetCurrentTime(float Value)
 	{
-		SetTime((float)m_WriteBufferIndex / SampleRate);
+		m_WriteBufferIndex = m_Time * SampleRate;
+		m_ReadBufferIndex = m_WriteBufferIndex;
+	}
+	float GetCurrentTime(void) const
+	{
+		return (float)m_WriteBufferIndex / SampleRate;
 	}
 
 	//[-120dB, 20dB]
@@ -60,6 +65,7 @@ public:
 		ASSERT(-120 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_Feedback = Value;
+		m_FeedbackCoef = Math::dBToLinear(m_Feedback);
 	}
 	float GetFeedback(void) const
 	{
@@ -112,11 +118,11 @@ public:
 
 	T Process(T Value) override
 	{
-		T sample = GetCircularSample(m_ReadBufferIndex);
+		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 
 		MoveForward();
-
-		return Math::Lerp(Value, sample, m_OutputMixRate);
+		
+		return Math::Lerp(Value, delayedSample, m_OutputMixRate);
 	}
 
 	T Record(T Value)
@@ -146,7 +152,7 @@ public:
 private:
 	T GetCircularSample(uint32 Index) const
 	{
-		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * Math::dBToLinear(m_Feedback);
+		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * m_FeedbackCoef;
 	}
 
 private:
@@ -154,6 +160,8 @@ private:
 	float m_Feedback;
 	float m_OutputMixRate;
 	bool m_Reverse;
+	
+	float m_FeedbackCoef;
 
 	T *m_Buffer;
 	uint32 m_TotalBufferLength;

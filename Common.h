@@ -115,7 +115,7 @@ public:
 	uint8 A;
 };
 
-uint16 GetStringLength(cstr Value)
+static uint16 GetStringLength(cstr Value)
 {
 	if (Value == nullptr)
 		return 0;
@@ -127,5 +127,12 @@ uint16 GetStringLength(cstr Value)
 	return len;
 }
 
-#define ASSERT_ON_FLOATING_TYPE(T) static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double")
-#define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
+#ifdef ENABLE_TYPE_CHECK
+	#define ASSERT_ON_FLOATING_TYPE(T) static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double")
+	#define ASSERT_ON_NOT_FLOATING_TYPE(T) static_assert(!ARE_TYPES_THE_SAME(T, float) && !ARE_TYPES_THE_SAME(T, double), "T must not be float or double")
+	#define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
+#else
+	#define ASSERT_ON_FLOATING_TYPE(T) 
+	#define ASSERT_ON_NOT_FLOATING_TYPE(T) 
+	#define ASSERT_ON_SAMPLE_RATE(SampleRate) 
+#endif

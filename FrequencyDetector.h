@@ -43,7 +43,7 @@ public:
 	{
 	}
 
-	void Record(T Value)
+	void Process(T Value)
 	{
 		m_Buffer[m_BufferIndex] = Value;
 

@@ -1,21 +1,21 @@
 #pragma once
-#ifndef SAMPLE_AMOUNT_METER_H
-#define SAMPLE_AMOUNT_METER_H
+#ifndef SIGNAL_AMOUNT_METER_H
+#define SIGNAL_AMOUNT_METER_H
 
 #include "Math.h"
 #include "Log.h"
 
 template <typename T, uint16 SampleCount>
-class SampleAmountMeter
+class SignalAmountMeter
 {
 public:
-	SampleAmountMeter(void)
+	SignalAmountMeter(void)
 		: m_Buffer{},
 		  m_BufferIndex(0)
 	{
 	}
 
-	void Record(T Value)
+	void Process(T Value)
 	{
 		m_Buffer[m_BufferIndex] = Value;
 		m_BufferIndex = Math::Wrap(m_BufferIndex + 1, 0, SampleCount - 1);

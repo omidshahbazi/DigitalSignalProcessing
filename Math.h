@@ -22,7 +22,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return (Value != Value);
+		return std::isnan(Value);
 	}
 
 	template <typename T>
@@ -88,6 +88,10 @@ public:
 	template <typename T, typename U, typename V>
 	static T Wrap(T Value, U Min, V Max)
 	{
+		ASSERT_ON_NOT_FLOATING_TYPE(T);
+		ASSERT_ON_NOT_FLOATING_TYPE(U);
+		ASSERT_ON_NOT_FLOATING_TYPE(V);
+
 		T rangeSize = Max - Min + 1;
 
 		if (Value < Min)
@@ -139,22 +143,19 @@ public:
 	}
 
 	template <typename T>
-	static T Log2(T Value)
+	static T Log2(T x) 
 	{
-		ASSERT_ON_FLOATING_TYPE(T);
+		union { float f; uint32_t i; } vx = { (float)x };
+		union { uint32_t i; float f; } mx;
+		
+		float exp = (float)((vx.i >> 23) & 0xFF) - 127;
+		
+		mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
+		
+		float y = mx.f;
+		float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
-		T frac;
-		int32 exp;
-		frac = frexpf(Absolute(Value), &exp);
-		Value = 1.23149591368684;
-		Value *= frac;
-		Value += -4.11852516267426;
-		Value *= frac;
-		Value += 6.02197014179219;
-		Value *= frac;
-		Value += -3.13396450166353;
-		Value += exp;
-		return Value;
+		return exp + log_m;
 	}
 
 	template <typename T>
@@ -187,24 +188,18 @@ public:
 	}
 
 	template <typename T>
-	static T Power10(T Value)
-	{
-		return Exponential(2.302585092994046 * Value);
-	}
-
-	template <typename T>
 	static T Power(T Value, int32 N)
 	{
-		ASSERT_ON_FLOATING_TYPE(T);
+		return std::pow(Value, N);
 
-		long *lp, l;
-		lp = (long *)(&Value);
-		l = *lp;
-		l -= 0x3F800000;
-		l <<= (N - 1);
-		l += 0x3F800000;
-		*lp = l;
-		return Value;
+		// long *lp, l;
+		// lp = (long *)(&Value);
+		// l = *lp;
+		// l -= 0x3F800000;
+		// l <<= (N - 1);
+		// l += 0x3F800000;
+		// *lp = l;
+		// return Value;
 	}
 
 	template <typename T>
@@ -214,24 +209,9 @@ public:
 	}
 
 	template <typename T>
-	static T Root(T Value, int32 N)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		long *lp, l;
-		lp = (long *)(&Value);
-		l = *lp;
-		l -= 0x3F800000;
-		l >>= (N - 1);
-		l += 0x3F800000;
-		*lp = l;
-		return Value;
-	}
-
-	template <typename T>
 	static T SquareRoot(T Value)
 	{
-		return Root(Value, 2);
+		return std::sqrt(Value);
 	}
 
 	template <typename T>
@@ -239,7 +219,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Clamp(atan(Value), -1, 1);
+		return tanh(Value);
 	}
 
 	// Factor: [8, 10000]
@@ -259,7 +239,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return pow(10, dB / 20);
+		return Power(10, dB / 20);
 	}
 
 	template <typename T>
