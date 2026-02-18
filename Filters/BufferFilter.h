@@ -43,6 +43,8 @@ public:
 		m_Time = Value;
 
 		m_BufferLength = Math::Max(m_Time * SampleRate, 1);
+
+		ASSERT(m_BufferLength < m_TotalBufferLength, "Exceeding total buffer length %i", m_BufferLength);
 	}
 	float GetTime(void) const
 	{
@@ -51,7 +53,10 @@ public:
 
 	void SetCurrentTime(float Value)
 	{
-		m_WriteBufferIndex = m_Time * SampleRate;
+		m_WriteBufferIndex = Value * SampleRate;
+
+		ASSERT(m_WriteBufferIndex < m_BufferLength, "Exceeding buffer length %i", m_WriteBufferIndex);
+		
 		m_ReadBufferIndex = m_WriteBufferIndex;
 	}
 	float GetCurrentTime(void) const

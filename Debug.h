@@ -33,7 +33,7 @@
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
-		Expression;                      \
+		(void)(Expression);              \
 	} while (false)
 #endif
 

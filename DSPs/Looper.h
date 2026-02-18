@@ -22,8 +22,6 @@ public:
 	void SetIsPlaying(bool Value)
 	{
 		m_IsPlaying = Value;
-		
-		Log::WriteError("Looper", "SetIsPlaying %i", m_IsPlaying);
 	}
 	bool GetIsPlaying(void) const
 	{
@@ -32,8 +30,6 @@ public:
 
 	void SetIsRecording(bool Value)
 	{
-		ASSERT(m_IsPlaying, "Must be in Playing state to record");
-
 		m_IsRecording = Value;
 
 		if (m_IsRecording)
@@ -62,15 +58,11 @@ public:
 	void ToggleRecording(void)
 	{
 		SetIsRecording(!m_IsRecording);
-		
-		Log::WriteError("Looper", "ToggleRecording");
 	}
 
 	void SetReverse(bool Value)
 	{
 		m_Buffer.SetReverse(Value);
-		
-		Log::WriteError("Looper", "SetReverse %i", Value);
 	}
 	bool GetReverse(void) const
 	{
@@ -80,8 +72,6 @@ public:
 	void Undo(void)
 	{
 		m_UndoBuffer.CopyTo(m_Buffer);
-		
-		Log::WriteError("Looper", "Undo");
 	}
 
 	void Clear(void)
@@ -93,8 +83,6 @@ public:
 
 		m_IsPlaying = true;
 		m_MasterLineIsRecorded = false;
-		
-		Log::WriteError("Looper", "Clear");
 	}
 
 	//[0, 1]
@@ -103,8 +91,6 @@ public:
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Buffer.SetOutputMixRate(Value);
-		
-		Log::WriteError("Looper", "SetOutputMixRate %f", Value);
 	}
 	float GetOutputMixRate(void) const
 	{
@@ -117,8 +103,6 @@ public:
 		ASSERT(-20 <= Value && Value <= -0.5, "Invalid Value %f", Value);
 
 		m_Buffer.SetFeedback(0);
-		
-		Log::WriteError("Looper", "SetOverdubLevel %f", Value);
 	}
 	float GetOverdubLevel(void) const
 	{
