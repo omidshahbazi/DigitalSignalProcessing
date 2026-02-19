@@ -12,6 +12,12 @@ class IDSP
 
 public:
 	virtual void ProcessBuffer(T *Buffer, uint8 Count) = 0;
+
+protected:
+	virtual T Mix(T A, T B)
+	{
+		return 0;
+	}
 };
 
 #endif

@@ -90,9 +90,9 @@ public:
 
 			Buffer[i] *= gain;
 
-			Buffer[i] = Math::Clamp(Buffer[i], -1, 1);
+			Buffer[i] = Math::SoftClip(Buffer[i]);
 
-			Buffer[i] = m_LastGain;
+			Buffer[i] *= m_LastGain;
 		}
 	}
 

@@ -44,13 +44,13 @@ public:
 	}
 
 	template <typename T, typename U>
-	static T Min(T A, U B)
+	static auto Min(T A, U B) -> decltype(A * B)
 	{
 		return (A < B ? A : B);
 	}
 
 	template <typename T, typename U>
-	static T Max(T A, U B)
+	static auto Max(T A, U B) -> decltype(A * B)
 	{
 		return (A > B ? A : B);
 	}
@@ -62,7 +62,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static T Clamp(T Value, U Min, V Max)
+	static auto Clamp(T Value, U Min, V Max) -> decltype(Value * Min * Max)
 	{
 		if (Value < Min)
 			return Min;
@@ -74,19 +74,19 @@ public:
 	}
 
 	template <typename T>
-	static T Clamp01(T Value)
+	static auto Clamp01(T Value)
 	{
 		return Clamp(Value, 0, 1);
 	}
 
 	template <typename T>
-	static T ClampExcluded0To1(T Value)
+	static auto ClampExcluded0To1(T Value)
 	{
 		return Clamp(Value, EPSILON, 1);
 	}
 
 	template <typename T, typename U, typename V>
-	static T Wrap(T Value, U Min, V Max)
+	static auto Wrap(T Value, U Min, V Max) -> decltype(Value * Min * Max)
 	{
 		ASSERT_ON_NOT_FLOATING_TYPE(T);
 		ASSERT_ON_NOT_FLOATING_TYPE(U);
@@ -101,19 +101,25 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static T Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax)
+	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		return (Value - OldMin) / (OldMax - OldMin) * (NewMax - NewMin) + NewMin;
 	}
 
 	template <typename T, typename U, typename V>
-	static T Lerp(T Min, U Max, V Time)
+	static auto Lerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		Time = Clamp01(Time);
 
 		return (Min * (1 - Time)) + (Max * Time);
+	}
+
+	template <typename T, typename U, typename V>
+	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
+	{
+		return Min * Power(Max / Min, Time);
 	}
 
 	template <typename T>
@@ -187,8 +193,8 @@ public:
 		return Value;
 	}
 
-	template <typename T>
-	static T Power(T Value, int32 N)
+	template <typename T, typename U>
+	static auto Power(T Value, U N) -> decltype(Value * N)
 	{
 		return std::pow(Value, N);
 
@@ -215,11 +221,19 @@ public:
 	}
 
 	template <typename T>
-	static T SoftClip(T Value)
+	static T TanH(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return tanh(Value);
+	}
+
+	template <typename T>
+	static T SoftClip(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return TanH(Value);
 	}
 
 	// Factor: [8, 10000]
@@ -250,10 +264,36 @@ public:
 		return 20 * Log10(Value + EPSILON);
 	}
 
-	template <typename T, typename U, typename V>
-	static T FrequencyLerp(T Min, U Max, V Time)
+	template <typename T>
+	static T AdditiveMix(T A, T B)
 	{
-		return Min * Power(Max / Min, Time);
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return A + B;
+	}
+
+	template <typename T>
+	static T MultiplicativeMix(T A, T B)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return A * B;
+	}
+
+	template <typename T, typename U>
+	static T ConstantPowerMix(T Dry, T Wet, U WetRatio)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Dry + (Wet * WetRatio);
+	}
+
+	template <typename T, typename U>
+	static T CrossFadeMix(T A, T B, U Ratio)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Lerp(A, B, Ratio);
 	}
 };
 

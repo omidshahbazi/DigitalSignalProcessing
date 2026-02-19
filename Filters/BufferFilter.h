@@ -44,7 +44,7 @@ public:
 
 		m_BufferLength = Math::Max(m_Time * SampleRate, 1);
 
-		ASSERT(m_BufferLength < m_TotalBufferLength, "Exceeding total buffer length %i", m_BufferLength);
+		ASSERT(m_BufferLength <= m_TotalBufferLength, "Exceeding total buffer length %i", m_BufferLength);
 	}
 	float GetTime(void) const
 	{
@@ -64,10 +64,10 @@ public:
 		return (float)m_WriteBufferIndex / SampleRate;
 	}
 
-	//[-120dB, 20dB]
+	//[MIN_GAIN_dB, 20dB]
 	void SetFeedback(float Value)
 	{
-		ASSERT(-120 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(MIN_GAIN_dB <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_Feedback = Value;
 		m_FeedbackCoef = Math::dBToLinear(m_Feedback);
@@ -127,18 +127,18 @@ public:
 
 		MoveForward();
 		
-		return Math::Lerp(Value, delayedSample, m_OutputMixRate);
+		return Math::CrossFadeMix(Value, delayedSample, m_OutputMixRate);
 	}
 
 	T Record(T Value)
 	{
 		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 
-		m_Buffer[m_WriteBufferIndex] = delayedSample + Value;
+		m_Buffer[m_WriteBufferIndex] = (delayedSample * m_FeedbackCoef) + Value;
 
 		MoveForward();
 
-		return Math::Lerp(Value, delayedSample, m_OutputMixRate);
+		return Math::CrossFadeMix(Value, delayedSample, m_OutputMixRate);
 	}
 
 	void Reset(void)
@@ -157,7 +157,7 @@ public:
 private:
 	T GetCircularSample(uint32 Index) const
 	{
-		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)] * m_FeedbackCoef;
+		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)];
 	}
 
 private:

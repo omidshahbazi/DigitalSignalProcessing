@@ -61,8 +61,14 @@ public:
 		{
 			T modulation = (1 - m_Depth) + (m_Depth * 0.5 * (1 + m_Oscillator.Process()));
 
-			Buffer[i] = Math::Lerp(Buffer[i], Buffer[i] * modulation, m_WetRate);
+			Buffer[i] = Mix(Buffer[i], Buffer[i] * modulation);
 		}
+	}
+	
+protected:
+	T Mix(T A, T B) override
+	{
+		return Math::CrossFadeMix(A, B, m_WetRate);	
 	}
 
 private:

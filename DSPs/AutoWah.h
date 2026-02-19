@@ -3,7 +3,6 @@
 #define AUTO_WAH_H
 
 #include "Wah.h"
-#include "../Math.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
 template <typename T, uint32 SampleRate>

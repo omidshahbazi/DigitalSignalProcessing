@@ -2,24 +2,17 @@
 #ifndef CHORUS_H
 #define CHORUS_H
 
-#include "IDSP.h"
-#include "../Math.h"
-#include "../Filters/OscillatorFilter.h"
-#include "../Filters/BufferFilter.h"
+#include "Flanger.h"
 
 template <typename T, uint32 SampleRate>
-class Chorus : public IDSP<T, SampleRate>
+class Chorus : public Flanger<T, SampleRate>
 {
 public:
 	Chorus(void)
-		: m_Depth(0),
-		  m_WetRate(0)
+		: m_WetRate(0)
 	{
-		m_Buffer.SetTime(0.05);
-
-		SetDepth(1);
-		SetRate(1);
-		SetWetRate(0.5);
+		Flanger<T, SampleRate>::SetTime(0.05);
+		SetFeedback(SILENCE_GAIN_dB);
 	}
 
 	//[0, 100]
@@ -27,23 +20,23 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 100, "Invalid Value %f", Value);
 
-		m_Depth = Value;
+		Flanger<T, SampleRate>::SetDepth(Value);
 	}
 	float GetDepth(void) const
 	{
-		return m_Depth;
+		return Flanger<T, SampleRate>::GetDepth();
 	}
 
-	//(0.01, 4]
+	//[1Hz, 3Hz]
 	void SetRate(float Value)
 	{
 		ASSERT(0 < Value && Value <= 4, "Invalid Value %f", Value);
 
-		m_Oscillator.SetFrequency(Value);
+		Flanger<T, SampleRate>::SetRate(Value);
 	}
 	float GetRate(void) const
 	{
-		return m_Oscillator.GetFrequency();
+		return Flanger<T, SampleRate>::GetRate();
 	}
 
 	//[0, 1]
@@ -58,29 +51,19 @@ public:
 		return m_WetRate;
 	}
 
-	void Reset(void)
-	{
-		m_Buffer.Reset();
-	}
-
-	void ProcessBuffer(T *Buffer, uint8 Count) override
-	{
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			m_Buffer.Record(Buffer[i]);
-
-			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
-
-			T delayedSample = m_Buffer.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
-
-			Buffer[i] = Math::Lerp(Buffer[i], delayedSample, m_WetRate);
-		}
-	}
-
 protected:
-	OscillatorFilter<T, SampleRate> m_Oscillator;
-	BufferFilter<T, SampleRate, 1> m_Buffer;
-	float m_Depth;
+	T Mix(T A, T B) override
+	{
+		return Math::ConstantPowerMix(A, B, m_WetRate);
+	}
+
+private:
+	void SetFeedback(float Value)
+	{
+		Flanger<T, SampleRate>::SetFeedback(Value);
+	}
+
+private:
 	float m_WetRate;
 };
 

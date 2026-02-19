@@ -32,6 +32,12 @@ typedef const char *cstr;
 #define MIN_FREQUENCY 20.0
 #define MAX_FREQUENCY 20.0 * KHz
 
+//https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
+#define MIN_GAIN_dB -90
+#define SILENCE_GAIN_dB -40
+#define NORMAL_GAIN_dB 0
+#define MAX_GAIN_dB 6
+
 #define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
 
 #ifdef DEBUG

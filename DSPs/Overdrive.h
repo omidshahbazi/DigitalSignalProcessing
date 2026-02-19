@@ -4,7 +4,6 @@
 
 #include "IDSP.h"
 #include "../Filters/LowPassFilter.h"
-#include "../Math.h"
 #include "../Debug.h"
 
 template <typename T, uint32 SampleRate>
@@ -14,24 +13,21 @@ public:
 	Overdrive(void)
 		: m_Drive(0),
 		  m_Gain(0),
-		  m_PreGain(0),
-		  m_PostGain(0)
+		  m_LinearGain(0)
 	{
-		m_Filter.SetCutoffFrequency(3 * KHz);
-		m_Filter.SetResonance(2);
+		m_Filter.SetCutoffFrequency(3.5 * KHz);
+		m_Filter.SetResonance(RESONANCE_BUTTERWORTH);
 
 		SetDrive(1);
 		SetGain(0);
 	}
 
-	//[0, 1]
+	//[1, 50]
 	void SetDrive(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT(1 <= Value && Value <= 50, "Invalid Value %f", Value);
 
 		m_Drive = Value;
-
-		m_PreGain = Math::Lerp(1.0, 4, m_Drive);
 	}
 	float GetDrive(void) const
 	{
@@ -45,7 +41,7 @@ public:
 
 		m_Gain = Value;
 
-		m_PostGain = Math::dBToLinear(Value);
+		m_LinearGain = Math::dBToLinear(m_Gain);
 	}
 	float GetGain(void) const
 	{
@@ -56,17 +52,11 @@ public:
 	{
 		for (uint16 i = 0; i < Count; ++i)
 		{
-			T value = Buffer[i];
+			T value = Math::TanH(Buffer[i] * m_Drive);
 
 			value = m_Filter.Process(value);
 
-			value = Math::SoftClip(value * m_PreGain);
-
-			value *= m_PostGain;
-
-			value = Math::Clamp(value, -1, 1);
-
-			Buffer[i] = value;
+			Buffer[i] = value * m_LinearGain;
 		}
 	}
 
@@ -75,9 +65,7 @@ private:
 
 	float m_Drive;
 	float m_Gain;
-
-	float m_PreGain;
-	float m_PostGain;
+	float m_LinearGain;
 };
 
 #endif
