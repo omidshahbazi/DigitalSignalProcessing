@@ -18,15 +18,15 @@ public:
 		  m_ReleaseSlope(0),
 		  m_Envelope(0.1)
 	{
-		SetAttackTime(0.001);
-		SetReleaseTime(0.01);
+		SetAttackTime(1 ms);
+		SetReleaseTime(10 ms);
 		SetUseAbsoluteValue(false);
 	}
 
-	//[0.0001, 0.5]
+	//[100ns, 500ms]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0.0001 <= Value && Value <= 0.5, "Invalid Value %f", Value);
+		ASSERT(100 ns <= Value && Value <= 500 ms, "Invalid Value %f", Value);
 
 		m_AttackTime = Value;
 
@@ -37,7 +37,7 @@ public:
 		return m_AttackTime;
 	}
 
-	//[0.005, 5]
+	//[5ms, 5s]
 	void SetReleaseTime(float Value)
 	{
 		ASSERT(0.005 <= Value && Value <= 5, "Invalid Value %f", Value);

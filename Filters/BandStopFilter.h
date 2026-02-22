@@ -13,10 +13,10 @@ public:
 	BandStopFilter(void)
 		: m_CenterFrequency(1),
 		  m_Bandwidth(1),
-		  m_Resonance(1)
+		  m_QualityFactory(1)
 	{
 		SetFrequencies(1950, 2050);
-		SetResonance(1);
+		SetQualityFactory(QUALITY_FACTOR_MAXIMALLY_FLAT);
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
@@ -60,18 +60,18 @@ public:
 		Update();
 	}
 
-	// [0.1, 10]
-	void SetResonance(float Value)
+	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	void SetQualityFactory(float Value)
 	{
-		ASSERT(0.1 <= Value && Value <= 10, "Invalid Value %f", Value);
+		ASSERT(QUALITY_FACTOR_MINIMUM <= Value && Value <= QUALITY_FACTOR_MAXIMUM, "Invalid Value %f", Value);
 
-		m_Resonance = Value;
+		m_QualityFactory = Value;
 
 		Update();
 	}
-	float GetResonance(void) const
+	float GetQualityFactory(void) const
 	{
-		return m_Resonance;
+		return m_QualityFactory;
 	}
 
 	T Process(T Value) override
@@ -82,13 +82,13 @@ public:
 private:
 	void Update(void)
 	{
-		BiquadFilter<T, 1, SampleRate>::SetBandStopFilterCoefficients(this, m_CenterFrequency, m_Bandwidth, m_Resonance);
+		BiquadFilter<T, 1, SampleRate>::SetBandStopFilterCoefficients(this, m_CenterFrequency, m_Bandwidth, m_QualityFactory);
 	}
 
 private:
 	float m_CenterFrequency;
 	float m_Bandwidth;
-	float m_Resonance;
+	float m_QualityFactory;
 };
 
 #endif

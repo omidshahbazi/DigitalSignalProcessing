@@ -9,7 +9,7 @@ template <typename T, uint32 SampleRate>
 class NoiseGate : public IDSP<T, SampleRate>
 {
 public:
-	//[0dB, 80dB]
+	//[-90dB, 0dB]
 	void SetThreshold(float Value)
 	{
 		m_NoiseGateFilter.SetThreshold(Value);

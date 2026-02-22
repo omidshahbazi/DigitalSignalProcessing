@@ -34,14 +34,14 @@ public:
 		  m_RawValue(0.00001),
 		  m_ElapsedSustainTime(0)
 	{
-		SetAttackTime(0.05);
-		SetDecayTime(0.05);
-		SetSustainTime(0.05);
-		SetSustainLevel(0.5);
-		SetReleaseTime(0.05);
+		SetAttackTime(50 ms);
+		SetDecayTime(50 ms);
+		SetSustainTime(50 ms);
+		SetSustainLevel(500 ms);
+		SetReleaseTime(50 ms);
 	}
 
-	//[0, 1]
+	//[0, 1s]
 	// 0: Bypass
 	void SetAttackTime(float Value)
 	{
@@ -54,7 +54,7 @@ public:
 		return m_SegmentTime[(uint8)Segments::Attack];
 	}
 
-	//[0, 1]
+	//[0, 1s]
 	// 0: Bypass
 	void SetDecayTime(float Value)
 	{
@@ -67,7 +67,7 @@ public:
 		return m_SegmentTime[(uint8)Segments::Decay];
 	}
 
-	//[0, 1]
+	//[0, 1s]
 	// Positive: Auto Release Mode
 	void SetSustainTime(float Value)
 	{
@@ -92,7 +92,7 @@ public:
 		return m_SustainLevel;
 	}
 
-	//[0, 1]
+	//[0, 1s]
 	// 0: Bypass
 	void SetReleaseTime(float Value)
 	{

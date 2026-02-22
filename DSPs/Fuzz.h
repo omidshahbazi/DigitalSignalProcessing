@@ -33,8 +33,8 @@ public:
 
 		m_Tone = Value;
 
-		m_Filter.SetCutoffFrequency(Math::Lerp(1.0 * KHz, 5 * KHz, m_Tone));
-		m_Filter.SetResonance(0.3);
+		m_Filter.SetCutoffFrequency(Math::Lerp(1.0 KHz, 5 KHz, m_Tone));
+		m_Filter.SetQualityFactory(0.3);
 	}
 	float GetTone(void) const
 	{

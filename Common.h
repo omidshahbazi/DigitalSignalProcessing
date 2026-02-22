@@ -11,28 +11,30 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 typedef const char *cstr;
 
-#define KHz 1000
-#define MHz 1000 * KHz
+#define KHz *1'000
 
-#define SAMPLE_RATE_8000 8 * KHz
-#define SAMPLE_RATE_15750 15.75 * KHz
-#define SAMPLE_RATE_16000 16 * KHz
-#define SAMPLE_RATE_22050 22.05 * KHz
-#define SAMPLE_RATE_24000 24 * KHz
-#define SAMPLE_RATE_32000 32 * KHz
-#define SAMPLE_RATE_44100 44.1 * KHz
-#define SAMPLE_RATE_48000 48 * KHz
-#define SAMPLE_RATE_96000 96 * KHz
-#define SAMPLE_RATE_192000 192 * KHz
-#define SAMPLE_RATE_320000 320 * KHz
+#define SAMPLE_RATE_8000 8 KHz
+#define SAMPLE_RATE_15750 15.75 KHz
+#define SAMPLE_RATE_16000 16 KHz
+#define SAMPLE_RATE_22050 22.05 KHz
+#define SAMPLE_RATE_24000 24 KHz
+#define SAMPLE_RATE_32000 32 KHz
+#define SAMPLE_RATE_44100 44.1 KHz
+#define SAMPLE_RATE_48000 48 KHz
+#define SAMPLE_RATE_96000 96 KHz
+#define SAMPLE_RATE_192000 192 KHz
+#define SAMPLE_RATE_320000 320 KHz
 
 #define MIN_SAMPLE_RATE SAMPLE_RATE_8000
 #define MAX_SAMPLE_RATE SAMPLE_RATE_320000
 
 #define MIN_FREQUENCY 20.0
-#define MAX_FREQUENCY 20.0 * KHz
+#define MAX_FREQUENCY 20.0 KHz
 
-//https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
+#define ms *0.001
+#define ns *0.000'001
+
+// https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
 #define MIN_GAIN_dB -90
 #define SILENCE_GAIN_dB -40
 #define NORMAL_GAIN_dB 0
@@ -79,6 +81,32 @@ public:
 	{
 	}
 
+	template<typename T>
+	Color operator*(T Value) const
+	{
+		Color col = *this;
+		col *= Value;
+		return col;
+	}
+
+	Color &operator*=(float Value)
+	{
+		R *= Value;
+		G *= Value;
+		B *= Value;
+
+		return *this;
+	}
+
+	Color &operator*=(uint8 Value)
+	{
+		R = CombineValues(R, Value);
+		G = CombineValues(G, Value);
+		B = CombineValues(B, Value);
+
+		return *this;
+	}
+
 	uint16 R5G6B5(void)
 	{
 		uint16 b = (B >> 3) & 0x1f;
@@ -109,7 +137,7 @@ public:
 		return (uint16)((((Alpha * (uint32)(ColorA & MASK_RB) + beta * (uint32)(ColorB & MASK_RB)) & MASK_MUL_RB) | ((Alpha * (ColorA & MASK_G) + beta * (ColorB & MASK_G)) & MASK_MUL_G)) >> 6);
 	}
 
-	static uint8 CombineAlphaValues(uint8 A, uint8 B)
+	static uint8 CombineValues(uint8 A, uint8 B)
 	{
 		return (uint8)(255 * (A / 255.F) * (B / 255.F));
 	}
@@ -134,11 +162,11 @@ static uint16 GetStringLength(cstr Value)
 }
 
 #ifdef ENABLE_TYPE_CHECK
-	#define ASSERT_ON_FLOATING_TYPE(T) static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double")
-	#define ASSERT_ON_NOT_FLOATING_TYPE(T) static_assert(!ARE_TYPES_THE_SAME(T, float) && !ARE_TYPES_THE_SAME(T, double), "T must not be float or double")
-	#define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
+#define ASSERT_ON_FLOATING_TYPE(T) static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double")
+#define ASSERT_ON_NOT_FLOATING_TYPE(T) static_assert(!ARE_TYPES_THE_SAME(T, float) && !ARE_TYPES_THE_SAME(T, double), "T must not be float or double")
+#define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
 #else
-	#define ASSERT_ON_FLOATING_TYPE(T) 
-	#define ASSERT_ON_NOT_FLOATING_TYPE(T) 
-	#define ASSERT_ON_SAMPLE_RATE(SampleRate) 
+#define ASSERT_ON_FLOATING_TYPE(T)
+#define ASSERT_ON_NOT_FLOATING_TYPE(T)
+#define ASSERT_ON_SAMPLE_RATE(SampleRate)
 #endif

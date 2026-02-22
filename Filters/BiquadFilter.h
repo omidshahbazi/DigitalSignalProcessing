@@ -6,7 +6,13 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-constexpr float RESONANCE_BUTTERWORTH = 0.707;
+static constexpr float QUALITY_FACTOR_MINIMUM = 0.01;
+static constexpr float QUALITY_FACTOR_CRITICAL_DAMPING = 0.5;
+static constexpr float QUALITY_FACTOR_MAXIMALLY_FLAT = 0.707;
+static constexpr float QUALITY_FACTOR_RESONANCE = 1.5;
+static constexpr float QUALITY_FACTOR_PEAK = 2;
+static constexpr float QUALITY_FACTOR_HIGH_SELECTIVE = 5;
+static constexpr float QUALITY_FACTOR_MAXIMUM = 100;
 
 template <typename T, uint8_t StageCount, uint32 SampleRateValue>
 class BiquadFilter : public Filter<T, SampleRateValue>
@@ -74,28 +80,28 @@ public:
 
 public:
 	// CutoffFrequency [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
-	static void SetLowPassFilterCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetLowPassFilterCoefficients(BiquadFilter *Filter, float CutoffFrequency, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetLowPassFilterCoefficients(Filter, SampleRateValue, CutoffFrequency, Resonance);
+		SetLowPassFilterCoefficients(Filter, SampleRateValue, CutoffFrequency, QualityFactory);
 	}
 	// CutoffFrequency [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
-	static void SetLowPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Resonance)
+	static void SetLowPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
-
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
 		double CosOmega = Math::Cos(Omega);
-		double Alpha = Math::Sin(Omega) / (2.0 * Resonance);
+		double Alpha = Math::Sin(Omega) / (2.0 * QualityFactory);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		Coefficients &Coeffs = CoeffsArray[0];
@@ -110,28 +116,27 @@ public:
 	}
 
 	// CutoffFrequency [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
-	static void SetHighPassFilterCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetHighPassFilterCoefficients(BiquadFilter *Filter, float CutoffFrequency, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetHighPassFilterCoefficients(Filter, SampleRateValue, CutoffFrequency, Resonance);
+		SetHighPassFilterCoefficients(Filter, SampleRateValue, CutoffFrequency, QualityFactory);
 	}
 	// CutoffFrequency [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the cutoff frequency, which can lead to oscillations or instability.
-	static void SetHighPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Resonance)
+	static void SetHighPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
-
-		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
 		double CosOmega = Math::Cos(Omega);
-		double Alpha = Math::Sin(Omega) / (2.0 * Resonance);
+		double Alpha = Math::Sin(Omega) / (2.0 * QualityFactory);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		Coefficients &Coeffs = CoeffsArray[0];
@@ -147,31 +152,30 @@ public:
 
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Bandwidth [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a broader bandwidth and less peak resonance, making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the center frequency, which can lead to more pronounced resonance or oscillations.
-	static void SetBandPassFilterCoefficients(BiquadFilter *Filter, float CenterFrequency, float Bandwidth, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetBandPassFilterCoefficients(BiquadFilter *Filter, float CenterFrequency, float Bandwidth, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetBandPassFilterCoefficients(Filter, SampleRateValue, CenterFrequency, Bandwidth, Resonance);
+		SetBandPassFilterCoefficients(Filter, SampleRateValue, CenterFrequency, Bandwidth, QualityFactory);
 	}
 
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Bandwidth [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<RESONANCE_BUTTERWORTH] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>RESONANCE_BUTTERWORTH]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a broader bandwidth and less peak resonance, making the filter less selective.
 	// - Values greater than 1 increase resonance, creating a sharper peak around the center frequency, which can lead to more pronounced resonance or oscillations.
-	static void SetBandPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float Resonance)
+	static void SetBandPassFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency %f", CenterFrequency);
 		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth %f", Bandwidth);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
-
-		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double Omega = Math::TWO_PI_VALUE * CenterFrequency / SampleRate;
 		double CosOmega = Math::Cos(Omega);
-		double Alpha = Math::Sin(Omega) / (2.0 * Resonance);
+		double Alpha = Math::Sin(Omega) / (2.0 * QualityFactory);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		Coefficients &Coeffs = CoeffsArray[0];
@@ -187,30 +191,29 @@ public:
 
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Bandwidth [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetBandStopFilterCoefficients(BiquadFilter *Filter, float CenterFrequency, float Bandwidth, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetBandStopFilterCoefficients(BiquadFilter *Filter, float CenterFrequency, float Bandwidth, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetBandStopFilterCoefficients(Filter, SampleRateValue, CenterFrequency, Bandwidth, Resonance);
+		SetBandStopFilterCoefficients(Filter, SampleRateValue, CenterFrequency, Bandwidth, QualityFactory);
 	}
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Bandwidth [1, MAX_FREQUENCY]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetBandStopFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float Resonance)
+	static void SetBandStopFilterCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CenterFrequency, float Bandwidth, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CenterFrequency && CenterFrequency <= MAX_FREQUENCY, "Invalid CenterFrequency %f", CenterFrequency);
 		ASSERT(0 <= Bandwidth && Bandwidth <= MAX_FREQUENCY, "Invalid Bandwidth %f", Bandwidth);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
-
-		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double Omega = Math::TWO_PI_VALUE * CenterFrequency / SampleRate;
 		double CosOmega = Math::Cos(Omega);
-		double Alpha = Math::Sin(Omega) / (2.0 * Resonance);
+		double Alpha = Math::Sin(Omega) / (2.0 * QualityFactory);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		Coefficients &Coeffs = CoeffsArray[0];
@@ -226,30 +229,31 @@ public:
 
 	// CutoffFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetPeakingEQCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetPeakingEQCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetPeakingEQCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, Resonance);
+		SetPeakingEQCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, QualityFactory);
 	}
 	// CutoffFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetPeakingEQCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
+	static void SetPeakingEQCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
 		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
 		double Sn = Math::Sin(Omega);
 		double Cs = Math::Cos(Omega);
-		double Alpha = Sn / (2.0 * Resonance);
+		double Alpha = Sn / (2.0 * QualityFactory);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		Coefficients &Coeffs = CoeffsArray[0];
@@ -265,31 +269,32 @@ public:
 
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetLowShelfCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetLowShelfCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetLowShelfCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, Resonance);
+		SetLowShelfCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, QualityFactory);
 	}
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetLowShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
+	static void SetLowShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
 		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
 		double Sn = Math::Sin(Omega);
 		double Cs = Math::Cos(Omega);
 		// S = Shelf Slope. When S=1, the shelf is as steep as possible without ringing.
-		double Alpha = (Sn / 2.0) * Math::SquareRoot((A + 1.0 / A) * (1.0 / Resonance - 1.0) + 2.0);
+		double Alpha = (Sn / 2.0) * Math::SquareRoot((A + 1.0 / A) * (1.0 / QualityFactory - 1.0) + 2.0);
 		double TwoSqrtAAlpha = 2.0 * Math::SquareRoot(A) * Alpha;
 
 		Coefficients CoeffsArray[StageCount] = {};
@@ -306,30 +311,31 @@ public:
 
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetHighShelfCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float Resonance = RESONANCE_BUTTERWORTH)
+	static void SetHighShelfCoefficients(BiquadFilter *Filter, float CutoffFrequency, float Gain, float QualityFactory = QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetHighShelfCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, Resonance);
+		SetHighShelfCoefficients(Filter, SampleRateValue, CutoffFrequency, Gain, QualityFactory);
 	}
 	// CenterFrequency [1, MAX_FREQUENCY]
 	// Gain [-20dB, 20dB]
-	// Resonance [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[RESONANCE_BUTTERWORTH] SharpKneeSlope=[>1]
+	// QualityFactory [0.1, 10] SmoorthKneeSlope=[<0.7] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>1]
 	// - Values less than 0.7 result in a broader notch and less resonance suppression, making the filter less effective at removing specific frequencies.
 	// - Values greater than 1 increase resonance, creating a sharper notch around the center frequency, which can lead to more pronounced resonance or instability.
-	static void SetHighShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float Resonance)
+	static void SetHighShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, float CutoffFrequency, float Gain, float QualityFactory)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %f", SampleRate);
 		ASSERT(0 < CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
 		ASSERT(0 <= Gain && Gain <= MAX_FREQUENCY, "Invalid Gain %f", Gain);
-		ASSERT(0.1 <= Resonance && Resonance <= 10, "Invalid Resonance %f", Resonance);
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactory && QualityFactory <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactory %f", QualityFactory);
 
 		double A = pow(10.0, Gain / 40.0);
 		double Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
 		double Sn = Math::Sin(Omega);
 		double Cs = Math::Cos(Omega);
-		double Alpha = (Sn / 2.0) * Math::SquareRoot((A + 1.0 / A) * (1.0 / Resonance - 1.0) + 2.0);
+		double Alpha = (Sn / 2.0) * Math::SquareRoot((A + 1.0 / A) * (1.0 / QualityFactory - 1.0) + 2.0);
 		double TwoSqrtAAlpha = 2.0 * Math::SquareRoot(A) * Alpha;
 
 		Coefficients CoeffsArray[StageCount] = {};

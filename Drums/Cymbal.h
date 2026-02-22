@@ -38,7 +38,7 @@ public:
 		m_FrequencyEnvelope.SetSustainTime(0.0001);
 		m_FrequencyEnvelope.SetReleaseTime(0.3);
 
-		m_BandPass.SetResonance(1);
+		m_BandPass.SetQualityFactory(1);
 
 		switch (m_Type)
 		{
@@ -48,10 +48,10 @@ public:
 			m_Envelope.SetSustainTime(0.0001);
 			m_Envelope.SetReleaseTime(0);
 
-			m_MaxCutoffFrequency = 8 * KHz;
+			m_MaxCutoffFrequency = 8 KHz;
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
-			m_FrequencyEnvelope.SetMaxValue(6 * KHz);
+			m_FrequencyEnvelope.SetMaxValue(6 KHz);
 			break;
 
 		case Types::Ride:
@@ -60,10 +60,10 @@ public:
 			m_Envelope.SetSustainTime(0.0001);
 			m_Envelope.SetReleaseTime(0.8);
 
-			m_MaxCutoffFrequency = 10 * KHz;
+			m_MaxCutoffFrequency = 10 KHz;
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
-			m_FrequencyEnvelope.SetMaxValue(8 * KHz);
+			m_FrequencyEnvelope.SetMaxValue(8 KHz);
 
 			break;
 
@@ -73,10 +73,10 @@ public:
 			m_Envelope.SetSustainTime(0.0001);
 			m_Envelope.SetReleaseTime(0.5);
 
-			m_MaxCutoffFrequency = 12 * KHz;
+			m_MaxCutoffFrequency = 12 KHz;
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
-			m_FrequencyEnvelope.SetMaxValue(10 * KHz);
+			m_FrequencyEnvelope.SetMaxValue(10 KHz);
 
 			break;
 

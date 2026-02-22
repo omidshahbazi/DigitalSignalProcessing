@@ -51,6 +51,7 @@ public:
 		return m_Time;
 	}
 
+	//[0, Time]
 	void SetCurrentTime(float Value)
 	{
 		m_WriteBufferIndex = Value * SampleRate;

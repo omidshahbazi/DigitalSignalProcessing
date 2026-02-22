@@ -59,7 +59,9 @@ public:
 
 	virtual void Print(cstr Value) = 0;
 
+	virtual void Crash(void) const = 0;
 	virtual void Break(void) const = 0;
+	virtual void Reset(void) const = 0;
 
 	virtual void Delay(uint16 Ms) const = 0;
 

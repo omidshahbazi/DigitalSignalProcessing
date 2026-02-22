@@ -144,7 +144,7 @@ public:
 	{
 		WriteCritical(Tag, FormattedMessage, Args...);
 
-		GetHAL()->Break();
+		GetHAL()->Crash();
 	}
 
 private:

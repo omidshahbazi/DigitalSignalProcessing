@@ -13,7 +13,7 @@ public:
 		: m_WetRate(0)
 	{
 		m_Buffer.SetOutputMixRate(1);
-		SetDelayTime(0.5);
+		SetDelayTime(500 ms);
 		SetFeedback(-6.02);
 	}
 
@@ -59,7 +59,7 @@ public:
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = Mix(Buffer[i], m_Buffer.Record(Buffer[i]));
+			Buffer[i] = Math::SoftClip(Mix(Buffer[i], m_Buffer.Record(Buffer[i])));
 	}
 
 protected:

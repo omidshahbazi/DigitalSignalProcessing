@@ -13,15 +13,15 @@ public:
 	NoiseGateFilter(void)
 	{
 		SetThreshold(-65);
-		SetAttackTime(0.02);
-		SetReleaseTime(0.07);
+		SetAttackTime(20 ms);
+		SetReleaseTime(70 ms);
 		EnvelopeFollowerFilter<T, SampleRate>::SetUseAbsoluteValue(true);
 	}
 
-	//[0.0001, 0.1]
+	//[100ns, 100ms]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0.0001 <= Value && Value <= 0.1, "Invalid Value %f", Value);
+		ASSERT(100 ns <= Value && Value <= 100 ms, "Invalid Value %f", Value);
 
 		EnvelopeFollowerFilter<T, SampleRate>::SetAttackTime(Value);
 	}
@@ -30,10 +30,10 @@ public:
 		return EnvelopeFollowerFilter<T, SampleRate>::GetAttackTime();
 	}
 
-	//[0.01, 2]
+	//[10ms, 2s]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0.01 <= Value && Value <= 2, "Invalid Value %f", Value);
+		ASSERT(10 ms <= Value && Value <= 2, "Invalid Value %f", Value);
 
 		EnvelopeFollowerFilter<T, SampleRate>::SetReleaseTime(Value);
 	}

@@ -32,11 +32,11 @@ public:
 	{
 		m_SegmentTime[(uint8)Segments::Idle] = 0.05;
 
-		SetAttackTime(0.05);
-		SetDecayTime(0.05);
+		SetAttackTime(50 ms);
+		SetDecayTime(50 ms);
 	}
 
-	//(0, 1]
+	//(0, 1s]
 	void SetAttackTime(float Value)
 	{
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
@@ -48,7 +48,7 @@ public:
 		return m_SegmentTime[(uint8)Segments::Attack];
 	}
 
-	//(0, 1]
+	//(0, 1s]
 	void SetDecayTime(float Value)
 	{
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);

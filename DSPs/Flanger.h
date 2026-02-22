@@ -14,16 +14,16 @@ public:
 	Flanger(void)
 		: m_Depth(0)
 	{
-		SetTime(0.005);
+		SetTime(5 ms);
 		SetFeedback(-6.02);
-		SetDepth(1);
+		SetDepth(0.001);
 		SetRate(1);
 	}
 
-	//[0, 100]
+	//(0ms, 2ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 100, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
 
 		m_Depth = Value;
 	}
@@ -32,7 +32,7 @@ public:
 		return m_Depth;
 	}
 
-	//(0, 0.5Hz]
+	//(0Hz, 2Hz]
 	void SetRate(float Value)
 	{
 		ASSERT(0 < Value && Value <= 4, "Invalid Value %f", Value);
@@ -44,7 +44,7 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	//[SILENCE_GAIN_dB, 0dB]
+	//[SILENCE_GAIN_dB, NORMAL_GAIN_dB]
 	void SetFeedback(float Value)
 	{
 		ASSERT(SILENCE_GAIN_dB <= Value && Value <= 0, "Invalid Value %f", Value);
@@ -67,11 +67,11 @@ public:
 		{
 			m_Buffer.Record(Buffer[i]);
 
-			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * (m_Depth * SampleRate);
 
 			T delayedSample = m_Buffer.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
 
-			Buffer[i] = Mix(Buffer[i], delayedSample);
+			Buffer[i] = Math::SoftClip(Mix(Buffer[i], delayedSample));
 		}
 	}
 

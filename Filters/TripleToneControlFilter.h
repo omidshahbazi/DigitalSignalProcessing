@@ -20,7 +20,7 @@ public:
 		  m_HighToneMultiplier(0)
 
 	{
-		SetBorderFrequencies(150, 5 * KHz);
+		SetBorderFrequencies(150, 5 KHz);
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
@@ -28,7 +28,7 @@ public:
 	void SetBorderFrequencies(float LowMid, float MidHigh, float Threshold = 5)
 	{
 		const float LowMidThreshold = Threshold * 10;
-		const float MidHighThreshold = (Threshold * 0.1) * KHz;
+		const float MidHighThreshold = (Threshold * 0.1) KHz;
 
 		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid %f", LowMid);
 		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh %f", MidHigh);

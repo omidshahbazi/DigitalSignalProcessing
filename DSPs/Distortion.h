@@ -21,8 +21,8 @@ public:
 		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -0.7}, {-0.1, -0.7}, {0, 0}, {0.4, 1}, {1, 1}};
 		m_WaveShaperFilter.SetTable(points, 5);
 
-		m_BandPassFilter.SetFrequencies(100, 1 * KHz);
-		m_BandPassFilter.SetResonance(0.3);
+		m_BandPassFilter.SetFrequencies(100, 1 KHz);
+		m_BandPassFilter.SetQualityFactory(0.3);
 
 		SetLevel(0);
 		SetGain(0);

@@ -21,14 +21,14 @@ public:
 	{
 		m_EnvelopeFollowerFilter.SetUseAbsoluteValue(true);
 
-		SetAttackTime(0.1);
-		SetReleaseTime(0.1);
+		SetAttackTime(100 ms);
+		SetReleaseTime(100 ms);
 
 		SetRatio(2);
 		SetThreshold(-12);
 	}
 
-	//[0.001, 10]
+	//[1ms, 10s]
 	void SetAttackTime(float Value)
 	{
 		m_EnvelopeFollowerFilter.SetAttackTime(Value);
@@ -40,7 +40,7 @@ public:
 		return m_EnvelopeFollowerFilter.GetAttackTime();
 	}
 
-	//[0.001, 10]
+	//[1ms, 10s]
 	void SetReleaseTime(float Value)
 	{
 		m_EnvelopeFollowerFilter.SetReleaseTime(Value);
@@ -64,7 +64,7 @@ public:
 		return m_Ratio;
 	}
 
-	//[-80dB, 0dB]
+	//[-80dB, NORMAL_GAIN_dB]
 	void SetThreshold(float Value)
 	{
 		ASSERT(-80 <= Value && Value <= 0, "Invalid Value %f", Value);
@@ -90,9 +90,7 @@ public:
 
 			Buffer[i] *= gain;
 
-			Buffer[i] = Math::SoftClip(Buffer[i]);
-
-			Buffer[i] *= m_LastGain;
+			Buffer[i] = Math::SoftClip(Buffer[i] * m_LastGain);
 		}
 	}
 

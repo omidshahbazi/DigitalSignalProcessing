@@ -11,14 +11,15 @@ public:
 	Chorus(void)
 		: m_WetRate(0)
 	{
-		Flanger<T, SampleRate>::SetTime(0.05);
+		SetRate(1.5);
+		Flanger<T, SampleRate>::SetTime(50 ms);
 		SetFeedback(SILENCE_GAIN_dB);
 	}
 
-	//[0, 100]
+	//(0ms, 2ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 100, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
 
 		Flanger<T, SampleRate>::SetDepth(Value);
 	}
@@ -27,10 +28,10 @@ public:
 		return Flanger<T, SampleRate>::GetDepth();
 	}
 
-	//[1Hz, 3Hz]
+	//(0Hz, 3Hz]
 	void SetRate(float Value)
 	{
-		ASSERT(0 < Value && Value <= 4, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 3, "Invalid Value %f", Value);
 
 		Flanger<T, SampleRate>::SetRate(Value);
 	}

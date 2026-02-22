@@ -23,15 +23,15 @@ public:
 			m_Buffers[i].SetOutputMixRate(1);
 		}
 
-		SetDepth(1);
-		SetRate(1);
+		SetDepth(1 ms);
+		SetRate(2.5);
 		SetWetRate(0.5);
 	}
 
-	//[0, 100]
+	//(0ms, 2ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 100, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
 
 		m_Depth = Value;
 	}
@@ -40,10 +40,10 @@ public:
 		return m_Depth;
 	}
 
-	//(0, 3.7Hz]
+	//(0, 5Hz]
 	void SetRate(float Value)
 	{
-		ASSERT(0.1 < Value && Value <= 25, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 5, "Invalid Value %f", Value);
 
 		m_Oscillator.SetFrequency(Value);
 	}
@@ -76,7 +76,7 @@ public:
 		{
 			T output = Buffer[i];
 
-			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * m_Depth;
+			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * (m_Depth * SampleRate);
 
 			for (uint8 j = 0; j < StageCount; ++j)
 			{

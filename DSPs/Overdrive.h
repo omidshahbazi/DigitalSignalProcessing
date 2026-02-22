@@ -15,8 +15,7 @@ public:
 		  m_Gain(0),
 		  m_LinearGain(0)
 	{
-		m_Filter.SetCutoffFrequency(3.5 * KHz);
-		m_Filter.SetResonance(RESONANCE_BUTTERWORTH);
+		m_Filter.SetCutoffFrequency(3.5 KHz);
 
 		SetDrive(1);
 		SetGain(0);
@@ -34,10 +33,10 @@ public:
 		return m_Drive;
 	}
 
-	//[-6dB, 6dB]
+	//[-10dB, 6dB]
 	void SetGain(float Value)
 	{
-		ASSERT(-6 <= Value && Value <= 6, "Invalid Value %f", Value);
+		ASSERT(-10 <= Value && Value <= 6, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 
@@ -56,7 +55,7 @@ public:
 
 			value = m_Filter.Process(value);
 
-			Buffer[i] = value * m_LinearGain;
+			Buffer[i] = Math::SoftClip(value * m_LinearGain);
 		}
 	}
 

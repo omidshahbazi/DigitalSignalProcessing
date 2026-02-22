@@ -14,14 +14,14 @@ private:
 	public:
 		float FrequencyMin;
 		float FrequencyMax;
-		float ResonanceMin;
-		float ResonanceMax;
+		float QualityFactoryMin;
+		float QualityFactoryMax;
 	};
 
 	const FrequencyRange FREQUENCY_RANGES[3] = {
-		{400, 2.1 * KHz, 2, 4.5},	// Classic
-		{300, 1.2 * KHz, 2, 4.5},	// Deep
-		{500, 3.0 * KHz, 2, 4.5}};	// Sharp
+		{400, 2.1 KHz, 2, 4.5},	// Classic
+		{300, 1.2 KHz, 2, 4.5},	// Deep
+		{500, 3.0 KHz, 2, 4.5}};	// Sharp
 
 public:
 	enum class Types
@@ -58,7 +58,7 @@ public:
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
 		m_BandPassFilter.SetCenterFrequency(Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio));
-		m_BandPassFilter.SetResonance(Math::Lerp(freqRange.ResonanceMin, freqRange.ResonanceMax, m_Ratio));
+		m_BandPassFilter.SetQualityFactory(Math::Lerp(freqRange.QualityFactoryMin, freqRange.QualityFactoryMax, m_Ratio));
 	}
 	float GetRatio(void) const
 	{

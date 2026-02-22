@@ -20,8 +20,8 @@ public:
 		m_Envelope.SetMinValue(0);
 		m_Envelope.SetMaxValue(1);
 
-		m_BandPass.SetFrequencies(8 * KHz, 10 * KHz);
-		m_BandPass.SetResonance(3);
+		m_BandPass.SetFrequencies(8 KHz, 10 KHz);
+		m_BandPass.SetQualityFactory(3);
 	}
 
 	void Beat(void) override
