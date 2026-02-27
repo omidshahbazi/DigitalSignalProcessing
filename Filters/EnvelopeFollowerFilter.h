@@ -68,7 +68,7 @@ public:
 
 		m_Envelope = Math::Lerp(Value, m_Envelope, currentSlope);
 
-		return Math::LinearTodB(m_Envelope);
+		return m_Envelope;
 	}
 
 protected:

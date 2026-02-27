@@ -11,6 +11,8 @@ class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 {
 public:
 	NoiseGateFilter(void)
+		: m_Threshold(0),
+		  m_LinearThreshold(0)
 	{
 		SetThreshold(-65);
 		SetAttackTime(20 ms);
@@ -48,6 +50,7 @@ public:
 		ASSERT(-90 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
+		m_LinearThreshold = Math::dBToLinear(m_Threshold);
 	}
 
 	float GetThreshold(void) const
@@ -59,12 +62,13 @@ public:
 	{
 		T envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Value);
 
-		T targetGain = (envelope > m_Threshold) ? 1.0 : 0.0;
+		T targetGain = (envelope > m_LinearThreshold) ? 1.0 : 0.0;
 
 		return Value * targetGain;
 	}
 
 private:
 	float m_Threshold;
+	float m_LinearThreshold;
 };
 #endif

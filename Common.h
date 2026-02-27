@@ -89,20 +89,12 @@ public:
 		return col;
 	}
 
-	Color &operator*=(float Value)
-	{
-		R *= Value;
-		G *= Value;
-		B *= Value;
-
-		return *this;
-	}
-
-	Color &operator*=(uint8 Value)
+	template<typename T>
+	Color &operator*=(T Value)
 	{
 		R = CombineValues(R, Value);
 		G = CombineValues(G, Value);
-		B = CombineValues(B, Value);
+		B = CombineValues(G, Value);
 
 		return *this;
 	}
