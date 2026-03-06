@@ -81,7 +81,7 @@ public:
 	{
 	}
 
-	template<typename T>
+	template <typename T>
 	Color operator*(T Value) const
 	{
 		Color col = *this;
@@ -89,12 +89,12 @@ public:
 		return col;
 	}
 
-	template<typename T>
+	template <typename T>
 	Color &operator*=(T Value)
 	{
 		R = CombineValues(R, Value);
 		G = CombineValues(G, Value);
-		B = CombineValues(G, Value);
+		B = CombineValues(B, Value);
 
 		return *this;
 	}
@@ -131,7 +131,8 @@ public:
 
 	static uint8 CombineValues(uint8 A, uint8 B)
 	{
-		return (uint8)(255 * (A / 255.F) * (B / 255.F));
+		// return (uint8)(255 * (A / 255.F) * (B / 255.F));
+		return (uint8)((A * B) / 255.F);
 	}
 
 public:
