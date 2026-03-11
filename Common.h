@@ -11,6 +11,9 @@ typedef unsigned int uint32;
 typedef unsigned long long uint64;
 typedef const char *cstr;
 
+#define KB *1024
+#define MB *1048576
+
 #define KHz *1'000
 
 #define SAMPLE_RATE_8000 8 KHz
@@ -141,6 +144,19 @@ public:
 	uint8 B;
 	uint8 A;
 };
+
+static const Color ColorBlack = {0, 0, 0, 255};
+static const Color ColorWhite = {255, 255, 255, 255};
+
+static const Color ColorLightGray = {186, 186, 186, 255};
+static const Color ColorGray = {127, 127, 127, 255};
+static const Color ColorDarkGray = {100, 100, 100, 255};
+
+static const Color ColorRed = {255, 0, 0, 255};
+
+static const Color ColorGreen = {0, 255, 0, 255};
+
+static const Color ColorBlue = {0, 0, 255, 255};
 
 static uint16 GetStringLength(cstr Value)
 {
