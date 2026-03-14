@@ -16,10 +16,10 @@ public:
 		SetFeedback(SILENCE_GAIN_dB);
 	}
 
-	//(0ms, 2ms]
+	//(0ms, 3ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
 
 		Flanger<T, SampleRate>::SetDepth(Value);
 	}

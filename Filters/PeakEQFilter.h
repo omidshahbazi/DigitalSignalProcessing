@@ -1,17 +1,18 @@
 #pragma once
-#ifndef HIGH_PASS_FILTER_H
-#define HIGH_PASS_FILTER_H
+#ifndef PEAK_EQ_FILTER_H
+#define PEAK_EQ_FILTER_H
 
 #include "BiquadFilter.h"
 #include "../Math.h"
 #include "../Debug.h"
 
 template <typename T, uint32 SampleRate>
-class HighPassFilter : private BiquadFilter<T, 1, SampleRate>
+class PeakEQFilter : private BiquadFilter<T, 1, SampleRate>
 {
 public:
-	HighPassFilter(void)
+	PeakEQFilter(void)
 		: m_CutoffFrequency(MIN_FREQUENCY),
+		  m_Gain(0),
 		  m_QualityFactor(QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
 		Update();
@@ -29,6 +30,20 @@ public:
 	float GetCutoffFrequency(void) const
 	{
 		return m_CutoffFrequency;
+	}
+
+	// [-20dB, 20dB]
+	void SetGain(float Value)
+	{
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+
+		m_Gain = Value;
+
+		Update();
+	}
+	float GetGain(void) const
+	{
+		return m_Gain;
 	}
 
 	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
@@ -53,11 +68,12 @@ public:
 private:
 	void Update(void)
 	{
-		BiquadFilter<T, 1, SampleRate>::SetHighPassFilterCoefficients(this, m_CutoffFrequency, m_QualityFactor);
+		BiquadFilter<T, 1, SampleRate>::SetPeakEQCoefficients(this, m_CutoffFrequency, m_Gain, m_QualityFactor);
 	}
 
 private:
 	float m_CutoffFrequency;
+	float m_Gain;
 	float m_QualityFactor;
 };
 

@@ -39,10 +39,10 @@ public:
 		m_HighPassFilter.SetCutoffFrequency(MidHigh - MidHighThreshold);
 	}
 
-	//[-20dB, 20dB]
+	//[-20dB, 40dB]
 	void SetLowTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
 		m_LowToneMultiplier = Math::dBToLinear(m_LowTone);
@@ -52,10 +52,10 @@ public:
 		return m_LowTone;
 	}
 
-	//[-20dB, 20dB]
+	//[-20dB, 40dB]
 	void SetMidTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_MidTone = Value;
 		m_MidToneMultiplier = Math::dBToLinear(m_MidTone);
@@ -65,10 +65,10 @@ public:
 		return m_MidTone;
 	}
 
-	//[-20dB, 20dB]
+	//[-20dB, 40dB]
 	void SetHighTone(float Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
 		m_HighToneMultiplier = Math::dBToLinear(m_HighTone);

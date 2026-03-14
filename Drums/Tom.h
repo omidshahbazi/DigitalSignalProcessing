@@ -32,8 +32,8 @@ public:
 		switch (m_Type)
 		{
 		case Types::Floor:
-			m_Envelope.SetAttackTime(0.02);
-			m_Envelope.SetDecayTime(0.4);
+			m_Envelope.SetAttackTime(20 ms);
+			m_Envelope.SetDecayTime(400 ms);
 			m_Envelope.SetMinValue(0);
 			m_Envelope.SetMaxValue(1);
 

@@ -20,10 +20,10 @@ public:
 		SetRate(1);
 	}
 
-	//(0ms, 2ms]
+	//(0ms, 3ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
 
 		m_Depth = Value;
 	}

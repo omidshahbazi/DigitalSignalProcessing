@@ -11,11 +11,10 @@ class LowPassFilter : private BiquadFilter<T, 1, SampleRate>
 {
 public:
 	LowPassFilter(void)
-		: m_CutoffFrequency(1),
-		  m_QualityFactory(1)
+		: m_CutoffFrequency(MIN_FREQUENCY),
+		  m_QualityFactor(QUALITY_FACTOR_MAXIMALLY_FLAT)
 	{
-		SetCutoffFrequency(MAX_FREQUENCY);
-		SetQualityFactory(QUALITY_FACTOR_MAXIMALLY_FLAT);
+		Update();
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
@@ -33,17 +32,17 @@ public:
 	}
 
 	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
-	void SetQualityFactory(float Value)
+	void SetQualityFactor(float Value)
 	{
 		ASSERT(QUALITY_FACTOR_MINIMUM <= Value && Value <= QUALITY_FACTOR_MAXIMUM, "Invalid Value %f", Value);
 
-		m_QualityFactory = Value;
+		m_QualityFactor = Value;
 
 		Update();
 	}
-	float GetQualityFactory(void) const
+	float GetQualityFactor(void) const
 	{
-		return m_QualityFactory;
+		return m_QualityFactor;
 	}
 
 	T Process(T Value) override
@@ -54,12 +53,12 @@ public:
 private:
 	void Update(void)
 	{
-		BiquadFilter<T, 1, SampleRate>::SetLowPassFilterCoefficients(this, m_CutoffFrequency, m_QualityFactory);
+		BiquadFilter<T, 1, SampleRate>::SetLowPassFilterCoefficients(this, m_CutoffFrequency, m_QualityFactor);
 	}
 
 private:
 	float m_CutoffFrequency;
-	float m_QualityFactory;
+	float m_QualityFactor;
 };
 
 #endif

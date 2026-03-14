@@ -19,8 +19,6 @@ public:
 		  m_RatioMultipler(0),
 		  m_LastGain(0.1)
 	{
-		m_EnvelopeFollowerFilter.SetUseAbsoluteValue(true);
-
 		SetAttackTime(100 ms);
 		SetReleaseTime(100 ms);
 

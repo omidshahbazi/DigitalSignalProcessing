@@ -13,14 +13,12 @@ public:
 	EnvelopeFollowerFilter(void)
 		: m_AttackTime(0),
 		  m_ReleaseTime(0),
-		  m_UseAbsoluteValue(false),
 		  m_AttackSlope(0),
 		  m_ReleaseSlope(0),
 		  m_Envelope(0.1)
 	{
 		SetAttackTime(1 ms);
 		SetReleaseTime(10 ms);
-		SetUseAbsoluteValue(false);
 	}
 
 	//[100ns, 500ms]
@@ -51,18 +49,9 @@ public:
 		return m_ReleaseTime;
 	}
 
-	void SetUseAbsoluteValue(bool Value)
-	{
-		m_UseAbsoluteValue = Value;
-	}
-	float GetUseAbsoluteValue(void) const
-	{
-		return m_UseAbsoluteValue;
-	}
-
 	T Process(T Value) override
 	{
-		Value = m_UseAbsoluteValue ? Math::Absolute(Value) : Value;
+		Value = Math::Absolute(Value);
 
 		float currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
 
@@ -74,7 +63,6 @@ public:
 protected:
 	float m_AttackTime;
 	float m_ReleaseTime;
-	bool m_UseAbsoluteValue;
 
 	double m_RatioMultiplier;
 	double m_AttackSlope;

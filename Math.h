@@ -103,7 +103,25 @@ public:
 	template <typename T, typename U, typename V, typename W>
 	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
-		return (Value - OldMin) / (OldMax - OldMin) * (NewMax - NewMin) + NewMin;
+		return (Value - OldMin) / (float)(OldMax - OldMin) * (float)(NewMax - NewMin) + NewMin;
+	}
+
+	template <typename T, typename U, typename V, typename W>
+	static auto MapLinearToLogaritmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	{
+		float newMinLog = Log2(NewMin);
+		float newMaxLog = Log2(NewMax);
+
+		return Clamp(Power2(Map(Value, OldMin, OldMax, newMinLog, newMaxLog)), NewMin, NewMax);
+	}
+
+	template <typename T, typename U, typename V, typename W>
+	static auto MapLogaritmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	{
+		float oldMinLog = Log2(OldMin);
+		float oldMaxLog = Log2(OldMax);
+
+		return Map(Log2(Value), oldMinLog, oldMaxLog, NewMin, NewMax);
 	}
 
 	template <typename T, typename U, typename V>
@@ -149,15 +167,29 @@ public:
 	}
 
 	template <typename T>
-	static T Log2(T x) 
+	static T Log(T Value)
 	{
-		union { float f; uint32_t i; } vx = { (float)x };
-		union { uint32_t i; float f; } mx;
-		
+		return logf(Value);
+	}
+
+	template <typename T>
+	static T Log2(T Value)
+	{
+		union
+		{
+			float f;
+			uint32_t i;
+		} vx = {(float)Value};
+		union
+		{
+			uint32_t i;
+			float f;
+		} mx;
+
 		float exp = (float)((vx.i >> 23) & 0xFF) - 127;
-		
+
 		mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
-		
+
 		float y = mx.f;
 		float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
@@ -206,6 +238,30 @@ public:
 		// l += 0x3F800000;
 		// *lp = l;
 		// return Value;
+	}
+
+	template <typename T>
+	static T Power2(T Value)
+	{
+		float clipp = Value < -126.0f ? -126.0f : Value;
+		union
+		{
+			uint32 i;
+			float f;
+		} v;
+
+		int i = (int)clipp;
+		float f = clipp - i;
+		if (clipp < 0)
+		{
+			i--;
+			f++;
+		}
+
+		v.i = (uint32_t)((i + 127) << 23);
+		v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
+
+		return (T)v.f;
 	}
 
 	template <typename T>

@@ -13,15 +13,15 @@ class Snare : public DrumsPart<T, SampleRate>
 public:
 	Snare(void)
 	{
-		m_Envelope.SetAttackTime(0.01);
-		m_Envelope.SetDecayTime(0.2);
-		m_Envelope.SetSustainTime(0.0001);
-		m_Envelope.SetReleaseTime(0.3);
+		m_Envelope.SetAttackTime(10 ms);
+		m_Envelope.SetDecayTime(200 ms);
+		m_Envelope.SetSustainTime(100 ns);
+		m_Envelope.SetReleaseTime(300 ms);
 		m_Envelope.SetMinValue(0);
 		m_Envelope.SetMaxValue(1);
 
 		m_BandPass.SetFrequencies(8 KHz, 10 KHz);
-		m_BandPass.SetQualityFactory(3);
+		m_BandPass.SetQualityFactor(3);
 	}
 
 	void Beat(void) override

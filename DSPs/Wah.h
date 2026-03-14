@@ -3,7 +3,7 @@
 #define WAH_H
 
 #include "IDSP.h"
-#include "../Filters/BandPassFilter.h"
+#include "../Filters/PeakEQFilter.h"
 
 template <typename T, uint32 SampleRate>
 class Wah : public IDSP<T, SampleRate>
@@ -14,14 +14,17 @@ private:
 	public:
 		float FrequencyMin;
 		float FrequencyMax;
-		float QualityFactoryMin;
-		float QualityFactoryMax;
+		float QualityFactorMin;
+		float QualityFactorMax;
+		float GainMin;
+		float GainMax;
+		float FinalGain;
 	};
 
 	const FrequencyRange FREQUENCY_RANGES[3] = {
-		{400, 2.1 KHz, 2, 4.5},	// Classic
-		{300, 1.2 KHz, 2, 4.5},	// Deep
-		{500, 3.0 KHz, 2, 4.5}};	// Sharp
+		{400, 2.1 KHz, 2, 4.5, 12, 16, 0.6},  // Classic
+		{300, 1.2 KHz, 2, 4.5, 10, 14, 0.5},  // Deep
+		{500, 3.0 KHz, 2, 4.5, 14, 20, 0.4}}; // Sharp
 
 public:
 	enum class Types
@@ -33,6 +36,7 @@ public:
 
 public:
 	Wah(void)
+		: m_Ratio(0)
 	{
 		SetType(Types::Classic);
 	}
@@ -57,8 +61,9 @@ public:
 
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
-		m_BandPassFilter.SetCenterFrequency(Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio));
-		m_BandPassFilter.SetQualityFactory(Math::Lerp(freqRange.QualityFactoryMin, freqRange.QualityFactoryMax, m_Ratio));
+		m_PeakEQFilter.SetCutoffFrequency(Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio));
+		m_PeakEQFilter.SetGain(Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio));
+		m_PeakEQFilter.SetQualityFactor(Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio));
 	}
 	float GetRatio(void) const
 	{
@@ -74,11 +79,13 @@ public:
 protected:
 	T Process(T Value)
 	{
-		return m_BandPassFilter.Process(Value) * 0.8;
+		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
+
+		return Math::SoftClip(m_PeakEQFilter.Process(Value) * freqRange.FinalGain);
 	}
 
 private:
-	BandPassFilter<T, SampleRate> m_BandPassFilter;
+	PeakEQFilter<T, SampleRate> m_PeakEQFilter;
 	Types m_Type;
 	float m_Ratio;
 };

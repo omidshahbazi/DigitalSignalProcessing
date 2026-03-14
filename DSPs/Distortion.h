@@ -22,7 +22,7 @@ public:
 		m_WaveShaperFilter.SetTable(points, 5);
 
 		m_BandPassFilter.SetFrequencies(100, 1 KHz);
-		m_BandPassFilter.SetQualityFactory(0.3);
+		m_BandPassFilter.SetQualityFactor(0.3);
 
 		SetLevel(0);
 		SetGain(0);

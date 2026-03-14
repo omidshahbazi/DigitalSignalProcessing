@@ -17,7 +17,6 @@ public:
 		SetThreshold(-65);
 		SetAttackTime(20 ms);
 		SetReleaseTime(70 ms);
-		EnvelopeFollowerFilter<T, SampleRate>::SetUseAbsoluteValue(true);
 	}
 
 	//[100ns, 100ms]

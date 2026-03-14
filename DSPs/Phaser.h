@@ -19,7 +19,7 @@ public:
 		for (uint8 i = 0; i < StageCount; ++i)
 		{
 			m_Buffers[i].SetFeedback(MIN_GAIN_dB);
-			m_Buffers[i].SetTime(0.05);
+			m_Buffers[i].SetTime(50 ms);
 			m_Buffers[i].SetOutputMixRate(1);
 		}
 
@@ -28,10 +28,10 @@ public:
 		SetWetRate(0.5);
 	}
 
-	//(0ms, 2ms]
+	//(0ms, 3ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 2 ms, "Invalid Value %f", Value);
+		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
 
 		m_Depth = Value;
 	}

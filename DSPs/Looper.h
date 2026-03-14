@@ -143,7 +143,7 @@ public:
 	//[5KHz, MAX_FREQUENCY]
 	void SetHighCutFrequency(float Value)
 	{
-		ASSERT(5 KHz <= Value && Value <= 10 KHz, "Invalid Value %f", Value);
+		ASSERT(5 KHz <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_LowPassFilter.SetCutoffFrequency(Value);
 	}
