@@ -152,8 +152,10 @@ static const Color ColorLightGray = {186, 186, 186, 255};
 static const Color ColorGray = {127, 127, 127, 255};
 static const Color ColorDarkGray = {100, 100, 100, 255};
 
+static const Color ColorLightRed = {186, 0, 0, 255};
 static const Color ColorRed = {255, 0, 0, 255};
 
+static const Color ColorLightGreen = {0, 186, 0, 255};
 static const Color ColorGreen = {0, 255, 0, 255};
 
 static const Color ColorBlue = {0, 0, 255, 255};

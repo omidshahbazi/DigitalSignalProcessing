@@ -47,13 +47,6 @@ public:
 
 	virtual void PWMWrite(uint8 Pin, float Value) = 0;
 
-	virtual void InitializePersistentData(uint16 ID) = 0;
-	virtual bool ContainsPersistentData(uint16 ID) = 0;
-	virtual void SetPersistentData(uint16 ID, const void *const Data, uint16 Size) = 0;
-	virtual void GetPersistentData(uint16 ID, void *Data, uint16 Size) = 0;
-	virtual void EreasPersistentData(void) = 0;
-	virtual void SavePersistentData(bool Force = false) = 0;
-
 	virtual uint32 GetTimeSinceStartupMs(void) const = 0;
 	virtual float GetTimeSinceStartup(void) const = 0;
 
@@ -66,6 +59,8 @@ public:
 	virtual void Delay(uint16 Ms) const = 0;
 
 	virtual IUSBInterface *GetUSBInterface(void) = 0;
+
+	virtual void EraseQSPIData(void) = 0;
 };
 
 #endif

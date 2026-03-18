@@ -2,7 +2,6 @@
 #ifndef DRUMS_MATCHINE_H
 #define DRUMS_MATCHINE_H
 
-#include "../IHAL.h"
 #include "Kick.h"
 #include "Snare.h"
 #include "Cymbal.h"
@@ -42,13 +41,12 @@ private:
 	static constexpr uint8 NOTES_COUNT = 8;
 
 public:
-	DrumsMachine(IHAL *HAL)
-		: m_HAL(HAL),
-		  m_EnabledParts(Parts::None),
+	DrumsMachine(void)
+		: m_EnabledParts(Parts::None),
 		  m_NoteDuration(NoteDurations::Whole),
 		  m_BeatsPerMinute(0),
-		  m_BeatTime(0),
-		  m_NextBeatTime(0),
+		  m_SampleCountPerBeat(0),
+		  m_ElapsedSampleCount(0),
 		  m_Pattern(nullptr),
 		  m_PatternLength(0),
 		  m_PatternIndex(0),
@@ -114,36 +112,32 @@ public:
 		m_PatternLength = Length;
 	}
 
-	void Update(void)
-	{
-		if (m_PatternLength == 0)
-			return;
-
-		uint32 time = m_HAL->GetTimeSinceStartupMs();
-		if (time >= m_NextBeatTime)
-		{
-			Parts parts = m_Pattern[m_PatternIndex];
-			m_PatternIndex = Math::Moderate(m_PatternIndex + 1, m_PatternLength);
-
-			for (uint8 i = 0; i < NOTES_COUNT; ++i)
-			{
-				uint8 id = (1 << i);
-
-				if (((uint8)m_EnabledParts & id) == 0)
-					continue;
-
-				if (((uint8)parts & id) == 0)
-					continue;
-
-				m_Parts[i]->Beat();
-			}
-
-			m_NextBeatTime = time + m_BeatTime;
-		}
-	}
-
 	T Process(void)
 	{
+		if (++m_ElapsedSampleCount == m_SampleCountPerBeat)
+		{
+			m_ElapsedSampleCount = 0;
+
+			if (m_PatternLength != 0)
+			{
+				Parts parts = m_Pattern[m_PatternIndex];
+				m_PatternIndex = Math::Moderate(m_PatternIndex + 1, m_PatternLength);
+
+				for (uint8 i = 0; i < NOTES_COUNT; ++i)
+				{
+					uint8 id = (1 << i);
+
+					if (((uint8)m_EnabledParts & id) == 0)
+						continue;
+
+					if (((uint8)parts & id) == 0)
+						continue;
+
+					m_Parts[i]->Beat();
+				}
+			}
+		}
+
 		uint8 enabledCount = 0;
 		T samplesSum = 0;
 
@@ -164,17 +158,18 @@ public:
 private:
 	void UpdateData(void)
 	{
-		m_BeatTime = 60 * 1000 / (m_BeatsPerMinute * (uint8)m_NoteDuration);
-		m_NextBeatTime = m_HAL->GetTimeSinceStartupMs() + m_BeatTime;
+		m_SampleCountPerBeat = SampleRate / ((m_BeatsPerMinute * (uint8)m_NoteDuration) / 60);
+		m_ElapsedSampleCount = 0;
 	}
 
 private:
-	IHAL *m_HAL;
 	Parts m_EnabledParts;
 	NoteDurations m_NoteDuration;
 	float m_BeatsPerMinute;
-	uint32 m_BeatTime;
-	uint32 m_NextBeatTime;
+
+	uint32 m_SampleCountPerBeat;
+	uint32 m_ElapsedSampleCount;
+
 	Parts *m_Pattern;
 	uint8 m_PatternLength;
 	uint8 m_PatternIndex;
