@@ -321,11 +321,11 @@ public:
 	}
 
 	template <typename T>
-	static T AdditiveMix(T A, T B)
+	static T AdditiveMix(T Dry, T Wet, float WetRatio = 1)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return A + B;
+		return Dry + (Wet * WetRatio);
 	}
 
 	template <typename T>
@@ -336,20 +336,24 @@ public:
 		return A * B;
 	}
 
-	template <typename T, typename U>
-	static T ConstantPowerMix(T Dry, T Wet, U WetRatio)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		return Dry + (Wet * WetRatio);
-	}
-
-	template <typename T, typename U>
-	static T CrossFadeMix(T A, T B, U Ratio)
+	template <typename T>
+	static T LinearCrossFadeMix(T A, T B, float Ratio)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return Lerp(A, B, Ratio);
+	}
+
+	template <typename T>
+	static T ConstantPowerCrossFadeMix(T Dry, T Wet, float WetRatio)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float angle = WetRatio * HALF_PI_VALUE;
+		const T gainA = cosf(angle);
+		const T gainB = sinf(angle);
+		
+		return (Dry * gainA) + (Wet * gainB);
 	}
 };
 

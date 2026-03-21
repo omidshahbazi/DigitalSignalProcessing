@@ -68,7 +68,7 @@ public:
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::CrossFadeMix(A, B, m_WetRate);	
+		return Math::LinearCrossFadeMix(A, B, m_WetRate);	
 	}
 
 private:

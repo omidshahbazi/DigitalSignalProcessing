@@ -51,9 +51,9 @@ public:
 		return m_WetRate;
 	}
 
-	void Reset(void)
+	void Clear(void)
 	{
-		m_Buffer.Reset();
+		m_Buffer.Clear();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
@@ -65,7 +65,7 @@ public:
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::ConstantPowerMix(A, B, m_WetRate);
+		return Math::AdditiveMix(A, B, m_WetRate);
 	}
 
 private:

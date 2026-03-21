@@ -64,10 +64,10 @@ public:
 		return m_WetRate;
 	}
 
-	void Reset(void)
+	void Clear(void)
 	{
 		for (uint8 j = 0; j < StageCount; ++j)
-			m_Buffers[j].Reset();
+			m_Buffers[j].Clear();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override
@@ -82,7 +82,7 @@ public:
 			{
 				m_Buffers[j].Record(output);
 
-				output = Math::CrossFadeMix(output, m_Buffers[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex)), 0.5);
+				output = Math::LinearCrossFadeMix(output, m_Buffers[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex)), 0.5);
 			}
 
 			Buffer[i] = Mix(Buffer[i], output);
@@ -92,7 +92,7 @@ public:
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::ConstantPowerMix(A, B, m_WetRate);
+		return Math::AdditiveMix(A, B, m_WetRate);
 	}
 
 private:

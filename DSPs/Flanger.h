@@ -56,9 +56,9 @@ public:
 		return m_Buffer.GetFeedback();
 	}
 
-	void Reset(void)
+	void Clear(void)
 	{
-		m_Buffer.Reset();
+		m_Buffer.Clear();
 	}
 
 	void ProcessBuffer(T *Buffer, uint8 Count) override

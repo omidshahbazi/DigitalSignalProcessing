@@ -14,6 +14,7 @@ class BufferFilter : public Filter<T, SampleRate>
 public:
 	BufferFilter(void)
 		: m_Time(0),
+		  m_CurrentTime(0),
 		  m_Feedback(0),
 		  m_OutputMixRate(0),
 		  m_Reverse(false),
@@ -21,7 +22,8 @@ public:
 		  m_TotalBufferLength(MaxTime * SampleRate),
 		  m_BufferLength(0),
 		  m_WriteBufferIndex(0),
-		  m_ReadBufferIndex(0)
+		  m_ReadBufferIndex(0),
+		  m_IsLastSample(false)
 	{
 		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
@@ -57,12 +59,12 @@ public:
 		m_WriteBufferIndex = Value * SampleRate;
 
 		ASSERT(m_WriteBufferIndex < m_BufferLength, "Exceeding buffer length %i", m_WriteBufferIndex);
-		
+
 		m_ReadBufferIndex = m_WriteBufferIndex;
 	}
 	float GetCurrentTime(void) const
 	{
-		return (float)m_WriteBufferIndex / SampleRate;
+		return m_CurrentTime;
 	}
 
 	//[MIN_GAIN_dB, 20dB]
@@ -99,9 +101,9 @@ public:
 		return m_Reverse;
 	}
 
-	uint32 GetBufferLength(void) const
+	bool GetIsLastSample(void) const
 	{
-		return m_BufferLength;
+		return m_IsLastSample;
 	}
 
 	T GetSample(uint32 Offset = 0) const
@@ -118,6 +120,9 @@ public:
 
 	void MoveForward(void)
 	{
+		m_CurrentTime = (float)(m_WriteBufferIndex + 1) / SampleRate;
+		m_IsLastSample = (m_WriteBufferIndex + 1 == m_BufferLength);
+
 		m_WriteBufferIndex = Math::Wrap(m_WriteBufferIndex + 1, 0, m_BufferLength - 1);
 		m_ReadBufferIndex = Math::Wrap(m_ReadBufferIndex + (m_Reverse ? -1 : 1), 0, m_BufferLength - 1);
 	}
@@ -127,8 +132,8 @@ public:
 		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 
 		MoveForward();
-		
-		return Math::CrossFadeMix(Value, delayedSample, m_OutputMixRate);
+
+		return Math::LinearCrossFadeMix(Value, delayedSample, m_OutputMixRate);
 	}
 
 	T Record(T Value)
@@ -139,18 +144,23 @@ public:
 
 		MoveForward();
 
-		return Math::CrossFadeMix(Value, delayedSample, m_OutputMixRate);
+		return Math::LinearCrossFadeMix(Value, delayedSample, m_OutputMixRate);
 	}
 
 	void Reset(void)
 	{
-		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
-
 		m_WriteBufferIndex = 0;
 		m_ReadBufferIndex = 0;
 	}
 
-	void CopyTo(BufferFilter& Other, bool FullBuffer = false)
+	void Clear(void)
+	{
+		Memory::Set(m_Buffer, 0, m_TotalBufferLength);
+
+		Reset();
+	}
+
+	void CopyTo(BufferFilter &Other, bool FullBuffer = false) const
 	{
 		Memory::Copy(m_Buffer, Other.m_Buffer, FullBuffer ? m_TotalBufferLength : m_BufferLength);
 	}
@@ -163,10 +173,11 @@ private:
 
 private:
 	float m_Time;
+	float m_CurrentTime;
 	float m_Feedback;
 	float m_OutputMixRate;
 	bool m_Reverse;
-	
+
 	float m_FeedbackCoef;
 
 	T *m_Buffer;
@@ -174,6 +185,7 @@ private:
 	uint32 m_BufferLength;
 	uint32 m_WriteBufferIndex;
 	uint32 m_ReadBufferIndex;
+	bool m_IsLastSample;
 };
 
 #endif

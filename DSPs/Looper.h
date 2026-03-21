@@ -23,10 +23,16 @@ public:
 	void SetIsPlaying(bool Value)
 	{
 		m_IsPlaying = Value;
+
+		m_Buffer.Reset();
 	}
 	bool GetIsPlaying(void) const
 	{
 		return m_IsPlaying;
+	}
+	void TogglePlaying(void)
+	{
+		SetIsPlaying(!m_IsPlaying);
 	}
 
 	void SetIsRecording(bool Value)
@@ -37,6 +43,8 @@ public:
 		{
 			if (!m_MasterLineIsRecorded)
 				m_Buffer.SetCurrentTime(0);
+
+			m_Buffer.CopyTo(m_UndoBuffer);
 		}
 		else
 		{
@@ -46,8 +54,6 @@ public:
 
 				m_Buffer.SetTime(m_Buffer.GetCurrentTime());
 			}
-
-			m_Buffer.CopyTo(m_UndoBuffer);
 		}
 	}
 	bool GetIsRecording(void) const
@@ -75,12 +81,11 @@ public:
 
 	void Clear(void)
 	{
-		m_UndoBuffer.Reset();
+		m_UndoBuffer.Clear();
 
-		m_Buffer.Reset();
+		m_Buffer.Clear();
 		m_Buffer.SetTime(MaxTime);
 
-		m_IsPlaying = true;
 		m_MasterLineIsRecorded = false;
 	}
 
@@ -148,6 +153,11 @@ public:
 		m_LowPassFilter.SetCutoffFrequency(Value);
 	}
 
+	bool GetIsLastSample(void) const
+	{
+		return m_Buffer.GetIsLastSample();
+	}
+
 	void ProcessBuffer(T *Buffer, uint8 Count) override
 	{
 		for (uint8 i = 0; i < Count; ++i)
@@ -160,6 +170,9 @@ public:
 			else
 				output = m_Buffer.Process(output);
 
+			if (!m_IsPlaying)
+				output = 0;
+
 			Buffer[i] = Math::SoftClip(Mix(Buffer[i], output));
 		}
 	}
@@ -167,7 +180,7 @@ public:
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::ConstantPowerMix(A, B, m_WetRate);
+		return Math::AdditiveMix(A, B, m_WetRate);
 	}
 
 private:

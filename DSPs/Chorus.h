@@ -55,7 +55,7 @@ public:
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::ConstantPowerMix(A, B, m_WetRate);
+		return Math::AdditiveMix(A, B, m_WetRate);
 	}
 
 private:
