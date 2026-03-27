@@ -15,7 +15,7 @@ public:
 
 public:
 	OscillatorFilter(void)
-		: m_Freuency(0),
+		: m_Frequency(0),
 		  m_PhaseOffset(0),
 		  m_DeltaPhase(0),
 		  m_Phase(0)
@@ -40,8 +40,8 @@ public:
 	{
 		SetFunction({this, [](void *Context, T Value)
 					 {
-						 T t = -1 + (2 * Value);
-						 return (T)(2 * (Math::Absolute(t) - 0.5));
+						 T t = (2 * Value) - 1;
+						 return 2 * Math::Absolute(t) - 1;
 					 }});
 	}
 
@@ -60,7 +60,7 @@ public:
 	void SetSquareWaveFunction(void)
 	{
 		SetFunction({this, [](void *Context, T Value)
-					 { return (T)(Value < 1 ? 1 : -1); }});
+					 { return (T)(Value < 0.5 ? 1 : -1); }});
 	}
 
 	//(0, MAX_FREQUENCY]
@@ -68,17 +68,20 @@ public:
 	{
 		ASSERT(0 < Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
-		m_Freuency = Value;
+		m_Frequency = Value;
 
-		m_DeltaPhase = m_Freuency / SampleRate;
+		m_DeltaPhase = m_Frequency / SampleRate;
 	}
 	float GetFrequency(void) const
 	{
-		return m_Freuency;
+		return m_Frequency;
 	}
 
+	//[0, 1)
 	void SetPhaseOffset(float Value)
 	{
+		ASSERT(0 < Value && Value < 1, "Invalid Value %f", Value);
+
 		m_PhaseOffset = Value;
 	}
 	float GetPhaseOffset(void) const
@@ -106,7 +109,7 @@ public:
 	}
 
 private:
-	float m_Freuency;
+	float m_Frequency;
 	float m_PhaseOffset;
 	OscillatorFunction m_Function;
 

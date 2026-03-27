@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 typedef signed char int8;
 typedef short int16;
 typedef int int32;
@@ -148,17 +150,20 @@ public:
 static const Color ColorBlack = {0, 0, 0, 255};
 static const Color ColorWhite = {255, 255, 255, 255};
 
-static const Color ColorLightGray = {186, 186, 186, 255};
-static const Color ColorGray = {127, 127, 127, 255};
 static const Color ColorDarkGray = {100, 100, 100, 255};
+static const Color ColorGray = {127, 127, 127, 255};
+static const Color ColorLightGray = {186, 186, 186, 255};
 
-static const Color ColorLightRed = {186, 0, 0, 255};
-static const Color ColorRed = {255, 0, 0, 255};
+static const Color ColorDarkRed = {100, 0, 0, 255};
+static const Color ColorRed = {186, 0, 0, 255};
+static const Color ColorLightRed = {255, 0, 0, 255};
 
-static const Color ColorLightGreen = {0, 186, 0, 255};
-static const Color ColorGreen = {0, 255, 0, 255};
+static const Color ColorDarkGreen = {0, 100, 0, 255};
+static const Color ColorGreen = {0, 186, 0, 255};
+static const Color ColorLightGreen = {0, 255, 0, 255};
 
-static const Color ColorBlue = {0, 0, 255, 255};
+static const Color ColorBlue = {0, 0, 186, 255};
+static const Color ColorLightBlue = {0, 0, 255, 255};
 
 static uint16 GetStringLength(cstr Value)
 {
@@ -170,6 +175,39 @@ static uint16 GetStringLength(cstr Value)
 		++len;
 
 	return len;
+}
+
+static cstr IntToString(int32 Value)
+{
+	static char buffer[8];
+
+	snprintf(buffer, sizeof(buffer), "%i", Value);
+
+	return buffer;
+}
+
+static cstr FloatToString(float Value)
+{
+	static char buffer[8];
+
+	uint32 length = snprintf(buffer, sizeof(buffer), "%.1f", Value);
+
+	if (length >= 2 && buffer[length - 2] == '.' && buffer[length - 1] == '0')
+		buffer[length - 2] = '\0';
+
+	return buffer;
+}
+
+template <typename T>
+static cstr ToString(T Value)
+{
+	return IntToString(Value);
+}
+
+template <>
+cstr ToString<float>(float Value)
+{
+	return FloatToString(Value);
 }
 
 #ifdef ENABLE_TYPE_CHECK
