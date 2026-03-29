@@ -44,30 +44,33 @@ public:
 	}
 
 	//[-90dB, 0dB]
-	void SetThreshold(float Value)
+	void SetThreshold(dBGain Value)
 	{
 		ASSERT(-90 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
-		m_LinearThreshold = Math::dBToLinear(m_Threshold);
+		m_LinearThreshold = m_Threshold;
 	}
 
-	float GetThreshold(void) const
+	dBGain GetThreshold(void) const
 	{
 		return m_Threshold;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		T envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Value);
+		for (uint8 i = 0; i < Count; ++i)
+		{
+			LinearGain envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Buffer[i]);
 
-		T targetGain = (envelope > m_LinearThreshold) ? 1.0 : 0.0;
+			LinearGain targetGain = (envelope > m_LinearThreshold) ? 1.0 : 0.0;
 
-		return Value * targetGain;
+			Buffer[i] *= targetGain;
+		}
 	}
 
 private:
-	float m_Threshold;
-	float m_LinearThreshold;
+	dBGain m_Threshold;
+	LinearGain m_LinearThreshold;
 };
 #endif

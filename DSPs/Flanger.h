@@ -44,14 +44,14 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	//[SILENCE_GAIN_dB, NORMAL_GAIN_dB]
-	void SetFeedback(float Value)
+	//[SILENCE_GAIN, NORMAL_GAIN]
+	void SetFeedback(dBGain Value)
 	{
-		ASSERT(SILENCE_GAIN_dB <= Value && Value <= 0, "Invalid Value %f", Value);
+		ASSERT(SILENCE_GAIN <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Buffer.SetFeedback(Value);
 	}
-	float GetFeedback(void) const
+	dBGain GetFeedback(void) const
 	{
 		return m_Buffer.GetFeedback();
 	}
@@ -61,9 +61,9 @@ public:
 		m_Buffer.Clear();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint8 i = 0; i < Count; ++i)
 		{
 			m_Buffer.Record(Buffer[i]);
 

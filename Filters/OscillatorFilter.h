@@ -94,9 +94,10 @@ public:
 		m_Phase = 0;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return Process();
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Process();
 	}
 
 	T Process(void)

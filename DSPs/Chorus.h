@@ -13,7 +13,7 @@ public:
 	{
 		SetRate(1.5);
 		Flanger<T, SampleRate>::SetTime(50 ms);
-		SetFeedback(SILENCE_GAIN_dB);
+		SetFeedback(SILENCE_GAIN);
 	}
 
 	//(0ms, 3ms]

@@ -95,14 +95,18 @@ public:
 		m_FrequencyEnvelope.Trigger();
 	}
 
-	T Process(void) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		m_BandPass.SetFrequencies(m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
-
-		T sample = m_BandPass.Process(m_Noise.Process()) * m_Envelope.Process();
-
-		return sample;
 	}
+
+	// T Process(void) override
+	// {
+	// 	m_BandPass.SetFrequencies(m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
+
+	// 	T sample = m_BandPass.Process(m_Noise.Process()) * m_Envelope.Process();
+
+	// 	return sample;
+	// }
 
 private:
 	Types m_Type;

@@ -55,9 +55,9 @@ public:
 		return m_WetRate;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint8 i = 0; i < Count; ++i)
 		{
 			T modulation = (1 - m_Depth) + (m_Depth * 0.5 * (1 + m_Oscillator.Process()));
 

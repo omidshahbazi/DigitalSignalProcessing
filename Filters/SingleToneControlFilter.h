@@ -29,10 +29,16 @@ public:
 		return m_Tone;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return Math::Lerp(m_LowPassFilter.Process(Value), m_HighPassFilter.Process(Value), m_Tone);
+		// for (uint8 i = 0; i < Count; ++i)
+		// 	Buffer[i] = Process(Buffer[i]);
 	}
+
+	// T Process(T Value)
+	// {
+	// 	return Math::Lerp(m_LowPassFilter.Process(Value), m_HighPassFilter.Process(Value), m_Tone);
+	// }
 
 private:
 	float m_Tone;

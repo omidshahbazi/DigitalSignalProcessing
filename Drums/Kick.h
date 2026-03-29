@@ -38,13 +38,17 @@ public:
 		m_FrequencyEnvelope.Trigger();
 		m_Oscillator.Reset();
 	}
-
-	T Process(void) override
+	
+	void Process(T *Buffer, uint8 Count) override
 	{
-		m_Oscillator.SetFrequency(m_FrequencyEnvelope.Process());
-
-		return m_Envelope.Process() * m_Oscillator.Process();
 	}
+
+	// T Process(void) override
+	// {
+	// 	m_Oscillator.SetFrequency(m_FrequencyEnvelope.Process());
+
+	// 	return m_Envelope.Process() * m_Oscillator.Process();
+	// }
 
 private:
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;

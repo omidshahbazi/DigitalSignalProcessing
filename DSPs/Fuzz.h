@@ -48,7 +48,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = Math::dBToLinear(Math::Lerp(10.0, 30, m_Level));
+		m_PreGain = Math::Lerp(LinearGain(dBGain(10.0)), LinearGain(dBGain(30)), m_Level);
 	}
 	float GetLevel(void) const
 	{
@@ -67,13 +67,13 @@ public:
 		return m_WetRate;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		m_Filter.Process(Buffer, Count);
+
+		for (uint8 i = 0; i < Count; ++i)
 		{
 			T value = Buffer[i];
-
-			value = m_Filter.Process(value);
 
 			T prevAbsValue = m_PrevAbsValue;
 			m_PrevAbsValue = Math::Absolute(value);
@@ -82,12 +82,18 @@ public:
 
 			value *= m_PreGain;
 
-			value = Math::Lerp(Buffer[i], value, m_WetRate);
+			value = Mix(Buffer[i], value);
 
 			value = Math::Clamp(value, -1, 1);
 
 			Buffer[i] = value;
 		}
+	}
+
+protected:
+	T Mix(T A, T B) override
+	{
+		return Math::LinearCrossFadeMix(A, B, m_WetRate);
 	}
 
 private:
@@ -98,7 +104,7 @@ private:
 	float m_Level;
 	float m_WetRate;
 
-	float m_PreGain;
+	LinearGain m_PreGain;
 
 	T m_PrevAbsValue;
 };

@@ -28,13 +28,13 @@ public:
 	}
 
 	//[-40dB, 0dB]
-	void SetFeedback(float Value)
+	void SetFeedback(dBGain Value)
 	{
 		ASSERT(-40 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Buffer.SetFeedback(Value);
 	}
-	float GetFeedback(void) const
+	dBGain GetFeedback(void) const
 	{
 		return m_Buffer.GetFeedback();
 	}
@@ -56,9 +56,9 @@ public:
 		m_Buffer.Clear();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Mix(Buffer[i], m_Buffer.Record(Buffer[i])));
 	}
 

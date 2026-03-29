@@ -62,8 +62,8 @@ public:
 		return m_Ratio;
 	}
 
-	//[-80dB, NORMAL_GAIN_dB]
-	void SetThreshold(float Value)
+	//[-80dB, NORMAL_GAIN]
+	void SetThreshold(dBGain Value)
 	{
 		ASSERT(-80 <= Value && Value <= 0, "Invalid Value %f", Value);
 
@@ -71,31 +71,31 @@ public:
 
 		Log::WriteInfo("Threshold %f", m_Threshold);
 	}
-	float GetThreshold(void) const
+	dBGain GetThreshold(void) const
 	{
 		return m_Threshold;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			T envelope = m_EnvelopeFollowerFilter.Process(Buffer[i]);
+		//for (uint8 i = 0; i < Count; ++i)
+		// {
+		// 	T envelope = m_EnvelopeFollowerFilter.Process(Buffer[i]);
 
-			// m_LastGain = ((m_AttackSlope2 * m_LastGain) + (m_RatioMultipler * Math::Max((20 * Math::Log10(envelope)) - m_Threshold, 0)));
+		// 	// m_LastGain = ((m_AttackSlope2 * m_LastGain) + (m_RatioMultipler * Math::Max((20 * Math::Log10(envelope)) - m_Threshold, 0)));
 
-			float gain = Math::Power10(0.05 * m_LastGain);
+		// 	float gain = Math::Power10(0.05 * m_LastGain);
 
-			Buffer[i] *= gain;
+		// 	Buffer[i] *= gain;
 
-			Buffer[i] = Math::SoftClip(Buffer[i] * m_LastGain);
-		}
+		// 	Buffer[i] = Math::SoftClip(Buffer[i] * m_LastGain);
+		// }
 	}
 
 private:
 	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	float m_Ratio;
-	float m_Threshold;
+	dBGain m_Threshold;
 
 	float m_AttackSlope2;
 	float m_RatioMultipler;

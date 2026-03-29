@@ -45,9 +45,9 @@ public:
 		return m_QualityFactor;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return BiquadFilter<T, 1, SampleRate>::Process(Value);
+		return BiquadFilter<T, 1, SampleRate>::Process(Buffer, Count);
 	}
 
 private:

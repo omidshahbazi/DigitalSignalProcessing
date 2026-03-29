@@ -40,62 +40,68 @@ public:
 	}
 
 	//[-20dB, 40dB]
-	void SetLowTone(float Value)
+	void SetLowTone(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
-		m_LowToneMultiplier = Math::dBToLinear(m_LowTone);
+		m_LowToneMultiplier = m_LowTone;
 	}
-	float GetLowTone(void) const
+	dBGain GetLowTone(void) const
 	{
 		return m_LowTone;
 	}
 
 	//[-20dB, 40dB]
-	void SetMidTone(float Value)
+	void SetMidTone(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_MidTone = Value;
-		m_MidToneMultiplier = Math::dBToLinear(m_MidTone);
+		m_MidToneMultiplier = m_MidTone;
 	}
-	float GetMidTone(void) const
+	dBGain GetMidTone(void) const
 	{
 		return m_MidTone;
 	}
 
 	//[-20dB, 40dB]
-	void SetHighTone(float Value)
+	void SetHighTone(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
-		m_HighToneMultiplier = Math::dBToLinear(m_HighTone);
+		m_HighToneMultiplier = m_HighTone;
 	}
-	float GetHighTone(void) const
+	dBGain GetHighTone(void) const
 	{
 		return m_HighTone;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return (m_LowPassFilter.Process(Value) * m_LowToneMultiplier) +
-			   (m_BandPassFilter.Process(Value) * m_MidToneMultiplier) +
-			   (m_HighPassFilter.Process(Value) * m_HighToneMultiplier);
+		// for (uint8 i = 0; i < Count; ++i)
+		// 	Buffer[i] = Process(Buffer[i]);
 	}
 
+	// T Process(T Value)
+	// {
+	// 	return (m_LowPassFilter.Process(Value) * m_LowToneMultiplier) +
+	// 		   (m_BandPassFilter.Process(Value) * m_MidToneMultiplier) +
+	// 		   (m_HighPassFilter.Process(Value) * m_HighToneMultiplier);
+	// }
+
 private:
-	float m_LowTone;
-	float m_MidTone;
-	float m_HighTone;
+	dBGain m_LowTone;
+	dBGain m_MidTone;
+	dBGain m_HighTone;
 
 	LowPassFilter<T, SampleRate> m_LowPassFilter;
 	BandPassFilter<T, SampleRate> m_BandPassFilter;
 	HighPassFilter<T, SampleRate> m_HighPassFilter;
 
-	float m_LowToneMultiplier;
-	float m_MidToneMultiplier;
-	float m_HighToneMultiplier;
+	LinearGain m_LowToneMultiplier;
+	LinearGain m_MidToneMultiplier;
+	LinearGain m_HighToneMultiplier;
 };
 #endif

@@ -21,7 +21,7 @@ public:
 		m_BufferIndex = Math::Wrap(m_BufferIndex + 1, 0, SampleCount - 1);
 	}
 
-	T GetMean(void) const
+	LinearGain GetMean(void) const
 	{
 		double sum = 0;
 		for (uint16 i = 0; i < SampleCount; ++i)
@@ -30,7 +30,7 @@ public:
 		return sum / SampleCount;
 	}
 
-	T GetMin(void) const
+	LinearGain GetMin(void) const
 	{
 		T min = 1;
 		for (uint16 i = 0; i < SampleCount; ++i)
@@ -40,7 +40,7 @@ public:
 		return min;
 	}
 
-	T GetMax(void) const
+	LinearGain GetMax(void) const
 	{
 		T max = -1;
 		for (uint16 i = 0; i < SampleCount; ++i)
@@ -50,12 +50,12 @@ public:
 		return max;
 	}
 
-	T GetPeak(void) const
+	LinearGain GetPeak(void) const
 	{
 		return Math::Max(GetMax(), Math::Absolute(GetMin()));
 	}
 
-	T GetRMS(void) const
+	LinearGain GetRMS(void) const
 	{
 		double sum = 0;
 		for (uint16 i = 0; i < SampleCount; ++i)
@@ -64,34 +64,9 @@ public:
 		return Math::Max(0, Math::SquareRoot(sum / SampleCount));
 	}
 
-	T GetMeandB(void) const
-	{
-		return Math::LinearTodB(GetMean());
-	}
-
-	T GetMindB(void) const
-	{
-		return Math::LinearTodB(GetMin());
-	}
-
-	T GetMaxdB(void) const
-	{
-		return Math::LinearTodB(GetMax());
-	}
-
-	T GetPeakdB(void) const
-	{
-		return Math::LinearTodB(GetPeak());
-	}
-
-	T GetRMSdB(void) const
-	{
-		return Math::LinearTodB(GetRMS());
-	}
-
 	T GetCrestFactor(void) const
 	{
-		return GetPeakdB() - GetRMSdB();
+		return dBGain(GetPeak()) - dBGain(GetRMS());
 	}
 
 	void Reset(void)
@@ -103,7 +78,7 @@ public:
 
 	void Print(void) const
 	{
-		Log::WriteInfo("Samples Min: %fdB Max: %fdB Mean: %fdB Peak: %fdB Crest Factor: %fdB", GetMindB(), GetMaxdB(), GetMeandB(), GetPeakdB(), GetCrestFactor());
+		Log::WriteInfo("Samples Min: %fdB Max: %fdB Mean: %fdB Peak: %fdB Crest Factor: %fdB", dBGain(GetMin()), dBGain(GetMax()), dBGain(GetMean()), dBGain(GetPeak()), GetCrestFactor());
 	}
 
 private:

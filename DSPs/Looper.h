@@ -125,14 +125,14 @@ public:
 		return m_WetRate;
 	}
 
-	//[-20dB, NORMAL_GAIN_dB]
-	void SetOverdubLevel(float Value)
+	//[-20dB, NORMAL_GAIN]
+	void SetOverdubLevel(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= NORMAL_GAIN_dB, "Invalid Value %f", Value);
+		ASSERT(-20 <= Value && Value <= NORMAL_GAIN, "Invalid Value %f", Value);
 
 		m_Buffer.SetFeedback(Value);
 	}
-	float GetOverdubLevel(void) const
+	dBGain GetOverdubLevel(void) const
 	{
 		return m_Buffer.GetFeedback();
 	}
@@ -158,12 +158,14 @@ public:
 		return m_Buffer.GetIsLastSample();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
+		m_HighPassFilter.Process(Buffer, Count);
+		m_LowPassFilter.Process(Buffer, Count);
+
 		for (uint8 i = 0; i < Count; ++i)
 		{
-			T output = m_HighPassFilter.Process(Buffer[i]);
-			output = m_LowPassFilter.Process(output);
+			T output = Buffer[i];
 
 			if (m_IsPlaying && m_IsRecording)
 				output = m_Buffer.Record(output);

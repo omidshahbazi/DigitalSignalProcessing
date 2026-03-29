@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include <limits>
-#include "Common.h"
+#include "DataTypes.h"
 
 class Math
 {
@@ -178,11 +178,11 @@ public:
 		union
 		{
 			float f;
-			uint32_t i;
+			uint32 i;
 		} vx = {(float)Value};
 		union
 		{
-			uint32_t i;
+			uint32 i;
 			float f;
 		} mx;
 
@@ -258,7 +258,7 @@ public:
 			f++;
 		}
 
-		v.i = (uint32_t)((i + 127) << 23);
+		v.i = (uint32)((i + 127) << 23);
 		v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
 
 		return (T)v.f;

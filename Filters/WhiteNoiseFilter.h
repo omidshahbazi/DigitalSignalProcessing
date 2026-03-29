@@ -30,16 +30,14 @@ public:
 		return m_Seed;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return Process();
-	}
+		for (uint8 i = 0; i < Count; ++i)
+		{
+			m_Seed *= 16807;
 
-	T Process(void)
-	{
-		m_Seed *= 16807;
-
-		return (m_Seed * MULTIPLIER);
+			Buffer[i] = m_Seed * MULTIPLIER;
+		}
 	}
 
 private:

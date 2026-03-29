@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdio.h>
+#include "DataTypes.h"
+#include "Gain.h"
 
 typedef signed char int8;
 typedef short int16;
@@ -40,10 +42,10 @@ typedef const char *cstr;
 #define ns *0.000'001
 
 // https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
-#define MIN_GAIN_dB -90
-#define SILENCE_GAIN_dB -40
-#define NORMAL_GAIN_dB 0
-#define MAX_GAIN_dB 6
+#define MIN_GAIN dBGain(-90)
+#define SILENCE_GAIN dBGain(-40)
+#define NORMAL_GAIN dBGain(0)
+#define MAX_GAIN dBGain(6)
 
 #define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
 
@@ -211,11 +213,7 @@ cstr ToString<float>(float Value)
 }
 
 #ifdef ENABLE_TYPE_CHECK
-#define ASSERT_ON_FLOATING_TYPE(T) static_assert(ARE_TYPES_THE_SAME(T, float) || ARE_TYPES_THE_SAME(T, double), "T must be float or double")
-#define ASSERT_ON_NOT_FLOATING_TYPE(T) static_assert(!ARE_TYPES_THE_SAME(T, float) && !ARE_TYPES_THE_SAME(T, double), "T must not be float or double")
 #define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
 #else
-#define ASSERT_ON_FLOATING_TYPE(T)
-#define ASSERT_ON_NOT_FLOATING_TYPE(T)
 #define ASSERT_ON_SAMPLE_RATE(SampleRate)
 #endif

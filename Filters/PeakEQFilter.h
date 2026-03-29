@@ -33,7 +33,7 @@ public:
 	}
 
 	// [-20dB, 20dB]
-	void SetGain(float Value)
+	void SetGain(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
@@ -41,7 +41,7 @@ public:
 
 		Update();
 	}
-	float GetGain(void) const
+	dBGain GetGain(void) const
 	{
 		return m_Gain;
 	}
@@ -60,9 +60,9 @@ public:
 		return m_QualityFactor;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return BiquadFilter<T, 1, SampleRate>::Process(Value);
+		return BiquadFilter<T, 1, SampleRate>::Process(Buffer, Count);
 	}
 
 private:
@@ -73,7 +73,7 @@ private:
 
 private:
 	float m_CutoffFrequency;
-	float m_Gain;
+	dBGain m_Gain;
 	float m_QualityFactor;
 };
 

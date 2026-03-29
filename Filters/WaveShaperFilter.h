@@ -41,39 +41,42 @@ public:
 		return m_Length;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		const TablePoints *prev = nullptr;
-		const TablePoints *next = nullptr;
-		for (uint32 i = 0; i < m_Length; ++i)
+		for (uint8 i = 0; i < Count; ++i)
 		{
-			const TablePoints &curr = m_Table[i];
-
-			if (Value > curr.InputValue)
+			const TablePoints *prev = nullptr;
+			const TablePoints *next = nullptr;
+			for (uint32 j = 0; j < m_Length; ++j)
 			{
-				prev = &curr;
+				const TablePoints &curr = m_Table[j];
 
-				continue;
+				if (Buffer[i] > curr.InputValue)
+				{
+					prev = &curr;
+
+					continue;
+				}
+
+				next = &curr;
+				break;
 			}
 
-			next = &curr;
-			break;
+			if (prev == nullptr)
+			{
+				prev = &m_Table[0];
+			}
+
+			if (next == nullptr)
+			{
+				next = &m_Table[m_Length - 1];
+			}
+
+			float pointsDiff = next->InputValue - prev->InputValue;
+			float frac = (pointsDiff == 0 ? 0 : (Buffer[i] - prev->InputValue) / pointsDiff);
+
+			Buffer[i] = Math::Lerp(prev->OutputValue, next->OutputValue, frac);
 		}
-
-		if (prev == nullptr)
-		{
-			prev = &m_Table[0];
-		}
-
-		if (next == nullptr)
-		{
-			next = &m_Table[m_Length - 1];
-		}
-
-		float pointsDiff = next->InputValue - prev->InputValue;
-		float frac = (pointsDiff == 0 ? 0 : (Value - prev->InputValue) / pointsDiff);
-
-		return Math::Lerp(prev->OutputValue, next->OutputValue, frac);
 	}
 
 private:

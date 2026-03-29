@@ -35,7 +35,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = Math::dBToLinear(Math::Lerp(-5.0, 20, m_Level));
+		m_PreGain = Math::Lerp(LinearGain(dBGain(-5.0)), LinearGain(dBGain(20)), m_Level);
 	}
 	float GetLevel(void) const
 	{
@@ -43,35 +43,33 @@ public:
 	}
 
 	//[-20dB, 10dB]
-	void SetGain(float Value)
+	void SetGain(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 
-		m_PostGain = Math::dBToLinear(Value);
+		m_PostGain = Value;
 	}
-	float GetGain(void) const
+	dBGain GetGain(void) const
 	{
 		return m_Gain;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			T value = Buffer[i];
+		m_BandPassFilter.Process(Buffer, Count);
 
-			value = m_BandPassFilter.Process(value);
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_PreGain;
 
-			value = m_WaveShaperFilter.Process(value * m_PreGain);
+		m_WaveShaperFilter.Process(Buffer, Count);
 
-			value *= m_PostGain;
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_PostGain;
 
-			value = Math::Clamp(value, -1, 1);
-
-			Buffer[i] = value;
-		}
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::Clamp(Buffer[i], -1, 1);
 	}
 
 private:
@@ -79,10 +77,10 @@ private:
 	BandPassFilter<T, SampleRate> m_BandPassFilter;
 
 	float m_Level;
-	float m_Gain;
+	dBGain m_Gain;
 
-	float m_PreGain;
-	float m_PostGain;
+	LinearGain m_PreGain;
+	LinearGain m_PostGain;
 };
 
 #endif

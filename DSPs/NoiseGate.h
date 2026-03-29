@@ -10,19 +10,18 @@ class NoiseGate : public IDSP<T, SampleRate>
 {
 public:
 	//[-90dB, 0dB]
-	void SetThreshold(float Value)
+	void SetThreshold(dBGain Value)
 	{
 		m_NoiseGateFilter.SetThreshold(Value);
 	}
-	float GetThreshold(void) const
+	dBGain GetThreshold(void) const
 	{
 		return m_NoiseGateFilter.GetThreshold();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = m_NoiseGateFilter.Process(Buffer[i]);
+		m_NoiseGateFilter.Process(Buffer[i], Count);
 	}
 
 private:

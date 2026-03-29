@@ -67,15 +67,15 @@ public:
 		return m_CurrentTime;
 	}
 
-	//[MIN_GAIN_dB, 20dB]
-	void SetFeedback(float Value)
+	//[MIN_GAIN, 20dB]
+	void SetFeedback(dBGain Value)
 	{
-		ASSERT(MIN_GAIN_dB <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(MIN_GAIN <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_Feedback = Value;
-		m_FeedbackCoef = Math::dBToLinear(m_Feedback);
+		m_FeedbackCoef = m_Feedback;
 	}
-	float GetFeedback(void) const
+	dBGain GetFeedback(void) const
 	{
 		return m_Feedback;
 	}
@@ -127,7 +127,13 @@ public:
 		m_ReadBufferIndex = Math::Wrap(m_ReadBufferIndex + (m_Reverse ? -1 : 1), 0, m_BufferLength - 1);
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
+	{
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Process(Buffer[i]);
+	}
+
+	T Process(T Value)
 	{
 		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 
@@ -174,11 +180,11 @@ private:
 private:
 	float m_Time;
 	float m_CurrentTime;
-	float m_Feedback;
+	dBGain m_Feedback;
 	float m_OutputMixRate;
 	bool m_Reverse;
 
-	float m_FeedbackCoef;
+	LinearGain m_FeedbackCoef;
 
 	T *m_Buffer;
 	uint32 m_TotalBufferLength;

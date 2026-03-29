@@ -70,18 +70,13 @@ public:
 		return m_Ratio;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = Process(Buffer[i]);
-	}
+		m_PeakEQFilter.Process(Buffer, Count);
 
-protected:
-	T Process(T Value)
-	{
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
-
-		return Math::SoftClip(m_PeakEQFilter.Process(Value) * freqRange.FinalGain);
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::SoftClip(Buffer[i]) * freqRange.FinalGain;
 	}
 
 private:

@@ -18,7 +18,7 @@ public:
 	{
 		for (uint8 i = 0; i < StageCount; ++i)
 		{
-			m_Buffers[i].SetFeedback(MIN_GAIN_dB);
+			m_Buffers[i].SetFeedback(MIN_GAIN);
 			m_Buffers[i].SetTime(50 ms);
 			m_Buffers[i].SetOutputMixRate(1);
 		}
@@ -70,9 +70,9 @@ public:
 			m_Buffers[j].Clear();
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint8 i = 0; i < Count; ++i)
 		{
 			T output = Buffer[i];
 

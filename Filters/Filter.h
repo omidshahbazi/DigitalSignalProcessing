@@ -11,13 +11,7 @@ class Filter
 	ASSERT_ON_SAMPLE_RATE(SampleRate);
 
 public:
-	virtual T Process(T Value) = 0;
-
-	virtual void ProcessBuffer(T *Buffer, uint8 Count)
-	{
-		for (uint16 i = 0; i < Count; ++i)
-			Buffer[i] = Process(Buffer[i]);
-	}
+	virtual void Process(T *Buffer, uint8 Count) = 0;
 };
 
 #endif

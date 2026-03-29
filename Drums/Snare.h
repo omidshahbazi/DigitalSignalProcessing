@@ -29,9 +29,14 @@ public:
 		m_Envelope.Trigger();
 	}
 
-	T Process(void) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		return m_BandPass.Process(m_WhiteNoiseFilter.Process()) * m_Envelope.Process();
+		m_WhiteNoiseFilter.Process(Buffer, Count);
+
+		m_BandPass.Process(Buffer, Count);
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_Envelope.Process();
 	}
 
 private:

@@ -41,7 +41,7 @@ public:
 		ASSERT(0.005 <= Value && Value <= 5, "Invalid Value %f", Value);
 
 		m_ReleaseTime = Value;
-		
+
 		m_ReleaseSlope = Math::Exponential(-(1.0F / SampleRate) / m_ReleaseTime);
 	}
 	float GetReleaseTime(void) const
@@ -49,7 +49,13 @@ public:
 		return m_ReleaseTime;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
+	{
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Process(Buffer[i]);
+	}
+
+	LinearGain Process(T Value)
 	{
 		Value = Math::Absolute(Value);
 

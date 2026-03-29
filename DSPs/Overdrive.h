@@ -34,37 +34,42 @@ public:
 	}
 
 	//[-10dB, 6dB]
-	void SetGain(float Value)
+	void SetGain(dBGain Value)
 	{
 		ASSERT(-10 <= Value && Value <= 6, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 
-		m_LinearGain = Math::dBToLinear(m_Gain);
+		m_LinearGain = m_Gain;
 	}
-	float GetGain(void) const
+	dBGain GetGain(void) const
 	{
 		return m_Gain;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			T value = Math::TanH(Buffer[i] * m_Drive);
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_Drive;
 
-			value = m_Filter.Process(value);
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::TanH(Buffer[i]);
 
-			Buffer[i] = Math::SoftClip(value * m_LinearGain);
-		}
+		m_Filter.Process(Buffer, Count);
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_LinearGain;
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::SoftClip(Buffer[i]);
 	}
 
 private:
 	LowPassFilter<T, SampleRate> m_Filter;
 
 	float m_Drive;
-	float m_Gain;
-	float m_LinearGain;
+	dBGain m_Gain;
+	LinearGain m_LinearGain;
 };
 
 #endif

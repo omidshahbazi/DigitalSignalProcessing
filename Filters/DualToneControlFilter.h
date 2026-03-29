@@ -34,40 +34,46 @@ public:
 	}
 
 	//[-20dB, 20dB]
-	void SetLowTone(float Value)
+	void SetLowTone(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
-		m_LowToneMultiplier = Math::dbToMultiplier(m_LowTone);
+		m_LowToneMultiplier = m_LowTone;
 	}
-	float GetLowTone(void) const
+	dBGain GetLowTone(void) const
 	{
 		return m_LowTone;
 	}
 
 	//[-20dB, 20dB]
-	void SetHighTone(float Value)
+	void SetHighTone(dBGain Value)
 	{
 		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
-		m_MidToneMultiplier = Math::dbToMultiplier(m_MidTone);
+		m_MidToneMultiplier = m_MidTone;
 	}
-	float GetHighTone(void) const
+	dBGain GetHighTone(void) const
 	{
 		return m_HighTone;
 	}
 
-	T Process(T Value) override
+	void Process(T *Buffer, uint8 Count) override
+	{
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Process(Buffer[i]);
+	}
+	
+	T Process(T Value)
 	{
 		return (m_LowPassFilter.Process(Value) * m_LowToneMultiplier) +
 			   (m_HighPassFilter.Process(Value) * m_HighToneMultiplier);
 	}
 
 private:
-	float m_LowTone;
-	float m_HighTone;
+	dBGain m_LowTone;
+	dBGain m_HighTone;
 
 	LowPassFilter<T, SampleRate> m_LowPassFilter;
 	HighPassFilter<T, SampleRate> m_HighPassFilter;

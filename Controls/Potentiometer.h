@@ -51,7 +51,10 @@ protected:
 		if (m_FilterSwings)
 		{
 			if (0 < m_Value && m_Value < 1)
-				m_Value = Math::Clamp01(m_Filter.Process(m_Value));
+			{
+				m_Filter.Process(&m_Value, 1);
+				m_Value = Math::Clamp01(m_Value);
+			}
 
 			if (Math::Absolute(prevValue - m_Value) < 0.005F)
 				return;

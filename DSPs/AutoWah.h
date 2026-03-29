@@ -28,15 +28,12 @@ public:
 		return m_Sensitivity;
 	}
 
-	void ProcessBuffer(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8 Count) override
 	{
 		float envelope = m_EnvelopeFollowerFilter.Process(Buffer[0]);
 		Wah<T, SampleRate>::SetRatio(Math::Clamp01(envelope * m_Sensitivity));
 
-		for (uint16 i = 0; i < Count; ++i)
-		{
-			Buffer[i] = Wah<T, SampleRate>::Process(Buffer[i]);
-		}
+		Wah<T, SampleRate>::Process(Buffer, Count);
 	}
 
 private:
