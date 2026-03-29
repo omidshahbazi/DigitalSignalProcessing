@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "DataTypes.h"
 #include "Gain.h"
+#include "Octave.h"
 
 typedef signed char int8;
 typedef short int16;
@@ -20,32 +21,38 @@ typedef const char *cstr;
 
 #define KHz *1'000
 
-#define SAMPLE_RATE_8000 8 KHz
-#define SAMPLE_RATE_15750 15.75 KHz
-#define SAMPLE_RATE_16000 16 KHz
-#define SAMPLE_RATE_22050 22.05 KHz
-#define SAMPLE_RATE_24000 24 KHz
-#define SAMPLE_RATE_32000 32 KHz
-#define SAMPLE_RATE_44100 44.1 KHz
-#define SAMPLE_RATE_48000 48 KHz
-#define SAMPLE_RATE_96000 96 KHz
-#define SAMPLE_RATE_192000 192 KHz
-#define SAMPLE_RATE_320000 320 KHz
+static constexpr uint32 SAMPLE_RATE_8000 = 8 KHz;
+static constexpr uint32 SAMPLE_RATE_15750 = 15.75 KHz;
+static constexpr uint32 SAMPLE_RATE_16000 = 16 KHz;
+static constexpr uint32 SAMPLE_RATE_22050 = 22.05 KHz;
+static constexpr uint32 SAMPLE_RATE_24000 = 24 KHz;
+static constexpr uint32 SAMPLE_RATE_32000 = 32 KHz;
+static constexpr uint32 SAMPLE_RATE_44100 = 44.1 KHz;
+static constexpr uint32 SAMPLE_RATE_48000 = 48 KHz;
+static constexpr uint32 SAMPLE_RATE_96000 = 96 KHz;
+static constexpr uint32 SAMPLE_RATE_192000 = 192 KHz;
+static constexpr uint32 SAMPLE_RATE_320000 = 320 KHz;
 
-#define MIN_SAMPLE_RATE SAMPLE_RATE_8000
-#define MAX_SAMPLE_RATE SAMPLE_RATE_320000
+static constexpr uint32 MIN_SAMPLE_RATE = SAMPLE_RATE_8000;
+static constexpr uint32 MAX_SAMPLE_RATE = SAMPLE_RATE_320000;
 
-#define MIN_FREQUENCY 20.0
-#define MAX_FREQUENCY 20.0 KHz
+static constexpr float MIN_FREQUENCY = 20.0;
+static constexpr float MAX_FREQUENCY = 20.0 KHz;
 
 #define ms *0.001
 #define ns *0.000'001
 
 // https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
-#define MIN_GAIN dBGain(-90)
-#define SILENCE_GAIN dBGain(-40)
-#define NORMAL_GAIN dBGain(0)
-#define MAX_GAIN dBGain(6)
+static const dBGain MIN_GAIN(-90);
+static const dBGain SILENCE_GAIN(-40);
+static const dBGain NORMAL_GAIN(0);
+static const dBGain MAX_GAIN(6);
+
+static const Octave ONE_OCTAVE(-1);
+static const Octave ONE_OCTAVE_UP(-1);
+static const Octave ONE_OCTAVE_DOWN(1);
+static const Octave HALF_OCTAVE_UP(-0.5);
+static const Octave HALF_OCTAVE_DOWN(0.5);
 
 #define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
 
@@ -217,3 +224,14 @@ cstr ToString<float>(float Value)
 #else
 #define ASSERT_ON_SAMPLE_RATE(SampleRate)
 #endif
+
+#ifdef MAX_FRAME_LENGTH
+static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
+#else
+#define MAX_FRAME_LENGTH 64
+#endif
+
+#define CLONE_BUFFER(Name)                                                                                      \
+	ASSERT(MAX_FRAME_LENGTH >= Count, "Insofficient buffer size for " #Name " %i<%i", MAX_FRAME_LENGTH, Count); \
+	static T Name[MAX_FRAME_LENGTH];                                                                            \
+	Memory::Copy(Buffer, Name, Count);

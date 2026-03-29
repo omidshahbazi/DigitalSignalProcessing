@@ -21,7 +21,7 @@ static constexpr float QUALITY_FACTOR_MAXIMALLY_FLAT = 0.707;
 static constexpr float QUALITY_FACTOR_RESONANCE = 1.5;
 static constexpr float QUALITY_FACTOR_PEAK = 2;
 static constexpr float QUALITY_FACTOR_HIGH_SELECTIVE = 5;
-static constexpr float QUALITY_FACTOR_MAXIMUM = 100;
+static constexpr float QUALITY_FACTOR_MAXIMUM = 10;
 
 static constexpr float SLOPE_FACTOR_MINIMUM = 0.01;
 static constexpr float SLOPE_FACTOR_GENTLE = 0.5;
@@ -137,8 +137,6 @@ public:
 
 	LinearGain GetGainAt(float Frequency) const
 	{
-#ifdef ARM_SIMD_BIQUAD
-#else
 		const ValueType omega = Math::TWO_PI_VALUE * Frequency / SampleRateValue;
 		const ValueType cosOmega = Math::Cos(omega);
 		const ValueType cos2Omega = Math::Cos(2.0 * omega);
@@ -149,13 +147,17 @@ public:
 
 		for (uint8 i = 0; i < StageCount; ++i)
 		{
-			const Stage &stage = m_Stages[i];
+#ifdef ARM_SIMD_BIQUAD
+			const Coefficients &coeffs = m_Stage.Coeffs[i];
+#else
+			const Coefficients &coeffs = m_Stages[i].Coeffs;
+#endif
 
-			ValueType a1Original = -stage.Coeffs.a1;
-			ValueType a2Original = -stage.Coeffs.a2;
+			ValueType a1Original = -coeffs.a1;
+			ValueType a2Original = -coeffs.a2;
 
-			ValueType numReal = stage.Coeffs.b0 + stage.Coeffs.b1 * cosOmega + stage.Coeffs.b2 * cos2Omega;
-			ValueType numImag = -(stage.Coeffs.b1 * sinOmega + stage.Coeffs.b2 * sin2Omega);
+			ValueType numReal = coeffs.b0 + coeffs.b1 * cosOmega + coeffs.b2 * cos2Omega;
+			ValueType numImag = -(coeffs.b1 * sinOmega + coeffs.b2 * sin2Omega);
 
 			ValueType denReal = 1.0 + a1Original * cosOmega + a2Original * cos2Omega;
 			ValueType denImag = -(a1Original * sinOmega + a2Original * sin2Omega);
@@ -167,7 +169,6 @@ public:
 		}
 
 		return gainTotal;
-#endif
 	}
 
 public:
@@ -346,22 +347,23 @@ public:
 		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactor && QualityFactor <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactor %f", QualityFactor);
 
 		const ValueType A = Math::Power(10.0, Gain / 40.0);
-		const ValueType Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
-		const ValueType Sn = Math::Sin(Omega);
-		const ValueType Cs = Math::Cos(Omega);
-		const ValueType Alpha = Sn / (2.0 * QualityFactor);
+        const ValueType Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
+        const ValueType Sn = Math::Sin(Omega);
+        const ValueType Cs = Math::Cos(Omega);
+        const ValueType Alpha = Sn / (2.0 * QualityFactor);
 
-		Coefficients CoeffsArray[StageCount] = {};
-		Coefficients &Coeffs = CoeffsArray[0];
-		Coeffs.b0 = 1.0 + (Alpha * A);
-		Coeffs.b1 = -2.0 * Cs;
-		Coeffs.b2 = 1.0 - (Alpha * A);
-		Coeffs.a1 = -2.0 * Cs;
-		Coeffs.a2 = 1.0 - (Alpha / A);
+        Coefficients CoeffsArray[StageCount] = {};
+        Coefficients &Coeffs = CoeffsArray[0];
+        
+        Coeffs.b0 = 1.0 + (Alpha * A);
+        Coeffs.b1 = -2.0 * Cs;
+        Coeffs.b2 = 1.0 - (Alpha * A);
+        Coeffs.a1 = -2.0 * Cs;
+        Coeffs.a2 = 1.0 - (Alpha / A);
 
-		Normalize(Coeffs, 1.0 + Alpha);
-
-		Filter->SetCoefficients(CoeffsArray);
+        Normalize(Coeffs, 1.0 + (Alpha / A));
+		
+        Filter->SetCoefficients(CoeffsArray);
 	}
 
 	// CenterFrequency [1, MAX_FREQUENCY]
@@ -447,6 +449,24 @@ public:
 		Normalize(Coeffs, (A + 1.0) - (A - 1.0) * Cs + TwoSqrtAAlpha);
 
 		Filter->SetCoefficients(CoeffsArray);
+	}
+
+	// LowFrequency [1, MAX_FREQUENCY]
+	// HighFrequency [1, MAX_FREQUENCY]
+	static float CalculateCoveringQ(float LowFrequency, float HighFrequency)
+	{
+		ASSERT(LowFrequency < HighFrequency, "HighFrequency must be higher than LowFrequency");
+
+		const float MidFreq = Math::FrequencyLerp(LowFrequency, HighFrequency, 0.5f);
+
+		const float N = Math::Log2(HighFrequency / LowFrequency);
+		if (N < 0.1)
+			return QUALITY_FACTOR_MAXIMUM;
+
+		const float P2N = Math::Power(2, N);
+		const float FinalQ = Math::SquareRoot(P2N) / (P2N - 1);
+
+		return Math::Clamp(FinalQ, QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM);
 	}
 
 private:

@@ -305,11 +305,11 @@ public:
 	}
 
 	template <typename T>
-	static T dBToLinear(T dB)
+	static T dBToLinear(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Power(10, dB / 20);
+		return Power(10, Value / 20);
 	}
 
 	template <typename T>
@@ -318,6 +318,14 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return 20 * Log10(Value + EPSILON);
+	}
+
+	template <typename T>
+	static T OctaveToLinear(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Power(2, Value);
 	}
 
 	template <typename T>

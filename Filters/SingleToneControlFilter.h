@@ -3,18 +3,27 @@
 #define SINGLE_TONE_CONTROL_FILTER_H
 
 #include "../Math.h"
-#include "LowPassFilter.h"
-#include "HighPassFilter.h"
+#include "LowShelfFilter.h"
+#include "HighShelfFilter.h"
 
 template <typename T, uint32 SampleRate>
 class SingleToneControlFilter : public Filter<T, SampleRate>
 {
 public:
 	SingleToneControlFilter(void)
-		: m_Tone(1)
+		: m_Tone(0)
 	{
-		m_LowPassFilter.SetCutoffFrequency(408.0895981378369);
-		m_HighPassFilter.SetCutoffFrequency(1476.390939459707);
+		SetTone(0.5);
+		SetBorderFrequency(1 KHz);
+	}
+
+	//[MIN_FREQUENCY, MAX_FREQUENCY]
+	void SetBorderFrequency(float Value)
+	{
+		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
+
+		m_LowShelfFilter.SetCutoffFrequency(Value);
+		m_HighShelfFilter.SetCutoffFrequency(Value);
 	}
 
 	//[0, 1]
@@ -23,6 +32,11 @@ public:
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Tone = Value;
+
+		const dBGain Gain = 6;
+
+		m_LowShelfFilter.SetGain(Math::Map(1 - Value, 0.0F, 1, -Gain, (float)Gain));
+		m_HighShelfFilter.SetGain(Math::Map(Value, 0.0F, 1, -Gain, (float)Gain));
 	}
 	float GetTone(void) const
 	{
@@ -31,19 +45,15 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
-		// for (uint8 i = 0; i < Count; ++i)
-		// 	Buffer[i] = Process(Buffer[i]);
+		m_LowShelfFilter.Process(Buffer, Count);
+		m_HighShelfFilter.Process(Buffer, Count);
 	}
-
-	// T Process(T Value)
-	// {
-	// 	return Math::Lerp(m_LowPassFilter.Process(Value), m_HighPassFilter.Process(Value), m_Tone);
-	// }
 
 private:
 	float m_Tone;
 
-	LowPassFilter<T, SampleRate> m_LowPassFilter;
-	HighPassFilter<T, SampleRate> m_HighPassFilter;
+	LowShelfFilter<T, SampleRate> m_LowShelfFilter;
+	HighShelfFilter<T, SampleRate> m_HighShelfFilter;
 };
+
 #endif

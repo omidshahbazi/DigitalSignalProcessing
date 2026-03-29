@@ -73,7 +73,7 @@ private:
 
 private:
 	float m_CutoffFrequency;
-	float m_Gain;
+	dBGain m_Gain;
 	float m_SlopeFactor;
 };
 

@@ -3,40 +3,36 @@
 #define TRIPLE_TONE_CONTROL_FILTER_H
 
 #include "../Math.h"
-#include "LowPassFilter.h"
-#include "BandPassFilter.h"
-#include "HighPassFilter.h"
+#include "LowShelfFilter.h"
+#include "PeakEQFilter.h"
+#include "HighShelfFilter.h"
 
 template <typename T, uint32 SampleRate>
 class TripleToneControlFilter : public Filter<T, SampleRate>
 {
 public:
 	TripleToneControlFilter(void)
-		: m_LowTone(0),
-		  m_MidTone(0),
-		  m_HighTone(0),
-		  m_LowToneMultiplier(0),
-		  m_MidToneMultiplier(0),
-		  m_HighToneMultiplier(0)
-
 	{
 		SetBorderFrequencies(150, 5 KHz);
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	//[0, (LowMid / 10) - (MIN_FREQUENCY / 10)]
-	void SetBorderFrequencies(float LowMid, float MidHigh, float Threshold = 5)
+	void SetBorderFrequencies(float LowMid, float MidHigh, Octave Offset = ONE_OCTAVE)
 	{
-		const float LowMidThreshold = Threshold * 10;
-		const float MidHighThreshold = (Threshold * 0.1) KHz;
+		const float LowFreq = LowMid / Offset;
+		const float HighFreq = MidHigh * Offset;
+		const float MidFreq = Math::FrequencyLerp(LowFreq, HighFreq, 0.5);
 
-		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid %f", LowMid);
-		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh %f", MidHigh);
-		ASSERT(MIN_FREQUENCY <= LowMid - LowMidThreshold, "Invalid Threshold %f", Threshold);
+		ASSERT(MIN_FREQUENCY <= LowFreq && LowFreq <= MAX_FREQUENCY, "Invalid LowFreq %f", LowFreq);
+		ASSERT(MIN_FREQUENCY <= MidFreq && MidFreq <= MAX_FREQUENCY, "Invalid MidFreq %f", MidFreq);
+		ASSERT(MIN_FREQUENCY <= HighFreq && HighFreq <= MAX_FREQUENCY, "Invalid HighFreq %f", HighFreq);
 
-		m_LowPassFilter.SetCutoffFrequency(LowMid);
-		m_BandPassFilter.SetFrequencies(LowMid - LowMidThreshold, MidHigh);
-		m_HighPassFilter.SetCutoffFrequency(MidHigh - MidHighThreshold);
+		m_LowShelfFilter.SetCutoffFrequency(LowFreq);
+		
+		m_PeakEQFilter.SetQualityFactor(BiquadFilter<T, 1, SampleRate>::CalculateCoveringQ(LowMid, MidHigh));
+		m_PeakEQFilter.SetCutoffFrequency(MidFreq);
+
+		m_HighShelfFilter.SetCutoffFrequency(HighFreq);
 	}
 
 	//[-20dB, 40dB]
@@ -44,12 +40,11 @@ public:
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
-		m_LowTone = Value;
-		m_LowToneMultiplier = m_LowTone;
+		m_LowShelfFilter.SetGain(Value);
 	}
 	dBGain GetLowTone(void) const
 	{
-		return m_LowTone;
+		return m_LowShelfFilter.GetGain();
 	}
 
 	//[-20dB, 40dB]
@@ -57,12 +52,11 @@ public:
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
-		m_MidTone = Value;
-		m_MidToneMultiplier = m_MidTone;
+		m_PeakEQFilter.SetGain(Value);
 	}
 	dBGain GetMidTone(void) const
 	{
-		return m_MidTone;
+		return m_PeakEQFilter.GetGain();
 	}
 
 	//[-20dB, 40dB]
@@ -70,38 +64,23 @@ public:
 	{
 		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
 
-		m_HighTone = Value;
-		m_HighToneMultiplier = m_HighTone;
+		m_HighShelfFilter.SetGain(Value);
 	}
 	dBGain GetHighTone(void) const
 	{
-		return m_HighTone;
+		return m_HighShelfFilter.GetGain();
 	}
 
 	void Process(T *Buffer, uint8 Count) override
 	{
-		// for (uint8 i = 0; i < Count; ++i)
-		// 	Buffer[i] = Process(Buffer[i]);
+		m_LowShelfFilter.Process(Buffer, Count);
+		m_PeakEQFilter.Process(Buffer, Count);
+		m_HighShelfFilter.Process(Buffer, Count);
 	}
 
-	// T Process(T Value)
-	// {
-	// 	return (m_LowPassFilter.Process(Value) * m_LowToneMultiplier) +
-	// 		   (m_BandPassFilter.Process(Value) * m_MidToneMultiplier) +
-	// 		   (m_HighPassFilter.Process(Value) * m_HighToneMultiplier);
-	// }
-
 private:
-	dBGain m_LowTone;
-	dBGain m_MidTone;
-	dBGain m_HighTone;
-
-	LowPassFilter<T, SampleRate> m_LowPassFilter;
-	BandPassFilter<T, SampleRate> m_BandPassFilter;
-	HighPassFilter<T, SampleRate> m_HighPassFilter;
-
-	LinearGain m_LowToneMultiplier;
-	LinearGain m_MidToneMultiplier;
-	LinearGain m_HighToneMultiplier;
+	LowShelfFilter<T, SampleRate> m_LowShelfFilter;
+	PeakEQFilter<T, SampleRate> m_PeakEQFilter;
+	HighShelfFilter<T, SampleRate> m_HighShelfFilter;
 };
 #endif

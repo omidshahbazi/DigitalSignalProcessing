@@ -160,17 +160,19 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
-		m_HighPassFilter.Process(Buffer, Count);
-		m_LowPassFilter.Process(Buffer, Count);
+		CLONE_BUFFER(filteredBuffer);
+
+		m_HighPassFilter.Process(filteredBuffer, Count);
+		m_LowPassFilter.Process(filteredBuffer, Count);
 
 		for (uint8 i = 0; i < Count; ++i)
 		{
-			T output = Buffer[i];
+			T output = 0;
 
 			if (m_IsPlaying && m_IsRecording)
-				output = m_Buffer.Record(output);
+				output = m_Buffer.Record(filteredBuffer[i]);
 			else
-				output = m_Buffer.Process(output);
+				output = m_Buffer.Process(filteredBuffer[i]);
 
 			if (!m_IsPlaying)
 				output = 0;
