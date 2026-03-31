@@ -57,13 +57,14 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_Ratio = Value;
+		m_Ratio = Math::Lerp(m_Ratio, Value, 0.01);
 
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
 
-		m_PeakEQFilter.SetCutoffFrequency(Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio));
-		m_PeakEQFilter.SetGain(Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio));
-		m_PeakEQFilter.SetQualityFactor(Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio));
+		m_PeakEQFilter.SetParameters(
+			Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio),
+			Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio),
+			Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio));
 	}
 	float GetRatio(void) const
 	{

@@ -112,53 +112,60 @@ public:
 		m_PatternLength = Length;
 	}
 
+	void Process(T *Buffer, uint8 Count)
+	{
+		for (uint8 i = 0; i < Count; ++i)
+		{
+			Buffer[i] = Process();
+		}
+	}
+
 	T Process(void)
 	{
-		if (++m_ElapsedSampleCount == m_SampleCountPerBeat)
+		if (++m_ElapsedSampleCount >= m_SampleCountPerBeat)
 		{
 			m_ElapsedSampleCount = 0;
 
 			if (m_PatternLength != 0)
 			{
 				Parts parts = m_Pattern[m_PatternIndex];
-				m_PatternIndex = Math::Moderate(m_PatternIndex + 1, m_PatternLength);
+				m_PatternIndex = (m_PatternIndex + 1) % m_PatternLength;
 
 				for (uint8 i = 0; i < NOTES_COUNT; ++i)
 				{
 					uint8 id = (1 << i);
-
-					if (((uint8)m_EnabledParts & id) == 0)
-						continue;
-
-					if (((uint8)parts & id) == 0)
-						continue;
-
-					m_Parts[i]->Beat();
+					if (((uint8)m_EnabledParts & id) && ((uint8)parts & id))
+					{
+						m_Parts[i]->Beat();
+					}
 				}
 			}
 		}
 
-		uint8 enabledCount = 0;
 		T samplesSum = 0;
+		uint8 enabledCount = 0;
 
 		for (uint8 i = 0; i < NOTES_COUNT; ++i)
 		{
-			uint8 id = (1 << i);
-
-			if (((uint8)m_EnabledParts & id) == 0)
-				continue;
-
-			++enabledCount;
-			samplesSum += m_Parts[i]->Process();
+			if (((uint8)m_EnabledParts & (1 << i)))
+			{
+				T tempSample = m_Parts[i]->Process();
+				samplesSum += tempSample;
+				enabledCount++;
+			}
 		}
 
-		return samplesSum / enabledCount;
+		if (enabledCount > 0)
+			return samplesSum * (1 / (float)enabledCount);
+
+		return 0;
 	}
 
 private:
 	void UpdateData(void)
 	{
-		m_SampleCountPerBeat = SampleRate / ((m_BeatsPerMinute * (uint8)m_NoteDuration) / 60);
+		float beatsPerSecond = (m_BeatsPerMinute * (float)m_NoteDuration) / 60;
+		m_SampleCountPerBeat = static_cast<uint32>((float)SampleRate / beatsPerSecond);
 		m_ElapsedSampleCount = 0;
 	}
 

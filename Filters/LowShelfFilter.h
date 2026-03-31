@@ -60,9 +60,32 @@ public:
 		return m_SlopeFactor;
 	}
 
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
+	// [-20dB, 20dB]
+	// [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
+	void SetParameters(float CutoffFrequency, dBGain Gain, float SlopeFactor)
+	{
+		ASSERT(MIN_FREQUENCY <= CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+		ASSERT(SLOPE_FACTOR_MINIMUM <= SlopeFactor && SlopeFactor <= SLOPE_FACTOR_MAXIMUM, "Invalid SlopeFactor %f", SlopeFactor);
+		
+		m_CutoffFrequency = CutoffFrequency;
+		m_Gain = Gain;
+		m_SlopeFactor = SlopeFactor;
+
+		Update();
+	}
+
 	void Process(T *Buffer, uint8 Count) override
 	{
 		return BiquadFilter<T, 1, SampleRate>::Process(Buffer, Count);
+	}
+
+	T Process(T Value) override
+	{
+		BiquadFilter<T, 1, SampleRate>::Process(&Value, 1);
+
+		return Value;
 	}
 
 private:

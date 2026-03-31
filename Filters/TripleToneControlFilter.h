@@ -29,8 +29,7 @@ public:
 
 		m_LowShelfFilter.SetCutoffFrequency(LowFreq);
 		
-		m_PeakEQFilter.SetQualityFactor(BiquadFilter<T, 1, SampleRate>::CalculateCoveringQ(LowMid, MidHigh));
-		m_PeakEQFilter.SetCutoffFrequency(MidFreq);
+		m_PeakEQFilter.SetParameters(MidFreq, 0, BiquadFilter<T, 1, SampleRate>::CalculateCoveringQ(LowMid, MidHigh));
 
 		m_HighShelfFilter.SetCutoffFrequency(HighFreq);
 	}

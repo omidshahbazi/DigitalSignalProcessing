@@ -49,17 +49,22 @@ public:
 		return m_ReleaseTime;
 	}
 
+	LinearGain GetCurrentEnvelope(void) const
+	{
+		return m_Envelope;
+	}
+
 	void Process(T *Buffer, uint8 Count) override
 	{
 		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] = Process(Buffer[i]);
+			Process(Buffer[i]);
 	}
 
-	LinearGain Process(T Value)
+	T Process(T Value) override
 	{
 		Value = Math::Absolute(Value);
 
-		float currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
+		double currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
 
 		m_Envelope = Math::Lerp(Value, m_Envelope, currentSlope);
 
@@ -73,7 +78,8 @@ protected:
 	double m_RatioMultiplier;
 	double m_AttackSlope;
 	double m_ReleaseSlope;
-	double m_Envelope;
+	
+	LinearGain m_Envelope;
 };
 
 #endif

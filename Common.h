@@ -231,7 +231,20 @@ static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
 #define MAX_FRAME_LENGTH 64
 #endif
 
+#ifdef STANDARD_UP_SAMPLE_FACTOR
+static_assert(STANDARD_UP_SAMPLE_FACTOR > 1, "Invalid STANDARD_UP_SAMPLE_FACTOR defined");
+#else
+#define STANDARD_UP_SAMPLE_FACTOR 2
+#endif
+
 #define CLONE_BUFFER(Name)                                                                                      \
 	ASSERT(MAX_FRAME_LENGTH >= Count, "Insofficient buffer size for " #Name " %i<%i", MAX_FRAME_LENGTH, Count); \
 	static T Name[MAX_FRAME_LENGTH];                                                                            \
 	Memory::Copy(Buffer, Name, Count);
+
+#define CREATE_UP_SAMPLE_BUFFER(Name, FactorValue) \
+	const uint8 Name##Factor = FactorValue;        \
+	T Name[MAX_FRAME_LENGTH * FactorValue];        \
+	const uint8 Name##Length = Count * FactorValue;
+
+#define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, STANDARD_UP_SAMPLE_FACTOR)

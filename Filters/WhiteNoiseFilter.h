@@ -9,7 +9,7 @@ template <typename T, uint32 SampleRate>
 class WhiteNoiseFilter : public Filter<T, SampleRate>
 {
 private:
-	static constexpr float MULTIPLIER = 4.6566129e-010f;
+	static constexpr float MULTIPLIER = 1.0 / 2147483648;
 
 public:
 	WhiteNoiseFilter(void)
@@ -32,13 +32,21 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
+		uint32 seed = m_Seed;
+
 		for (uint8 i = 0; i < Count; ++i)
 		{
-			m_Seed *= 16807;
+			seed ^= seed << 13;
+            seed ^= seed >> 17;
+            seed ^= seed << 5;
 
-			Buffer[i] = m_Seed * MULTIPLIER;
+			Buffer[i] = seed * MULTIPLIER;
 		}
+
+		m_Seed = seed;
 	}
+
+	using Filter<T, SampleRate>::Process;
 
 private:
 	int32 m_Seed;

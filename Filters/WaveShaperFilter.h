@@ -10,77 +10,76 @@ template <typename T>
 class WaveShaperFilter : public Filter<T, MIN_SAMPLE_RATE>
 {
 public:
-	struct TablePoints
-	{
-	public:
-		T InputValue;
-		T OutputValue;
-	};
+    struct TablePoints
+    {
+    public:
+        T InputValue;
+        T OutputValue;
+    };
 
 public:
-	WaveShaperFilter(void)
-		: m_Table(nullptr),
-		  m_Length(0)
-	{
-	}
+    WaveShaperFilter(void)
+        : m_Table(nullptr),
+          m_Length(0),
+          m_MinInput(-1.0f),
+          m_MaxInput(1.0f),
+          m_InputRangeInv(0)
+    {
+    }
 
-	void SetTable(const TablePoints *Table, uint8 Length)
-	{
-		ASSERT(Table != nullptr, "Invalid Table");
-		ASSERT(Length > 1, "Invalid Length %f", Length);
+    void SetTable(const TablePoints *Table, uint8 Length)
+    {
+        ASSERT(Table != nullptr, "Invalid Table");
+        ASSERT(Length > 1, "Invalid Length %f", Length);
 
-		m_Table = Table;
-		m_Length = Length;
-	}
-	const TablePoints *GetTable(void) const
-	{
-		return m_Table;
-	}
-	uint8 GetLength(void) const
-	{
-		return m_Length;
-	}
+        m_Table = Table;
+        m_Length = Length;
 
-	void Process(T *Buffer, uint8 Count) override
-	{
-		for (uint8 i = 0; i < Count; ++i)
-		{
-			const TablePoints *prev = nullptr;
-			const TablePoints *next = nullptr;
-			for (uint32 j = 0; j < m_Length; ++j)
-			{
-				const TablePoints &curr = m_Table[j];
+        m_MinInput = Table[0].InputValue;
+        m_MaxInput = Table[Length - 1].InputValue;
+        
+        m_InputRangeInv = (float)(Length - 1) / (m_MaxInput - m_MinInput);
+    }
+    const TablePoints *GetTable(void) const
+    {
+        return m_Table;
+    }
+    uint8 GetLength(void) const
+    {
+        return m_Length;
+    }
 
-				if (Buffer[i] > curr.InputValue)
-				{
-					prev = &curr;
+    void Process(T *Buffer, uint8 Count) override
+    {
+        const float minIn = m_MinInput;
+        const float maxIn = m_MaxInput;
+        const float rangeInv = m_InputRangeInv;
+        const uint8 maxIdx = m_Length - 1;
 
-					continue;
-				}
+        for (uint8 i = 0; i < Count; ++i)
+        {
+            float input = Math::Clamp(Buffer[i], minIn, maxIn);
+            
+            float pos = (input - minIn) * rangeInv;
+            uint8 index = static_cast<uint8>(pos);
+            float frac = pos - index;
 
-				next = &curr;
-				break;
-			}
-
-			if (prev == nullptr)
-			{
-				prev = &m_Table[0];
-			}
-
-			if (next == nullptr)
-			{
-				next = &m_Table[m_Length - 1];
-			}
-
-			float pointsDiff = next->InputValue - prev->InputValue;
-			float frac = (pointsDiff == 0 ? 0 : (Buffer[i] - prev->InputValue) / pointsDiff);
-
-			Buffer[i] = Math::Lerp(prev->OutputValue, next->OutputValue, frac);
-		}
-	}
+            if (index >= maxIdx) 
+            {
+                Buffer[i] = m_Table[maxIdx].OutputValue;
+            }
+            else 
+            {
+                Buffer[i] = Math::Lerp(m_Table[index].OutputValue, m_Table[index + 1].OutputValue, frac);
+            }
+        }
+    }
 
 private:
-	const TablePoints *m_Table;
-	uint8 m_Length;
+    const TablePoints *m_Table;
+    uint8 m_Length;
+    float m_MinInput;
+    float m_MaxInput;
+    float m_InputRangeInv;
 };
 #endif

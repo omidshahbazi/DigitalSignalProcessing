@@ -4,7 +4,7 @@
 
 #include "DrumsPart.h"
 #include "../Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
-#include "../Filters/WhiteNoiseFilter.h"
+#include "../Filters/MetalNoiseFilter.h"
 #include "../Filters/BandPassFilter.h"
 
 template <typename T, uint32 SampleRate>
@@ -95,24 +95,20 @@ public:
 		m_FrequencyEnvelope.Trigger();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	T Process(void) override
 	{
+		m_BandPass.SetFrequencies(m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
+
+		T sample = m_BandPass.Process(m_Noise.Process()) * m_Envelope.Process();
+
+		return sample;
 	}
-
-	// T Process(void) override
-	// {
-	// 	m_BandPass.SetFrequencies(m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
-
-	// 	T sample = m_BandPass.Process(m_Noise.Process()) * m_Envelope.Process();
-
-	// 	return sample;
-	// }
 
 private:
 	Types m_Type;
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_FrequencyEnvelope;
-	WhiteNoiseFilter<T, SampleRate> m_Noise;
+	MetalNoiseFilter<T, SampleRate> m_Noise;
 	float m_MaxCutoffFrequency;
 	BandPassFilter<T, SampleRate> m_BandPass;
 };

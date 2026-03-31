@@ -133,7 +133,7 @@ public:
 			Buffer[i] = Process(Buffer[i]);
 	}
 
-	T Process(T Value)
+	T Process(T Value) override
 	{
 		T delayedSample = GetCircularSample(m_ReadBufferIndex);
 

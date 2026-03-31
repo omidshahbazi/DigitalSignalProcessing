@@ -17,7 +17,7 @@ public:
 		Update();
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
 	void SetCutoffFrequency(float Value)
 	{
 		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
@@ -45,9 +45,29 @@ public:
 		return m_QualityFactor;
 	}
 
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
+	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	void SetParameters(float CutoffFrequency, float QualityFactor)
+	{
+		ASSERT(MIN_FREQUENCY <= CutoffFrequency && CutoffFrequency <= MAX_FREQUENCY, "Invalid CutoffFrequency %f", CutoffFrequency);
+		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactor && QualityFactor <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactor %f", QualityFactor);
+		
+		m_CutoffFrequency = CutoffFrequency;
+		m_QualityFactor = QualityFactor;
+
+		Update();
+	}
+
 	void Process(T *Buffer, uint8 Count) override
 	{
 		return BiquadFilter<T, 1, SampleRate>::Process(Buffer, Count);
+	}
+
+	T Process(T Value) override
+	{
+		BiquadFilter<T, 1, SampleRate>::Process(&Value, 1);
+
+		return Value;
 	}
 
 private:

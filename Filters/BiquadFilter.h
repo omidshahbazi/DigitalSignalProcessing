@@ -74,13 +74,18 @@ private:
 	};
 
 public:
-	BiquadFilter()
+	BiquadFilter(void)
 #ifdef ARM_SIMD_BIQUAD
 		: m_Stage{}
 #else
 		: m_Stages{}
 #endif
 	{
+		SetBypassCoefficients(this);
+
+#ifdef ARM_SIMD_BIQUAD
+		arm_biquad_cascade_df1_init_f32(&m_Stage.Instance, StageCount, &m_Stage.Coeffs[0].b0, m_Stage.State);
+#endif
 	}
 
 	void SetCoefficients(const Coefficients Values[StageCount])
@@ -88,8 +93,6 @@ public:
 #ifdef ARM_SIMD_BIQUAD
 		for (uint8 i = 0; i < StageCount; ++i)
 			m_Stage.Coeffs[i] = Values[i];
-
-		arm_biquad_cascade_df1_init_f32(&m_Stage.Instance, StageCount, &m_Stage.Coeffs[0].b0, m_Stage.State);
 #else
 		for (uint8 i = 0; i < StageCount; ++i)
 			m_Stages[i].Coeffs = Values[i];
@@ -172,6 +175,26 @@ public:
 	}
 
 public:
+	static void SetBypassCoefficients(BiquadFilter *Filter)
+	{
+		ASSERT(Filter != nullptr, "Filter cannot be null");
+
+		Coefficients CoeffsArray[StageCount] = {};
+
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
+
+			Coeffs.b0 = 1.0;
+			Coeffs.b1 = 0.0;
+			Coeffs.b2 = 0.0;
+			Coeffs.a1 = 0.0;
+			Coeffs.a2 = 0.0;
+		}
+
+		Filter->SetCoefficients(CoeffsArray);
+	}
+
 	// CutoffFrequency [1, MAX_FREQUENCY]
 	// QualityFactor [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM] SmoorthKneeSlope=[<QUALITY_FACTOR_MAXIMALLY_FLAT] Butterworth=[QUALITY_FACTOR_MAXIMALLY_FLAT] SharpKneeSlope=[>QUALITY_FACTOR_MAXIMALLY_FLAT]
 	// - Values less than 0.7 result in a smoother transition near the cutoff frequency, reducing peak resonance but also making the filter less selective.
@@ -347,23 +370,23 @@ public:
 		ASSERT(QUALITY_FACTOR_MINIMUM <= QualityFactor && QualityFactor <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactor %f", QualityFactor);
 
 		const ValueType A = Math::Power(10.0, Gain / 40.0);
-        const ValueType Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
-        const ValueType Sn = Math::Sin(Omega);
-        const ValueType Cs = Math::Cos(Omega);
-        const ValueType Alpha = Sn / (2.0 * QualityFactor);
+		const ValueType Omega = Math::TWO_PI_VALUE * CutoffFrequency / SampleRate;
+		const ValueType Sn = Math::Sin(Omega);
+		const ValueType Cs = Math::Cos(Omega);
+		const ValueType Alpha = Sn / (2.0 * QualityFactor);
 
-        Coefficients CoeffsArray[StageCount] = {};
-        Coefficients &Coeffs = CoeffsArray[0];
-        
-        Coeffs.b0 = 1.0 + (Alpha * A);
-        Coeffs.b1 = -2.0 * Cs;
-        Coeffs.b2 = 1.0 - (Alpha * A);
-        Coeffs.a1 = -2.0 * Cs;
-        Coeffs.a2 = 1.0 - (Alpha / A);
+		Coefficients CoeffsArray[StageCount] = {};
+		Coefficients &Coeffs = CoeffsArray[0];
 
-        Normalize(Coeffs, 1.0 + (Alpha / A));
-		
-        Filter->SetCoefficients(CoeffsArray);
+		Coeffs.b0 = 1.0 + (Alpha * A);
+		Coeffs.b1 = -2.0 * Cs;
+		Coeffs.b2 = 1.0 - (Alpha * A);
+		Coeffs.a1 = -2.0 * Cs;
+		Coeffs.a2 = 1.0 - (Alpha / A);
+
+		Normalize(Coeffs, 1.0 + (Alpha / A));
+
+		Filter->SetCoefficients(CoeffsArray);
 	}
 
 	// CenterFrequency [1, MAX_FREQUENCY]

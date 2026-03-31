@@ -13,7 +13,7 @@ class DrumsPart
 public:
 	virtual void Beat(void) = 0;
 
-	virtual void Process(T *Buffer, uint8 Count) = 0;
+	virtual T Process(void) = 0;
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
 			Reset();
 	}
 
-	void Start()
+	void Start(void)
 	{
 		m_IsStarted = true;
 		m_LastBeatTime = m_HAL->GetTimeSinceStartup();

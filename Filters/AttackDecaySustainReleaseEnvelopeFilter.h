@@ -28,11 +28,11 @@ public:
 		  m_SustainLevel(0),
 		  m_MinValue(0),
 		  m_MaxValue(1),
-		  m_TriggerValue(0),
 		  m_Curve(0),
-		  m_CurveValue(0),
-		  m_RawValue(0.00001),
-		  m_ElapsedSustainTime(0)
+		  m_RawValue(0.0f),
+		  m_TargetValue(0.0f),
+		  m_Multiplier(0.0f),
+		  m_AutoReleaseCounter(0)
 	{
 		SetAttackTime(50 ms);
 		SetDecayTime(50 ms);
@@ -46,7 +46,6 @@ public:
 	void SetAttackTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_SegmentTime[(uint8)Segments::Attack] = Value;
 	}
 	float GetAttackTime(void) const
@@ -59,7 +58,6 @@ public:
 	void SetDecayTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_SegmentTime[(uint8)Segments::Decay] = Value;
 	}
 	float GetDecayTime(void) const
@@ -72,7 +70,6 @@ public:
 	void SetSustainTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_SegmentTime[(uint8)Segments::Sustain] = Value;
 	}
 	float GetSustainTime(void) const
@@ -84,7 +81,6 @@ public:
 	void SetSustainLevel(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_SustainLevel = Value;
 	}
 	float GetSustainLevel(void) const
@@ -97,7 +93,6 @@ public:
 	void SetReleaseTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_SegmentTime[(uint8)Segments::Release] = Value;
 	}
 	float GetReleaseTime(void) const
@@ -111,7 +106,6 @@ public:
 	void SetCurve(float Value)
 	{
 		ASSERT(0 <= Value, "Invalid Value %f", Value);
-
 		m_Curve = Value;
 	}
 	float GetCurve(void) const
@@ -147,20 +141,16 @@ public:
 	void Trigger(void)
 	{
 		m_CurrSegment = Segments::Attack;
-		m_TriggerValue = m_RawValue;
-		m_CurveValue = 0;
-		m_ElapsedSustainTime = 0;
+		PrepareSegment();
 	}
 
 	void Release(void)
 	{
 		m_CurrSegment = Segments::Release;
+		PrepareSegment();
 	}
 
-	Segments GetCurrentSegment(void) const
-	{
-		return m_CurrSegment;
-	}
+	Segments GetCurrentSegment(void) const { return m_CurrSegment; }
 
 	void Process(T *Buffer, uint8 Count) override
 	{
@@ -170,102 +160,110 @@ public:
 
 	T Process(void)
 	{
-		const bool bypassAttack = (GetAttackTime() == 0);
-		const bool bypassDecay = (GetDecayTime() == 0);
-		const bool isAutoReleaseMode = (GetSustainTime() != 0);
-		const bool bypassRelease = (GetReleaseTime() == 0);
+		if (m_CurrSegment == Segments::Idle)
+			return m_MinValue;
 
-		float beginValue = 0;
-		float endValue = 0;
+		if (m_Curve <= 0.001f) // Linear
+		{
+			m_RawValue += m_Multiplier;
+		}
+		else // Exponential
+		{
+			m_RawValue = m_TargetValue + (m_RawValue - m_TargetValue) * m_Multiplier;
+		}
 
+		bool next = false;
 		switch (m_CurrSegment)
 		{
-		case Segments::Idle:
-			beginValue = 0;
-			endValue = 0;
-			break;
-
 		case Segments::Attack:
-			beginValue = m_TriggerValue;
-			endValue = 1;
-			break;
-
-		case Segments::Decay:
-			beginValue = 1;
-			endValue = m_SustainLevel;
-			break;
-
-		case Segments::Sustain:
-			beginValue = m_SustainLevel;
-			endValue = m_SustainLevel;
-			break;
-
-		case Segments::Release:
-			beginValue = m_SustainLevel;
-			endValue = 0;
-			break;
-
-		default:
-			ASSERT(false, "Unhandled Type");
-		}
-
-		float prevRawValue = m_RawValue;
-
-		if (m_CurrSegment == Segments::Idle)
-			m_RawValue = 0;
-		else if (m_CurrSegment == Segments::Attack && bypassAttack)
-			m_RawValue = m_SustainLevel;
-		else if (m_CurrSegment == Segments::Decay && bypassDecay)
-			m_RawValue = 1;
-		else if (m_CurrSegment == Segments::Sustain && isAutoReleaseMode)
-		{
-			m_RawValue = m_SustainLevel;
-
-			m_ElapsedSustainTime += 1.0 / SampleRate;
-			if (GetSustainTime() <= m_ElapsedSustainTime)
-				m_CurrSegment = Segments::Release;
-		}
-		else if (m_CurrSegment == Segments::Release && bypassRelease)
-			m_RawValue = 0;
-		else
-		{
-			uint32 sampleCount = (uint32)(m_SegmentTime[(uint8)m_CurrSegment] * SampleRate);
-
-			float step = 0;
-			if (m_Curve == 0)
-				step = (endValue - beginValue) / sampleCount;
-			else
-				step = (endValue - beginValue) / (1 - Math::Exponential(m_Curve));
-
-			if (step >= 0)
-				step = Math::Max(step, Math::EPSILON);
-			else
-				step = Math::Min(step, -Math::EPSILON);
-
-			if (m_Curve == 0)
-				m_RawValue += step;
-			else
+			if (m_RawValue >= 1.0f)
 			{
-				m_CurveValue += (m_Curve / sampleCount);
-
-				m_RawValue = beginValue + (step * (1 - Math::Exponential(m_CurveValue)));
-				if (Math::IsNAN(m_RawValue))
-					m_RawValue = 0;
+				m_RawValue = 1.0f;
+				next = true;
 			}
-
-			m_RawValue = Math::Clamp01(m_RawValue);
+			break;
+		case Segments::Decay:
+			if (m_RawValue <= m_SustainLevel)
+			{
+				m_RawValue = m_SustainLevel;
+				next = true;
+			}
+			break;
+		case Segments::Sustain:
+			if (m_SegmentTime[(uint8)Segments::Sustain] > 0)
+			{
+				if (++m_AutoReleaseCounter >= m_AutoReleaseLimit)
+					next = true;
+			}
+			break;
+		case Segments::Release:
+			if (m_RawValue <= 0.0001f)
+			{
+				m_RawValue = 0.0f;
+				next = true;
+			}
+			break;
+		default:
+			break;
 		}
 
-		if ((m_CurrSegment == Segments::Attack && prevRawValue >= 1) ||
-			(m_CurrSegment == Segments::Decay && prevRawValue <= m_SustainLevel) ||
-			(m_CurrSegment == Segments::Release && prevRawValue <= 0))
+		if (next)
 		{
-			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
-
-			m_CurveValue = 0;
+			uint8 nextS = (uint8)m_CurrSegment + 1;
+			m_CurrSegment = (nextS >= (uint8)Segments::COUNT) ? Segments::Idle : (Segments)nextS;
+			PrepareSegment();
 		}
 
 		return GetValue();
+	}
+
+private:
+	void PrepareSegment(void)
+	{
+		float time = m_SegmentTime[(uint8)m_CurrSegment];
+		uint32 samples = static_cast<uint32>(time * SampleRate);
+		m_AutoReleaseCounter = 0;
+
+		if (m_CurrSegment == Segments::Idle || (samples == 0 && m_CurrSegment != Segments::Sustain))
+		{
+			// Bypass logic: jump to next segment if time is 0
+			if (m_CurrSegment != Segments::Idle)
+			{
+				if (m_CurrSegment == Segments::Attack)
+					m_RawValue = 1.0f;
+				else if (m_CurrSegment == Segments::Decay)
+					m_RawValue = m_SustainLevel;
+				else if (m_CurrSegment == Segments::Release)
+					m_RawValue = 0.0f;
+
+				m_CurrSegment = (Segments)((uint8)m_CurrSegment + 1);
+				PrepareSegment();
+			}
+			return;
+		}
+
+		if (m_CurrSegment == Segments::Sustain)
+		{
+			m_TargetValue = m_SustainLevel;
+			m_Multiplier = (m_Curve <= 0.001f) ? 0.0f : 1.0f;
+			m_AutoReleaseLimit = samples;
+			return;
+		}
+
+		if (m_Curve <= 0.001f) // Linear Pre-calculation
+		{
+			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.0f : (m_CurrSegment == Segments::Decay) ? m_SustainLevel
+																											: 0.0f;
+			m_Multiplier = (m_TargetValue - m_RawValue) / samples;
+		}
+		else // Exponential Pre-calculation using Math::Exponential
+		{
+			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.1f : (m_CurrSegment == Segments::Decay) ? m_SustainLevel - 0.1f
+																											: -0.1f;
+
+			float exponent = -m_Curve / (float)samples;
+			m_Multiplier = Math::Exponential(exponent);
+		}
 	}
 
 private:
@@ -274,11 +272,12 @@ private:
 	float m_SustainLevel;
 	T m_MinValue;
 	T m_MaxValue;
-	T m_TriggerValue;
 	float m_Curve;
-	float m_CurveValue;
-	T m_RawValue;
-	float m_ElapsedSustainTime;
+	float m_RawValue;
+	float m_TargetValue;
+	float m_Multiplier;
+	uint32 m_AutoReleaseCounter;
+	uint32 m_AutoReleaseLimit;
 };
 
 #endif

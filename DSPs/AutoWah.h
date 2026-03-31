@@ -30,8 +30,8 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
-		float envelope = m_EnvelopeFollowerFilter.Process(Buffer[0]);
-		Wah<T, SampleRate>::SetRatio(Math::Clamp01(envelope * m_Sensitivity));
+		m_EnvelopeFollowerFilter.Process(Buffer, Count);
+		Wah<T, SampleRate>::SetRatio(Math::Clamp01(m_EnvelopeFollowerFilter.GetCurrentEnvelope() * m_Sensitivity));
 
 		Wah<T, SampleRate>::Process(Buffer, Count);
 	}

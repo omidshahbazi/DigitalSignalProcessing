@@ -5,6 +5,7 @@
 #include "DrumsPart.h"
 #include "../Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
 #include "../Filters/WhiteNoiseFilter.h"
+#include "../Filters/MetalNoiseFilter.h"
 #include "../Filters/BandPassFilter.h"
 
 template <typename T, uint32 SampleRate>
@@ -20,8 +21,7 @@ public:
 		m_Envelope.SetMinValue(0);
 		m_Envelope.SetMaxValue(1);
 
-		m_BandPass.SetFrequencies(8 KHz, 10 KHz);
-		m_BandPass.SetQualityFactor(3);
+		m_BandPass.SetParametersRange(8 KHz, 10 KHz, 3);
 	}
 
 	void Beat(void) override
@@ -29,19 +29,17 @@ public:
 		m_Envelope.Trigger();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	T Process(void) override
 	{
-		m_WhiteNoiseFilter.Process(Buffer, Count);
+		T sample = m_WhiteNoiseFilter.Process() + m_MetalNoiseFilter.Process();
 
-		m_BandPass.Process(Buffer, Count);
-
-		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] *= m_Envelope.Process();
+		return m_BandPass.Process(sample) * m_Envelope.Process();
 	}
 
 private:
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;
 	WhiteNoiseFilter<T, SampleRate> m_WhiteNoiseFilter;
+	MetalNoiseFilter<T, SampleRate> m_MetalNoiseFilter;
 	BandPassFilter<T, SampleRate> m_BandPass;
 };
 

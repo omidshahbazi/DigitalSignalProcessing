@@ -26,9 +26,9 @@ public:
 		  m_MinValue(0),
 		  m_MaxValue(1),
 		  m_Curve(0),
-		  m_CurveValue(0),
-		  m_TriggerValue(0),
-		  m_RawValue(0.00001)
+		  m_RawValue(0.0f),
+		  m_TargetValue(0.0f),
+		  m_Coeff(0.0f)
 	{
 		m_SegmentTime[(uint8)Segments::Idle] = 0.05;
 
@@ -42,6 +42,8 @@ public:
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Attack] = Value;
+		if (m_CurrSegment == Segments::Attack)
+			PrepareSegment();
 	}
 	float GetAttackTime(void) const
 	{
@@ -54,6 +56,8 @@ public:
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_SegmentTime[(uint8)Segments::Decay] = Value;
+		if (m_CurrSegment == Segments::Decay)
+			PrepareSegment();
 	}
 	float GetDecayTime(void) const
 	{
@@ -68,6 +72,7 @@ public:
 		ASSERT(0 <= Value, "Invalid Value %f", Value);
 
 		m_Curve = Value;
+		PrepareSegment();
 	}
 	float GetCurve(void) const
 	{
@@ -102,8 +107,7 @@ public:
 	void Trigger(void)
 	{
 		m_CurrSegment = Segments::Attack;
-		m_TriggerValue = m_RawValue;
-		m_CurveValue = 0;
+		PrepareSegment();
 	}
 
 	Segments GetCurrentSegment(void) const
@@ -119,71 +123,66 @@ public:
 
 	T Process(void)
 	{
-		float beginValue = 0;
-		float endValue = 0;
+		if (m_CurrSegment == Segments::Idle)
+			return (T)m_MinValue;
 
-		uint32 sampleCount = (uint32)(m_SegmentTime[(uint8)m_CurrSegment] * SampleRate);
-
-		switch (m_CurrSegment)
+		if (m_Curve <= 0.01f) // Linear Mode
 		{
-		case Segments::Idle:
-			beginValue = 0;
-			endValue = 0;
-			break;
-
-		case Segments::Attack:
-			beginValue = m_TriggerValue;
-			endValue = 1;
-			break;
-
-		case Segments::Decay:
-			beginValue = 1;
-			endValue = 0;
-			break;
-
-		default:
-			ASSERT(false, "Unhandled Type");
+			m_RawValue += m_Coeff;
 		}
-
-		float step = 0;
-
-		if (m_Curve == 0)
-			step = (endValue - beginValue) / sampleCount;
-		else
-			step = (endValue - beginValue) / (1 - Math::Exponential(m_Curve));
-
-		if (step >= 0)
-			step = Math::Max(step, Math::EPSILON);
-		else
-			step = Math::Min(step, -Math::EPSILON);
-
-		float prevRawValue = m_RawValue;
-
-		if (m_Curve == 0)
-			m_RawValue += step;
-		else
+		else // Exponential Mode (Fast & Professional)
 		{
-			m_CurveValue += (m_Curve / sampleCount);
-
-			m_RawValue = beginValue + (step * (1 - Math::Exponential(m_CurveValue)));
-			if (Math::IsNAN(m_RawValue))
-				m_RawValue = 0;
+			// V = Target + (Current - Target) * Coeff
+			m_RawValue = m_TargetValue + (m_RawValue - m_TargetValue) * m_Coeff;
 		}
 
 		m_RawValue = Math::Clamp01(m_RawValue);
 
-		if ((m_CurrSegment == Segments::Attack && prevRawValue >= 1) ||
-			(m_CurrSegment == Segments::Decay && prevRawValue <= 0))
+		bool segmentFinished = false;
+		if (m_CurrSegment == Segments::Attack && m_RawValue >= 0.999f)
 		{
-			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
-
-			m_CurveValue = 0;
+			m_RawValue = 1.0f;
+			segmentFinished = true;
+		}
+		else if (m_CurrSegment == Segments::Decay && m_RawValue <= 0.001f)
+		{
+			m_RawValue = 0.0f;
+			segmentFinished = true;
 		}
 
-		if (m_CurrSegment == Segments::Idle)
-			m_RawValue = 0;
+		if (segmentFinished)
+		{
+			// حرکت به سگمنت بعدی با استفاده از Moderate خودت
+			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
+			PrepareSegment();
+		}
 
-		return GetValue();
+		return (T)GetValue();
+	}
+
+private:
+	void PrepareSegment(void)
+	{
+		float timeInSeconds = m_SegmentTime[(uint8)m_CurrSegment];
+		uint32 sampleCount = static_cast<uint32>(timeInSeconds * SampleRate);
+
+		if (m_CurrSegment == Segments::Idle || sampleCount == 0)
+		{
+			m_Coeff = 0;
+			m_TargetValue = 0;
+			return;
+		}
+
+		if (m_Curve <= 0.01f) // Linear
+		{
+			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.0f : 0.0f;
+			m_Coeff = (m_TargetValue - m_RawValue) / sampleCount;
+		}
+		else // Exponential
+		{
+			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.1f : -0.1f;
+			m_Coeff = std::exp(-m_Curve / (timeInSeconds * SampleRate));
+		}
 	}
 
 private:
@@ -192,9 +191,9 @@ private:
 	float m_MinValue;
 	float m_MaxValue;
 	float m_Curve;
-	float m_CurveValue;
-	float m_TriggerValue;
 	float m_RawValue;
+	float m_TargetValue;
+	float m_Coeff;
 };
 
 #endif

@@ -16,6 +16,75 @@ public:
 	static constexpr double TO_RADIANS = PI_VALUE / 180;
 	static constexpr double TO_DEGREES = 180 / PI_VALUE;
 
+#ifdef FAST_MATH
+private:
+	class LookupTable
+	{
+	private:
+		static constexpr uint16 Size = 512;
+		static constexpr float SinScale = (Size - 1) / TWO_PI_VALUE;
+		static constexpr float TanHRange = 3.0;
+		static constexpr float TanHScale = (Size - 1) / (2.0 * TanHRange);
+
+	public:
+		LookupTable(void)
+		{
+			for (uint16 i = 0; i < Size; i++)
+			{
+				m_SinLUT[i] = std::sin((TWO_PI_VALUE * i) / (Size - 1));
+				m_TanHLUT[i] = std::tanh(-TanHRange + (2 * TanHRange * i) / (Size - 1));
+			}
+		}
+
+		template <typename T>
+		inline T Sin(T Value) const
+		{
+			Value = std::fmod(Value, TWO_PI_VALUE);
+			if (Value < 0)
+				Value += TWO_PI_VALUE;
+
+			float pos = Value * SinScale;
+			uint16 index = static_cast<uint16>(pos);
+			uint16 next = (index + 1) % Size;
+			float frac = pos - index;
+
+			return m_SinLUT[index] + (frac * (m_SinLUT[next] - m_SinLUT[index]));
+		}
+
+		template <typename T>
+		inline T Cos(T Value) const
+		{
+			return Sin(Value + HALF_PI_VALUE);
+		}
+
+		template <typename T>
+		inline T TanH(T Value) const
+		{
+			if (Value <= -TanHRange)
+				return -1;
+			if (Value >= TanHRange)
+				return 1;
+
+			float pos = (Value + TanHRange) * TanHScale;
+			uint16 index = static_cast<uint16>(pos);
+			uint16 next = (index + 1) % Size;
+			float frac = pos - index;
+
+			return m_TanHLUT[index] + (frac * (m_TanHLUT[next] - m_TanHLUT[index]));
+		}
+
+	private:
+		float m_SinLUT[Size];
+		float m_TanHLUT[Size];
+	};
+
+	static const LookupTable &GetLUT(void)
+	{
+		static LookupTable lut;
+		return lut;
+	}
+#endif
+
 public:
 	template <typename T>
 	static bool IsNAN(T Value)
@@ -157,24 +226,53 @@ public:
 	template <typename T>
 	static T Sin(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+#ifdef FAST_MATH
+		return (T)GetLUT().Sin(Value);
+#else
 		return (T)sin(Value);
+#endif
 	}
 
 	template <typename T>
 	static T Cos(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+		
+#ifdef FAST_MATH
+		return (T)GetLUT().Cos(Value);
+#else
 		return (T)cos(Value);
+#endif
+	}
+
+	template <typename T>
+	static T TanH(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+#ifdef FAST_MATH
+		return (T)GetLUT().TanH(Value);
+#else
+		return (T)tanh(Value);
+#endif
 	}
 
 	template <typename T>
 	static T Log(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
 		return logf(Value);
 	}
 
 	template <typename T>
 	static T Log2(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+#ifdef FAST_MATH
 		union
 		{
 			float f;
@@ -194,6 +292,9 @@ public:
 		float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
 		return exp + log_m;
+#else
+		return log2f(Value);
+#endif
 	}
 
 	template <typename T>
@@ -201,43 +302,27 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
+#ifdef FAST_MATH
 		return Log2(Value) * 0.3010299956639812;
+#else
+		return log10f(Value);
+#endif
 	}
 
 	template <typename T>
 	static T Exponential(T Value)
 	{
-		// return expf(Value);
-
-		Value = 1 + Value / 1024.0;
-
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-		Value *= Value;
-
-		return Value;
+#ifdef FAST_MATH
+		return (T)Power2(static_cast<float>(Value) * 1.4426950408f);
+#else
+		return expf(Value);
+#endif
 	}
 
 	template <typename T, typename U>
 	static auto Power(T Value, U N) -> decltype(Value * N)
 	{
 		return std::pow(Value, N);
-
-		// long *lp, l;
-		// lp = (long *)(&Value);
-		// l = *lp;
-		// l -= 0x3F800000;
-		// l <<= (N - 1);
-		// l += 0x3F800000;
-		// *lp = l;
-		// return Value;
 	}
 
 	template <typename T>
@@ -277,19 +362,19 @@ public:
 	}
 
 	template <typename T>
-	static T TanH(T Value)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		return tanh(Value);
-	}
-
-	template <typename T>
 	static T SoftClip(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return TanH(Value);
+	}
+
+	template <typename T>
+	static T CrunchClip(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Value / (1 + Absolute(Value));
 	}
 
 	// Factor: [8, 10000]
@@ -302,6 +387,15 @@ public:
 
 		// return atan(Root(1 - Power(Value, 3), 2) + Factor + (-Sign(Factor) * 10) + (Factor * Value)) * 0.63;
 		return atan(SquareRoot(1 - Power(Value, 3)));
+	}
+
+	template <typename T>
+	static float Asymmetric(T Value, float Factor)
+	{
+		if (Value < 0)
+			return 1 - (Factor * 0.5);
+
+		return 1;
 	}
 
 	template <typename T>
@@ -360,8 +454,52 @@ public:
 		const float angle = WetRatio * HALF_PI_VALUE;
 		const T gainA = cosf(angle);
 		const T gainB = sinf(angle);
-		
+
 		return (Dry * gainA) + (Wet * gainB);
+	}
+
+	// The integer MIDI note (440 -> 69 (A4))
+	// The deviation in cents (440.5 -> 69# (A4#))
+	static float FrequencyToMidi(float Value)
+	{
+		if (Value <= 0)
+			return 0;
+
+		return 12 * Log2(Value / 440.0f) + 69;
+	}
+
+	template <typename T>
+	static void UpSample(const T *Input, uint8 Count, T *Output, uint8 Ratio)
+	{
+		const float invRatio = 1.0f / (T)Ratio;
+
+		for (uint32 i = 0; i < Count - 1; ++i)
+		{
+			T current = Input[i];
+			T next = Input[i + 1];
+
+			for (uint32 j = 0; j < Ratio; ++j)
+			{
+				float fraction = j * invRatio;
+
+				Output[i * Ratio + j] = Lerp(current, next, fraction);
+			}
+		}
+
+		// Handle the last sample manually
+		for (uint32 j = 0; j < Ratio; ++j)
+		{
+			Output[(Count - 1) * Ratio + j] = Input[Count - 1];
+		}
+	}
+
+	template <typename T>
+	static void DownSample(const T *Input, uint8 Count, T *Output, uint8 Ratio)
+	{
+		uint8 outputIndex = 0;
+
+		for (uint8 i = 0; i < Count; i += Ratio)
+			Output[outputIndex++] = Input[i];
 	}
 };
 

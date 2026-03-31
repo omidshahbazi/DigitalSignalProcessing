@@ -2,35 +2,8 @@
 #ifndef FREQUENCY_DETECTOR_H
 #define FREQUENCY_DETECTOR_H
 
-#include "FastFourierTransfomr.h"
-#include "Memory.h"
-
-// template <typename T, uint32 SampleRate, uint16 SampleCount>
-// class FrequencyDetector
-// {
-// 	static_assert(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
-
-// public:
-// 	FrequencyDetector(void)
-// 		: m_Buffer{}
-// 	{
-// 	}
-
-// 	void Record(T Value)
-// 	{
-// 		Memory::Copy(m_Buffer + 1, m_Buffer, SampleCount - 1);
-
-// 		m_Buffer[SampleCount - 1] = Value;
-// 	}
-
-// 	float CalculateFrequency(void) const
-// 	{
-// 		return FastFourierTransfomr::CalculateFrequency<T, SampleRate, SampleCount>(m_Buffer);
-// 	}
-
-// private:
-// 	T m_Buffer[SampleCount];
-// };
+#include "FastFourierTransformer.h"
+#include "../Math.h"
 
 template <typename T, uint32 SampleRate, uint16 SampleCount>
 class FrequencyDetector
@@ -39,24 +12,36 @@ class FrequencyDetector
 
 public:
 	FrequencyDetector(void)
-		: m_Buffer{}
+		: m_Buffer{},
+		  m_BufferIndex(0)
 	{
+	}
+
+	void Process(T *Buffer, uint8 Count)
+	{
+		for (uint8 i = 0; i < Count; ++i)
+			Process(Buffer[i]);
 	}
 
 	void Process(T Value)
 	{
 		m_Buffer[m_BufferIndex] = Value;
 
-		m_BufferIndex = Math::Wrap(m_BufferIndex + 1, 0, SampleCount - 1);
+		m_BufferIndex = (m_BufferIndex + 1) & (SampleCount - 1);
 	}
 
 	float CalculateFrequency(void) const
 	{
-		return FastFourierTransfomr::CalculateFrequency<T, SampleRate, SampleCount>(m_Buffer);
+		T alignedBuffer[SampleCount];
+		for (uint16 i = 0; i < SampleCount; ++i)
+			alignedBuffer[i] = m_Buffer[(m_BufferIndex + i) & (SampleCount - 1)];
+
+		return FastFourierTransformer::CalculateFrequency<T, SampleRate, SampleCount>(alignedBuffer);
 	}
 
 private:
 	T m_Buffer[SampleCount];
 	uint16 m_BufferIndex;
 };
+
 #endif

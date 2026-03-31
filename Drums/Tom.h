@@ -62,15 +62,11 @@ public:
 		m_Oscillator.Reset();
 		m_Oscillator1.Reset();
 	}
-	
-	void Process(T *Buffer, uint8 Count) override
-	{
-	}
 
-	// T Process(void) override
-	// {
-	// 	return Math::Lerp(m_Noise.Process(), m_Oscillator1.Process() + m_Oscillator.Process(), 0.955) * m_Envelope.Process();
-	// }
+	T Process(void) override
+	{
+		return Math::Lerp(m_Noise.Process(), m_Oscillator1.Process() + m_Oscillator.Process(), 0.955) * m_Envelope.Process();
+	}
 
 private:
 	Types m_Type;
