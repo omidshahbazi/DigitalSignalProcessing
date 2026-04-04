@@ -36,7 +36,7 @@ static constexpr uint32 SAMPLE_RATE_320000 = 320 KHz;
 static constexpr uint32 MIN_SAMPLE_RATE = SAMPLE_RATE_8000;
 static constexpr uint32 MAX_SAMPLE_RATE = SAMPLE_RATE_320000;
 
-static constexpr float MIN_FREQUENCY = 20.0;
+static constexpr float MIN_FREQUENCY = 5.0;
 static constexpr float MAX_FREQUENCY = 20.0 KHz;
 
 #define ms *0.001

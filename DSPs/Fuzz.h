@@ -85,7 +85,7 @@ public:
 
 			value = Math::Clamp(value, -1, 1);
 
-			Buffer[i] = value;
+			Buffer[i] = Math::SoftClip(value);
 		}
 	}
 

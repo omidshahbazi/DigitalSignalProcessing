@@ -85,7 +85,7 @@ public:
 				output = Math::LinearCrossFadeMix(output, m_Buffers[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex)), 0.5);
 			}
 
-			Buffer[i] = Mix(Buffer[i], output);
+			Buffer[i] = Math::SoftClip(Mix(Buffer[i], output));
 		}
 	}
 

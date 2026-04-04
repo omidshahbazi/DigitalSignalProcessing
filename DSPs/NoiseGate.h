@@ -22,6 +22,9 @@ public:
 	void Process(T *Buffer, uint8 Count) override
 	{
 		m_NoiseGateFilter.Process(Buffer[i], Count);
+		
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::SoftClip(Buffer[i]);
 	}
 
 private:

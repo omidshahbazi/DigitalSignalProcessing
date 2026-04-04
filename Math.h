@@ -239,7 +239,7 @@ public:
 	static T Cos(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
-		
+
 #ifdef FAST_MATH
 		return (T)GetLUT().Cos(Value);
 #else
@@ -361,6 +361,18 @@ public:
 		return std::sqrt(Value);
 	}
 
+	// Factor [0, 1)
+	template <typename T>
+	static T AsymmetricGain(T Value, float Factor = 0)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float Positive = (1 - Factor);
+		const float Negative = (1 + Factor);
+
+		return Value * (Value < 0 ? Negative : Positive);
+	}
+
 	template <typename T>
 	static T SoftClip(T Value)
 	{
@@ -369,33 +381,40 @@ public:
 		return TanH(Value);
 	}
 
+	// Factor [0, 1)
 	template <typename T>
-	static T CrunchClip(T Value)
+	static T CrunchClip(T Value, float Factor = 0)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Value / ((1 - Factor) + Absolute(Value));
+	}
+
+	// Factor: [0, 1]
+	template <typename T, typename U>
+	static T HardClip(T Value, U Factor)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return atan(Value * Factor) / atan(Factor);
+	}
+
+	// Factor: [0, 1]
+	template <typename T, typename U>
+	static T AgressiveClip(T Value, U Factor)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return Value / (1 + Absolute(Value));
 	}
 
-	// Factor: [8, 10000]
+	// Factor: [0, 1]
 	template <typename T, typename U>
-	static T HardClip(T Value, U Factor)
+	static T HarshClip(T Value, U Factor)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		//\arctan\left(\sqrt{1\ -\ \left(\sin x\right)^{3}}+\left(\left(f\ +\left(-\operatorname{sign}\left(f\right)\cdot10\right)\right)+\left(f\cdot\sin x\right)\right)\right)\cdot0.63
-
-		// return atan(Root(1 - Power(Value, 3), 2) + Factor + (-Sign(Factor) * 10) + (Factor * Value)) * 0.63;
-		return atan(SquareRoot(1 - Power(Value, 3)));
-	}
-
-	template <typename T>
-	static float Asymmetric(T Value, float Factor)
-	{
-		if (Value < 0)
-			return 1 - (Factor * 0.5);
-
-		return 1;
+		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value)));
 	}
 
 	template <typename T>
