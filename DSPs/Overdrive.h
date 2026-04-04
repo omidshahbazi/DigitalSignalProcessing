@@ -14,13 +14,30 @@ public:
 	Overdrive(void)
 		: m_Drive(0),
 		  m_Gain(0),
-		  m_LinearGain(0)
+		  m_LinearGain(0),
+		  m_AsymmetryLevel(0),
+		  m_WetRate(0)
 	{
-		m_PreFilter.SetCutoffFrequency(720);
+		SetBassFilter(720);
+		m_DCOffsetFilter.SetCutoffFrequency(5);
 		m_PostFilter.SetCutoffFrequency(4.5 KHz);
 
-		SetDrive(1);
+		SetDrive(25);
 		SetGain(0);
+		SetAsymmetryLevel(0);
+		SetWetRate(0.5);
+	}
+
+	// [MIN_FREQUENCY, 800]
+	void SetBassFilter(float Value)
+	{
+		ASSERT(MIN_FREQUENCY <= Value && Value <= 800, "Invalid Value %f", Value);
+
+		m_PreFilter.SetCutoffFrequency(Value);
+	}
+	float GetBassFilter(void) const
+	{
+		return m_PreFilter.GetCutoffFrequency();
 	}
 
 	//[1, 50]
@@ -35,10 +52,22 @@ public:
 		return m_Drive;
 	}
 
-	//[-10dB, 6dB]
+	//[0, 1)
+	void SetAsymmetryLevel(float Value)
+	{
+		ASSERT(0 <= Value && Value < 1, "Invalid Value %f", Value);
+
+		m_AsymmetryLevel = Value;
+	}
+	float GetAsymmetryLevel(void) const
+	{
+		return m_AsymmetryLevel;
+	}
+
+	//[-12dB, 12dB]
 	void SetGain(dBGain Value)
 	{
-		ASSERT(-10 <= Value && Value <= 6, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_Gain = Value;
 
@@ -49,20 +78,40 @@ public:
 		return m_Gain;
 	}
 
+	//[0, 1]
+	void SetWetRate(float Value)
+	{
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+
+		m_WetRate = Value;
+	}
+	float GetWetRate(void) const
+	{
+		return m_WetRate;
+	}
+
 	void Process(T *Buffer, uint8 Count) override
 	{
 		CREATE_STANDARD_UP_SAMPLE_BUFFER(upBuffer);
+		{
+			Math::UpSample(Buffer, Count, upBuffer, upBufferFactor);
 
-		Math::UpSample(Buffer, Count, upBuffer, upBufferFactor);
+			m_PreFilter.Process(upBuffer, upBufferLength);
 
-		m_PreFilter.Process(upBuffer, upBufferLength);
+			for (uint8 i = 0; i < upBufferLength; ++i)
+			{
+				T wet = Math::AsymmetricGain(upBuffer[i], m_AsymmetryLevel);
 
-		for (uint8 i = 0; i < upBufferLength; ++i)
-			upBuffer[i] = Math::CrunchClip(upBuffer[i] * m_Drive);
+				wet = Math::CrunchClip(wet * m_Drive, 0.2);
 
-		m_PostFilter.Process(upBuffer, upBufferLength);
+				upBuffer[i] = Math::LinearCrossFadeMix(upBuffer[i] * m_Drive, wet, m_WetRate);
+			}
 
-		Math::DownSample(upBuffer, upBufferLength, Buffer, upBufferFactor);
+			m_DCOffsetFilter.Process(upBuffer, upBufferLength);
+			m_PostFilter.Process(upBuffer, upBufferLength);
+
+			Math::DownSample(upBuffer, upBufferLength, Buffer, upBufferFactor);
+		}
 
 		for (uint8 i = 0; i < Count; ++i)
 		{
@@ -73,11 +122,14 @@ public:
 
 private:
 	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PreFilter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_DCOffsetFilter;
 	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
 
 	float m_Drive;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
+	float m_AsymmetryLevel;
+	float m_WetRate;
 };
 
 #endif
