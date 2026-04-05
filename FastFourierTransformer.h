@@ -94,7 +94,7 @@ public:
 	}
 
 	template <uint32 SampleRate, uint16 SampleCount>
-	static float CalculateFrequency(Complex *Buffer)
+	static float CalculateFrequency(Complex *Buffer, float Threshold = 0.05)
 	{
 		FastFourierTransform<SampleCount>(Buffer);
 
@@ -108,15 +108,15 @@ public:
 			magnitudes[i] = Buffer[i].Magnitude();
 #endif
 
-		uint16 maxIdx = 0;
 		float maxValue = 0;
 
 #ifdef ARM_SIMD_FAST_FOURIER_TRANSFORMER
+		uint32_t maxIdx = 0;
 		arm_max_f32(magnitudes + 1, HALF_LEN - 1, &maxValue, &maxIdx);
 		maxIdx += 1;
 #else
+		uint16 maxIdx = 1;
 		maxValue = magnitudes[1];
-		maxIdx = 1;
 		for (uint16 i = 2; i < HALF_LEN; ++i)
 		{
 			if (magnitudes[i] > maxValue)
@@ -126,6 +126,9 @@ public:
 			}
 		}
 #endif
+
+		if (maxValue < Threshold)
+			return 0;
 
 		float fineIndex = (float)maxIdx;
 		if (maxIdx > 0 && maxIdx < HALF_LEN - 1)
@@ -143,17 +146,23 @@ public:
 	}
 
 	template <typename T, uint32 SampleRate, uint16 SampleCount>
-	static float CalculateFrequency(const T *const Buffer)
+	static float CalculateFrequencyAligned(const T *const AlignedBuffer, float Threshold = 0.05)
 	{
 		Complex buffer[SampleCount];
 		for (int i = 0; i < SampleCount; ++i)
-		{
-			// Applying Hann window for high accuracy frequency detection
-			float window = 0.5f * (1.0f - Math::Cos(Math::TWO_PI_VALUE * i / (SampleCount - 1)));
-			buffer[i] = Complex((float)Buffer[i] * window, 0.0f);
-		}
+			buffer[i] = Complex(Math::HannWindow<T, SampleCount>(AlignedBuffer[i], i), 0.0f);
 
-		return CalculateFrequency<SampleRate, SampleCount>(buffer);
+		return CalculateFrequency<SampleRate, SampleCount>(buffer, Threshold);
+	}
+	
+	template <typename T, uint32 SampleRate, uint16 SampleCount>
+	static float CalculateFrequencyRaw(const T *const RignBuffer, uint16 CurrentIndex, float Threshold = 0.05)
+	{
+		T alignedBuffer[SampleCount];
+		for (uint16 i = 0; i < SampleCount; ++i)
+			alignedBuffer[i] = RignBuffer[(CurrentIndex + i) & (SampleCount - 1)];
+
+		return CalculateFrequencyAligned<T, SampleRate, SampleCount>(alignedBuffer, Threshold);
 	}
 };
 

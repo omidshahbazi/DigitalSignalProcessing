@@ -128,4 +128,8 @@
 #define NOTE_A_SHARP_B_FLAT8 7458.62
 #define NOTE_B8 7902.13
 
+static constexpr uint8 TotalNoteCount = 12;
+static cstr FrenchNoteNames[TotalNoteCount] = {"Do", "Do#|Reb", "Re", "Re#|Mib", "Mi", "Fa", "Fa#|Solb", "Sol", "Sol#|Lab", "La", "La#|Sib", "Si"};
+static cstr EnglishNoteNames[TotalNoteCount] = {"C", "C#|Db", "D", "D#|Eb", "E", "F", "F#|Gb", "G", "G#|Ab", "A", "A#|Bb", "B"};
+
 #endif

@@ -4,6 +4,7 @@
 #include "DataTypes.h"
 #include "Gain.h"
 #include "Octave.h"
+#include "Notes.h"
 
 typedef signed char int8;
 typedef short int16;
@@ -217,6 +218,21 @@ template <>
 cstr ToString<float>(float Value)
 {
 	return FloatToString(Value);
+}
+
+static uint8 GetNoteIndex(uint8 MIDINumber)
+{
+	return Math::Moderate(MIDINumber, TotalNoteCount);
+}
+
+static cstr GetEnglishNoteName(uint8 MIDINumber)
+{
+	return EnglishNoteNames[GetNoteIndex(MIDINumber)];
+}
+
+static cstr GetFrenchNoteName(uint8 MIDINumber)
+{
+	return FrenchNoteNames[Math::Moderate(MIDINumber, TotalNoteCount)];
 }
 
 #ifdef ENABLE_TYPE_CHECK

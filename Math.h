@@ -4,7 +4,9 @@
 
 #include <cmath>
 #include <limits>
+#include <algorithm>
 #include "DataTypes.h"
+#include "Notes.h"
 
 class Math
 {
@@ -110,6 +112,19 @@ public:
 	static int8 Sign(T Value)
 	{
 		return (0 < Value) - (Value < 0);
+	}
+
+	template <typename T>
+	static int32 Round(T A, float Threshold)
+	{
+		ASSERT_ON_NOT_FLOATING_TYPE(T);
+
+		T absA =Absolute(A);
+
+		if (absA - (int32)absA > Threshold)
+			return (int32)A + Sign(A);
+
+		return (int32)A;
 	}
 
 	template <typename T, typename U>
@@ -478,13 +493,13 @@ public:
 	}
 
 	// The integer MIDI note (440 -> 69 (A4))
-	// The deviation in cents (440.5 -> 69# (A4#))
-	static float FrequencyToMidi(float Value)
+	// The deviation in cents +/-0.5
+	static float FrequencyToMidi(float Value, float A4Frequencey = NOTE_A4)
 	{
 		if (Value <= 0)
 			return 0;
 
-		return 12 * Log2(Value / 440.0f) + 69;
+		return Clamp(12 * Log2(Value / A4Frequencey) + 69, 0, 128);
 	}
 
 	template <typename T>
@@ -519,6 +534,38 @@ public:
 
 		for (uint8 i = 0; i < Count; i += Ratio)
 			Output[outputIndex++] = Input[i];
+	}
+
+	template <typename T>
+	static T GetMeanValue(T *Buffer, uint16 Count)
+	{
+		if (Buffer == nullptr)
+			return 0;
+
+		if (Count == 0)
+			return 0;
+
+		T *middle = Buffer + (Count / 2);
+
+		std::nth_element(Buffer, middle, Buffer + Count);
+
+		return *middle;
+	}
+
+	template <typename T, uint16 SampleCount>
+	static T HannWindow(T Value, uint16 Index)
+	{
+		// Applying Hann window for high accuracy frequency detection
+		float window = 0.5f * (1.0f - Cos(TWO_PI_VALUE * Index / (SampleCount - 1)));
+
+		return Value * window;
+	}
+
+	template <typename T, uint16 SampleCount>
+	static void HannWindow(T *Buffer, uint16 Count)
+	{
+		for (int i = 0; i < Count; ++i)
+			Buffer[i] *= HannWindow(Buffer[i], i);
 	}
 };
 

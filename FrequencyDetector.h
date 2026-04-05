@@ -3,7 +3,7 @@
 #define FREQUENCY_DETECTOR_H
 
 #include "FastFourierTransformer.h"
-#include "../Math.h"
+#include "Math.h"
 
 template <typename T, uint32 SampleRate, uint16 SampleCount>
 class FrequencyDetector
@@ -17,7 +17,7 @@ public:
 	{
 	}
 
-	void Process(T *Buffer, uint8 Count)
+	void Process(const T *const Buffer, uint8 Count)
 	{
 		for (uint8 i = 0; i < Count; ++i)
 			Process(Buffer[i]);
@@ -32,11 +32,14 @@ public:
 
 	float CalculateFrequency(void) const
 	{
-		T alignedBuffer[SampleCount];
-		for (uint16 i = 0; i < SampleCount; ++i)
-			alignedBuffer[i] = m_Buffer[(m_BufferIndex + i) & (SampleCount - 1)];
+		return FastFourierTransformer::CalculateFrequencyRaw<T, SampleRate, SampleCount>(m_Buffer, m_BufferIndex);
+	}
 
-		return FastFourierTransformer::CalculateFrequency<T, SampleRate, SampleCount>(alignedBuffer);
+	void Reset(void)
+	{
+		Memory::Set(m_Buffer, 0, SampleCount);
+
+		m_BufferIndex = 0;
 	}
 
 private:
