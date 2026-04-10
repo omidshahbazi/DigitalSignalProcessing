@@ -10,7 +10,7 @@ struct LinearGain
 {
 public:
 	LinearGain(void) = default;
-	LinearGain(float Value)
+	explicit LinearGain(float Value)
 		: m_Value(Value)
 	{
 	}
@@ -22,20 +22,20 @@ public:
 	}
 
 private:
-	float m_Value = 1.0f;
+	float m_Value = 1;
 };
 
 struct dBGain
 {
 public:
 	dBGain(void) = default;
-	dBGain(float Value)
+	explicit dBGain(float Value)
 		: m_Value(Value)
 	{
 	}
 	dBGain(const LinearGain &gain)
 	{
-		m_Value = Math::LinearTodB(gain);
+		m_Value = Math::LinearTodB((float)gain);
 	}
 
 	operator float(void) const
@@ -44,12 +44,12 @@ public:
 	}
 
 private:
-	float m_Value = 1.0f;
+	float m_Value = 0;
 };
 
 inline LinearGain::LinearGain(const dBGain &gain)
 {
-	m_Value = Math::dBToLinear(gain);
+	m_Value = Math::dBToLinear((float)gain);
 }
 
 #endif

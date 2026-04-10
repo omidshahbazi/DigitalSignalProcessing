@@ -60,11 +60,11 @@ public:
 		m_Ratio = Math::Lerp(m_Ratio, Value, 0.01);
 
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
+		Frequency freq = (Frequency)Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
+		QualityFactor q = (QualityFactor)Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio);
+		dBGain gain = (dBGain)Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio);
 
-		m_PeakEQFilter.SetParameters(
-			Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio),
-			Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio),
-			Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio));
+		m_PeakEQFilter.SetParameters(FrequencyBand(freq, q), gain);
 	}
 	float GetRatio(void) const
 	{

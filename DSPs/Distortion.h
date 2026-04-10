@@ -16,15 +16,16 @@ public:
 		: m_Level(0),
 		  m_Gain(0),
 		  m_PreGain(0),
-		  m_PostGain(0)
+		  m_PostGain(0),
+		  m_WetRate(0)
 	{
 		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -0.7}, {-0.1, -0.7}, {0, 0}, {0.4, 1}, {1, 1}};
 		m_WaveShaperFilter.SetTable(points, 5);
 
-		m_BandPassFilter.SetParametersRange(100, 1 KHz, 0.3);
+		m_BandPassFilter.SetBand(Frequency(100), Frequency(1 KHz));
 
 		SetLevel(0);
-		SetGain(0);
+		SetGain(NORMAL_GAIN);
 	}
 
 	//[0, 1]
@@ -34,7 +35,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = Math::Lerp(LinearGain(dBGain(-5.0)), LinearGain(dBGain(20)), m_Level);
+		m_PreGain = (dBGain)Math::Lerp(LinearGain(dBGain(-5.0)), LinearGain(dBGain(20)), m_Level);
 	}
 	float GetLevel(void) const
 	{
@@ -53,6 +54,18 @@ public:
 	dBGain GetGain(void) const
 	{
 		return m_Gain;
+	}
+
+	//[0, 1]
+	void SetWetRate(float Value)
+	{
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+
+		m_WetRate = Value;
+	}
+	float GetWetRate(void) const
+	{
+		return m_WetRate;
 	}
 
 	void Process(T *Buffer, uint8 Count) override
@@ -80,6 +93,7 @@ private:
 
 	LinearGain m_PreGain;
 	LinearGain m_PostGain;
+	float m_WetRate;
 };
 
 #endif

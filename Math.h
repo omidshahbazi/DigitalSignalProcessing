@@ -17,6 +17,8 @@ public:
 	static constexpr double EPSILON = std::numeric_limits<float>::epsilon();
 	static constexpr double TO_RADIANS = PI_VALUE / 180;
 	static constexpr double TO_DEGREES = 180 / PI_VALUE;
+	static constexpr double LOG_NATURAL_2 = 0.69314718;
+	static constexpr double HALF_LOG_NATURAL_2 = LOG_NATURAL_2 * 0.5;
 
 #ifdef FAST_MATH
 private:
@@ -41,6 +43,8 @@ private:
 		template <typename T>
 		inline T Sin(T Value) const
 		{
+			ASSERT_ON_FLOATING_TYPE(T);
+
 			Value = std::fmod(Value, TWO_PI_VALUE);
 			if (Value < 0)
 				Value += TWO_PI_VALUE;
@@ -62,6 +66,8 @@ private:
 		template <typename T>
 		inline T TanH(T Value) const
 		{
+			ASSERT_ON_FLOATING_TYPE(T);
+
 			if (Value <= -TanHRange)
 				return -1;
 			if (Value >= TanHRange)
@@ -117,9 +123,9 @@ public:
 	template <typename T>
 	static int32 Round(T A, float Threshold)
 	{
-		ASSERT_ON_NOT_FLOATING_TYPE(T);
+		ASSERT_ON_FLOATING_TYPE(T);
 
-		T absA =Absolute(A);
+		T absA = Absolute(A);
 
 		if (absA - (int32)absA > Threshold)
 			return (int32)A + Sign(A);
@@ -191,27 +197,27 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLinearToLogaritmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	static auto MapLinearToLogarithmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		float newMinLog = Log2(NewMin);
 		float newMaxLog = Log2(NewMax);
 
-		return Clamp(Power2(Map(Value, OldMin, OldMax, newMinLog, newMaxLog)), NewMin, NewMax);
+		return Clamp(Power2(Map(Value, (float)OldMin, (float)OldMax, newMinLog, newMaxLog)), NewMin, NewMax);
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLogaritmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	static auto MapLogarithmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		float oldMinLog = Log2(OldMin);
 		float oldMaxLog = Log2(OldMax);
 
-		return Map(Log2(Value), oldMinLog, oldMaxLog, NewMin, NewMax);
+		return Map((float)Log2(Value), oldMinLog, oldMaxLog, (float)NewMin, (float)NewMax);
 	}
 
 	template <typename T, typename U, typename V>
 	static auto Lerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
 	{
-		ASSERT_ON_FLOATING_TYPE(T);
+		ASSERT_ON_FLOATING_TYPE(V);
 
 		Time = Clamp01(Time);
 
@@ -221,7 +227,15 @@ public:
 	template <typename T, typename U, typename V>
 	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
 	{
+		ASSERT_ON_FLOATING_TYPE(V);
+
 		return Min * Power(Max / Min, Time);
+	}
+
+	template <typename T, typename U>
+	static auto FrequencyDiff(T Min, U Max) -> decltype(Min * Max)
+	{
+		return Log2(Max / Min);
 	}
 
 	template <typename T>
@@ -251,6 +265,18 @@ public:
 	}
 
 	template <typename T>
+	static T SinH(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return (Exponential(Value) - Exponential(-Value)) / 2;
+	}
+
+	float my_sinh(float x)
+	{
+	}
+
+	template <typename T>
 	static T Cos(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
@@ -271,6 +297,18 @@ public:
 		return (T)GetLUT().TanH(Value);
 #else
 		return (T)tanh(Value);
+#endif
+	}
+
+	template <typename T>
+	static T ASinh(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+#ifdef FAST_MATH
+		return Log(Value + SquareRoot(Value * Value + 1));
+#else
+		return (T)std::asinh(Value);
 #endif
 	}
 
@@ -306,9 +344,9 @@ public:
 		float y = mx.f;
 		float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
-		return exp + log_m;
+		return (T)(exp + log_m);
 #else
-		return log2f(Value);
+		return (T)log2f(Value);
 #endif
 	}
 
@@ -320,29 +358,36 @@ public:
 #ifdef FAST_MATH
 		return Log2(Value) * 0.3010299956639812;
 #else
-		return log10f(Value);
+		return (T)log10f(Value);
 #endif
 	}
 
 	template <typename T>
 	static T Exponential(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
 #ifdef FAST_MATH
-		return (T)Power2(static_cast<float>(Value) * 1.4426950408f);
+		return (T)Power2(Value * 1.4426950408);
 #else
-		return expf(Value);
+		return (T)expf(Value);
 #endif
 	}
 
 	template <typename T, typename U>
 	static auto Power(T Value, U N) -> decltype(Value * N)
 	{
-		return std::pow(Value, N);
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return (T)std::pow(Value, N);
 	}
 
 	template <typename T>
 	static T Power2(T Value)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+#ifdef FAST_MATH
 		float clipp = Value < -126.0f ? -126.0f : Value;
 		union
 		{
@@ -362,6 +407,9 @@ public:
 		v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
 
 		return (T)v.f;
+#else
+		return (T)Power(2.0, Value);
+#endif
 	}
 
 	template <typename T>
@@ -373,7 +421,9 @@ public:
 	template <typename T>
 	static T SquareRoot(T Value)
 	{
-		return std::sqrt(Value);
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return (T)(std::sqrt(Value));
 	}
 
 	// Factor [0, 1)
@@ -437,7 +487,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Power(10, Value / 20);
+		return (T)Power(10.0, Value / 20);
 	}
 
 	template <typename T>
@@ -445,7 +495,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return 20 * Log10(Value + EPSILON);
+		return (T)(20 * Log10(Value + EPSILON));
 	}
 
 	template <typename T>
@@ -453,7 +503,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Power(2, Value);
+		return (T)Power(2, Value);
 	}
 
 	template <typename T>
@@ -494,8 +544,11 @@ public:
 
 	// The integer MIDI note (440 -> 69 (A4))
 	// The deviation in cents +/-0.5
-	static float FrequencyToMidi(float Value, float A4Frequencey = NOTE_A4)
+	template <typename T>
+	static T FrequencyToMidi(T Value, T A4Frequencey = NOTE_A4)
 	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
 		if (Value <= 0)
 			return 0;
 
@@ -503,16 +556,16 @@ public:
 	}
 
 	template <typename T>
-	static void UpSample(const T *Input, uint8 Count, T *Output, uint8 Ratio)
+	static void UpSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
 	{
-		const float invRatio = 1.0f / (T)Ratio;
+		const float invRatio = 1.0 / Ratio;
 
-		for (uint32 i = 0; i < Count - 1; ++i)
+		for (uint16 i = 0; i < Count - 1; ++i)
 		{
 			T current = Input[i];
 			T next = Input[i + 1];
 
-			for (uint32 j = 0; j < Ratio; ++j)
+			for (uint16 j = 0; j < Ratio; ++j)
 			{
 				float fraction = j * invRatio;
 
@@ -522,17 +575,15 @@ public:
 
 		// Handle the last sample manually
 		for (uint32 j = 0; j < Ratio; ++j)
-		{
 			Output[(Count - 1) * Ratio + j] = Input[Count - 1];
-		}
 	}
 
 	template <typename T>
-	static void DownSample(const T *Input, uint8 Count, T *Output, uint8 Ratio)
+	static void DownSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
 	{
-		uint8 outputIndex = 0;
+		uint16 outputIndex = 0;
 
-		for (uint8 i = 0; i < Count; i += Ratio)
+		for (uint16 i = 0; i < Count; i += Ratio)
 			Output[outputIndex++] = Input[i];
 	}
 
@@ -555,8 +606,9 @@ public:
 	template <typename T, uint16 SampleCount>
 	static T HannWindow(T Value, uint16 Index)
 	{
-		// Applying Hann window for high accuracy frequency detection
-		float window = 0.5f * (1.0f - Cos(TWO_PI_VALUE * Index / (SampleCount - 1)));
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		float window = 0.5 * (1 - Cos(TWO_PI_VALUE * Index / (SampleCount - 1)));
 
 		return Value * window;
 	}
@@ -564,7 +616,7 @@ public:
 	template <typename T, uint16 SampleCount>
 	static void HannWindow(T *Buffer, uint16 Count)
 	{
-		for (int i = 0; i < Count; ++i)
+		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] *= HannWindow(Buffer[i], i);
 	}
 };

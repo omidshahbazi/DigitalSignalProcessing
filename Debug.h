@@ -33,7 +33,8 @@
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
-		(void)(Expression);              \
+		(void)sizeof(Expression);        \
+		(void)sizeof(Message);           \
 	} while (false)
 #endif
 

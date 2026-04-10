@@ -14,7 +14,7 @@ public:
 	{
 		m_Buffer.SetOutputMixRate(1);
 		SetDelayTime(500 ms);
-		SetFeedback(-6.02);
+		SetFeedback(dBGain(-6.02));
 	}
 
 	//[0, MaxDelayTime]

@@ -13,31 +13,26 @@ class TripleToneControlFilter : public Filter<T, SampleRate>
 public:
 	TripleToneControlFilter(void)
 	{
-		SetBorderFrequencies(150, 5 KHz);
+		SetBorderFrequencies(Frequency(150), Frequency(5 KHz));
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequencies(float LowMid, float MidHigh, Octave Offset = ONE_OCTAVE)
+	void SetBorderFrequencies(Frequency LowMid, Frequency MidHigh)
 	{
-		const float LowFreq = LowMid / Offset;
-		const float HighFreq = MidHigh * Offset;
-		const float MidFreq = Math::FrequencyLerp(LowFreq, HighFreq, 0.5);
+		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid %f", LowMid);
+		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh %f", MidHigh);
 
-		ASSERT(MIN_FREQUENCY <= LowFreq && LowFreq <= MAX_FREQUENCY, "Invalid LowFreq %f", LowFreq);
-		ASSERT(MIN_FREQUENCY <= MidFreq && MidFreq <= MAX_FREQUENCY, "Invalid MidFreq %f", MidFreq);
-		ASSERT(MIN_FREQUENCY <= HighFreq && HighFreq <= MAX_FREQUENCY, "Invalid HighFreq %f", HighFreq);
+		m_LowShelfFilter.SetCutoffFrequency(LowMid);
 
-		m_LowShelfFilter.SetCutoffFrequency(LowFreq);
-		
-		m_PeakEQFilter.SetParameters(MidFreq, 0, BiquadFilter<T, 1, SampleRate>::CalculateCoveringQ(LowMid, MidHigh));
+		m_PeakEQFilter.SetBand(LowMid, MidHigh);
 
-		m_HighShelfFilter.SetCutoffFrequency(HighFreq);
+		m_HighShelfFilter.SetCutoffFrequency(MidHigh);
 	}
 
-	//[-20dB, 40dB]
+	//[-12dB, 12dB]
 	void SetLowTone(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_LowShelfFilter.SetGain(Value);
 	}
@@ -46,10 +41,10 @@ public:
 		return m_LowShelfFilter.GetGain();
 	}
 
-	//[-20dB, 40dB]
+	//[-12dB, 12dB]
 	void SetMidTone(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_PeakEQFilter.SetGain(Value);
 	}
@@ -58,10 +53,10 @@ public:
 		return m_PeakEQFilter.GetGain();
 	}
 
-	//[-20dB, 40dB]
+	//[-12dB, 12dB]
 	void SetHighTone(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= 40, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_HighShelfFilter.SetGain(Value);
 	}

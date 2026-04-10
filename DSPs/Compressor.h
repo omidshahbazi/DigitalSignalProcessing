@@ -13,13 +13,13 @@ class Compressor : public IDSP<T, SampleRate>
 public:
 	Compressor(void)
 		: m_Ratio(2.0f),
-		  m_Threshold(0),
+		  m_Threshold(NORMAL_GAIN),
 		  m_MakeupGain(1.0f)
 	{
 		SetAttackTime(10 ms);
 		SetReleaseTime(100 ms);
 		SetRatio(2.0f);
-		SetThreshold(-12);
+		SetThreshold(dBGain(-12));
 	}
 
 	//[100ns, 500ms]
@@ -89,9 +89,9 @@ public:
 		{
 			dBGain envelop = (LinearGain)m_EnvelopeFollowerFilter.Process(Math::Absolute(Buffer[i]));
 
-			dBGain gainReduction = 0;
+			dBGain gainReduction = dBGain(0);
 			if (envelop > m_Threshold)
-				gainReduction = (1.0f - (1.0f / m_Ratio)) * (m_Threshold - envelop);
+				gainReduction = dBGain((1.0f - (1.0f / m_Ratio)) * (m_Threshold - envelop));
 
 			float multiplier = LinearGain(gainReduction) * m_MakeupGainLinear;
 

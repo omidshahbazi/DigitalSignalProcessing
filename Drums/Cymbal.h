@@ -38,7 +38,7 @@ public:
 		m_FrequencyEnvelope.SetSustainTime(100 ns);
 		m_FrequencyEnvelope.SetReleaseTime(300 ms);
 
-		m_BandPass.SetQualityFactor(1);
+		m_BandPass.SetQualityFactor(QualityFactor(1));
 
 		switch (m_Type)
 		{
@@ -48,7 +48,7 @@ public:
 			m_Envelope.SetSustainTime(100 ns);
 			m_Envelope.SetReleaseTime(0);
 
-			m_MaxCutoffFrequency = 8 KHz;
+			m_MaxCutoffFrequency = Frequency(8 KHz);
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
 			m_FrequencyEnvelope.SetMaxValue(6 KHz);
@@ -60,7 +60,7 @@ public:
 			m_Envelope.SetSustainTime(100 ns);
 			m_Envelope.SetReleaseTime(800 ms);
 
-			m_MaxCutoffFrequency = 10 KHz;
+			m_MaxCutoffFrequency = Frequency(10 KHz);
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
 			m_FrequencyEnvelope.SetMaxValue(8 KHz);
@@ -73,7 +73,7 @@ public:
 			m_Envelope.SetSustainTime(100 ns);
 			m_Envelope.SetReleaseTime(500 ms);
 
-			m_MaxCutoffFrequency = 12 KHz;
+			m_MaxCutoffFrequency = Frequency(12 KHz);
 
 			m_FrequencyEnvelope.SetMinValue(m_MaxCutoffFrequency);
 			m_FrequencyEnvelope.SetMaxValue(10 KHz);
@@ -97,7 +97,7 @@ public:
 
 	T Process(void) override
 	{
-		m_BandPass.SetFrequencies(m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
+		m_BandPass.SetBand((Frequency)m_FrequencyEnvelope.Process(), m_MaxCutoffFrequency);
 
 		T sample = m_BandPass.Process(m_Noise.Process()) * m_Envelope.Process();
 
@@ -109,7 +109,7 @@ private:
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_FrequencyEnvelope;
 	MetalNoiseFilter<T, SampleRate> m_Noise;
-	float m_MaxCutoffFrequency;
+	Frequency m_MaxCutoffFrequency;
 	BandPassFilter<T, SampleRate> m_BandPass;
 };
 

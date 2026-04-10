@@ -21,7 +21,7 @@ public:
 		m_Envelope.SetMinValue(0);
 		m_Envelope.SetMaxValue(1);
 
-		m_BandPass.SetParametersRange(8 KHz, 10 KHz, 3);
+		m_BandPass.SetBand(Frequency(8 KHz), Frequency(10 KHz));
 	}
 
 	void Beat(void) override

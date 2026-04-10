@@ -94,7 +94,7 @@ public:
 	}
 
 	template <uint32 SampleRate, uint16 SampleCount>
-	static float CalculateFrequency(Complex *Buffer, float Threshold = 0.05)
+	static Frequency CalculateFrequency(Complex *Buffer, float Threshold = 0.05)
 	{
 		FastFourierTransform<SampleCount>(Buffer);
 
@@ -128,7 +128,7 @@ public:
 #endif
 
 		if (maxValue < Threshold)
-			return 0;
+			return Frequency(0);
 
 		float fineIndex = (float)maxIdx;
 		if (maxIdx > 0 && maxIdx < HALF_LEN - 1)
@@ -142,11 +142,11 @@ public:
 				fineIndex += 0.5f * (a - c) / denominator;
 		}
 
-		return fineIndex * (float)SampleRate / (float)SampleCount;
+		return (Frequency)(fineIndex * (float)SampleRate / (float)SampleCount);
 	}
 
 	template <typename T, uint32 SampleRate, uint16 SampleCount>
-	static float CalculateFrequencyAligned(const T *const AlignedBuffer, float Threshold = 0.05)
+	static Frequency CalculateFrequencyAligned(const T *const AlignedBuffer, float Threshold = 0.05)
 	{
 		Complex buffer[SampleCount];
 		for (int i = 0; i < SampleCount; ++i)
@@ -156,7 +156,7 @@ public:
 	}
 	
 	template <typename T, uint32 SampleRate, uint16 SampleCount>
-	static float CalculateFrequencyRaw(const T *const RignBuffer, uint16 CurrentIndex, float Threshold = 0.05)
+	static Frequency CalculateFrequencyRaw(const T *const RignBuffer, uint16 CurrentIndex, float Threshold = 0.05)
 	{
 		T alignedBuffer[SampleCount];
 		for (uint16 i = 0; i < SampleCount; ++i)

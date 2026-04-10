@@ -11,9 +11,9 @@ public:
 	Chorus(void)
 		: m_WetRate(0)
 	{
-		SetRate(1.5);
+		SetRate(Frequency(1.5));
 		Flanger<T, SampleRate>::SetTime(50 ms);
-		SetFeedback(SILENCE_GAIN);
+		Flanger<T, SampleRate>::SetFeedback(SILENCE_GAIN);
 	}
 
 	//(0ms, 3ms]
@@ -29,13 +29,13 @@ public:
 	}
 
 	//(0Hz, 3Hz]
-	void SetRate(float Value)
+	void SetRate(Frequency Value)
 	{
 		ASSERT(0 < Value && Value <= 3, "Invalid Value %f", Value);
 
 		Flanger<T, SampleRate>::SetRate(Value);
 	}
-	float GetRate(void) const
+	Frequency GetRate(void) const
 	{
 		return Flanger<T, SampleRate>::GetRate();
 	}
@@ -56,12 +56,6 @@ protected:
 	T Mix(T A, T B) override
 	{
 		return Math::AdditiveMix(A, B, m_WetRate);
-	}
-
-private:
-	void SetFeedback(float Value)
-	{
-		Flanger<T, SampleRate>::SetFeedback(Value);
 	}
 
 private:

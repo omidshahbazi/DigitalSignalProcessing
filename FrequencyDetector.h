@@ -30,7 +30,7 @@ public:
 		m_BufferIndex = (m_BufferIndex + 1) & (SampleCount - 1);
 	}
 
-	float CalculateFrequency(void) const
+	Frequency CalculateFrequency(void) const
 	{
 		return FastFourierTransformer::CalculateFrequencyRaw<T, SampleRate, SampleCount>(m_Buffer, m_BufferIndex);
 	}

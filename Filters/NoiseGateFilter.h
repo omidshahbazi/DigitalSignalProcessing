@@ -11,10 +11,10 @@ class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 {
 public:
 	NoiseGateFilter(void)
-		: m_Threshold(0),
-		  m_LinearThreshold(0)
+		: m_IsGateOpen(false)
 	{
-		SetThreshold(-65);
+		SetThreshold(dBGain(-65));
+		SetHysteresis(dBGain(6));
 		SetAttackTime(20 ms);
 		SetReleaseTime(70 ms);
 	}
@@ -49,28 +49,59 @@ public:
 		ASSERT(-90 <= Value && Value <= 0, "Invalid Value %f", Value);
 
 		m_Threshold = Value;
-		m_LinearThreshold = m_Threshold;
+		m_LinearOpenThreshold = m_Threshold;
+		
+		UpdateCloseThreshold();
 	}
-
 	dBGain GetThreshold(void) const
 	{
 		return m_Threshold;
+	}
+
+	//[0dB, 12dB]
+	void SetHysteresis(dBGain Value)
+	{
+		ASSERT(0 <= Value && Value <= 12, "Invalid Value %f", Value);
+
+		m_Hysteresis = Value;
+		
+		UpdateCloseThreshold();
+	}
+	dBGain GetHysteresis(void) const
+	{
+		return m_Hysteresis;
 	}
 
 	void Process(T *Buffer, uint8 Count) override
 	{
 		for (uint8 i = 0; i < Count; ++i)
 		{
-			LinearGain envelope = EnvelopeFollowerFilter<T, SampleRate>::Process(Buffer[i]);
+			LinearGain envelope = (LinearGain)EnvelopeFollowerFilter<T, SampleRate>::Process(Buffer[i]);
 
-			LinearGain targetGain = (envelope > m_LinearThreshold) ? 1.0 : 0.0;
+			if (envelope > m_LinearOpenThreshold)
+				m_IsGateOpen = true;
+			else if (envelope < m_LinearCloseThreshold)
+				m_IsGateOpen = false;
+
+			LinearGain targetGain = (LinearGain)(m_IsGateOpen ? 1 : 0);
 
 			Buffer[i] *= targetGain;
 		}
 	}
 
 private:
+	void UpdateCloseThreshold(void)
+	{
+		m_LinearCloseThreshold = (LinearGain)(m_Threshold - m_Hysteresis);
+	}
+
+private:
 	dBGain m_Threshold;
-	LinearGain m_LinearThreshold;
+	dBGain m_Hysteresis;
+
+	LinearGain m_LinearOpenThreshold;
+	LinearGain m_LinearCloseThreshold;
+
+	bool m_IsGateOpen;
 };
 #endif

@@ -33,7 +33,7 @@ public:
 
 		m_Tone = Value;
 
-		m_Filter.SetParameters(Math::Lerp(1.0 KHz, 5 KHz, m_Tone), 0.3);
+		m_Filter.SetParameters((Frequency)Math::FrequencyLerp(1.0 KHz, 5 KHz, m_Tone), QualityFactor(0.3));
 	}
 	float GetTone(void) const
 	{
@@ -47,7 +47,7 @@ public:
 
 		m_Level = Value;
 
-		m_PreGain = Math::Lerp(LinearGain(dBGain(10.0)), LinearGain(dBGain(30)), m_Level);
+		m_PreGain = (dBGain)Math::Lerp(LinearGain(dBGain(10.0)), LinearGain(dBGain(30)), m_Level);
 	}
 	float GetLevel(void) const
 	{

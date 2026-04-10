@@ -18,24 +18,24 @@ public:
 		  m_AsymmetryLevel(0),
 		  m_WetRate(0)
 	{
-		SetBassFilter(720);
-		m_DCOffsetFilter.SetCutoffFrequency(5);
-		m_PostFilter.SetCutoffFrequency(4.5 KHz);
+		SetBassFilter(Frequency(720));
+		m_DCOffsetFilter.SetCutoffFrequency(Frequency(5));
+		m_PostFilter.SetCutoffFrequency(Frequency(4.5 KHz));
 
 		SetDrive(25);
-		SetGain(0);
+		SetGain(NORMAL_GAIN);
 		SetAsymmetryLevel(0);
 		SetWetRate(0.5);
 	}
 
-	// [MIN_FREQUENCY, 800]
-	void SetBassFilter(float Value)
+	// [150, 800]
+	void SetBassFilter(Frequency Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= 800, "Invalid Value %f", Value);
+		ASSERT(150 <= Value && Value <= 800, "Invalid Value %f", Value);
 
 		m_PreFilter.SetCutoffFrequency(Value);
 	}
-	float GetBassFilter(void) const
+	Frequency GetBassFilter(void) const
 	{
 		return m_PreFilter.GetCutoffFrequency();
 	}

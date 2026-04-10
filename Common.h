@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "DataTypes.h"
 #include "Gain.h"
-#include "Octave.h"
+#include "Frequency.h"
 #include "Notes.h"
 
 typedef signed char int8;
@@ -20,8 +20,6 @@ typedef const char *cstr;
 #define KB *1024
 #define MB *1048576
 
-#define KHz *1'000
-
 static constexpr uint32 SAMPLE_RATE_8000 = 8 KHz;
 static constexpr uint32 SAMPLE_RATE_15750 = 15.75 KHz;
 static constexpr uint32 SAMPLE_RATE_16000 = 16 KHz;
@@ -37,23 +35,17 @@ static constexpr uint32 SAMPLE_RATE_320000 = 320 KHz;
 static constexpr uint32 MIN_SAMPLE_RATE = SAMPLE_RATE_8000;
 static constexpr uint32 MAX_SAMPLE_RATE = SAMPLE_RATE_320000;
 
-static constexpr float MIN_FREQUENCY = 5.0;
-static constexpr float MAX_FREQUENCY = 20.0 KHz;
+static const Frequency MIN_FREQUENCY = LOWEST_FREQUENCY;
+static const Frequency MAX_FREQUENCY = HIGHEST_FREQUENCY;
 
-#define ms *0.001
 #define ns *0.000'001
+#define ms *0.001
 
 // https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
 static const dBGain MIN_GAIN(-90);
 static const dBGain SILENCE_GAIN(-40);
 static const dBGain NORMAL_GAIN(0);
 static const dBGain MAX_GAIN(6);
-
-static const Octave ONE_OCTAVE(-1);
-static const Octave ONE_OCTAVE_UP(-1);
-static const Octave ONE_OCTAVE_DOWN(1);
-static const Octave HALF_OCTAVE_UP(-0.5);
-static const Octave HALF_OCTAVE_DOWN(0.5);
 
 #define SWAP_ENDIAN_16BIT(Value) ((Value >> 8) | ((Value & 0xFF) << 8))
 

@@ -12,26 +12,22 @@ class DualToneControlFilter : public Filter<T, SampleRate>
 public:
 	DualToneControlFilter(void)
 	{
-		SetBorderFrequencies(1 KHz);
+		SetBorderFrequency(1 KHz);
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequency(float Value, Octave Offset = ONE_OCTAVE)
+	void SetBorderFrequency(Frequency Value)
 	{
-		const float LowFreq = Value / Offset;
-		const float HighFreq = Value * Offset;
+		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
-		ASSERT(MIN_FREQUENCY <= LowFreq && LowFreq <= MAX_FREQUENCY, "Invalid Value %f", LowFreq);
-		ASSERT(MIN_FREQUENCY <= HighFreq && HighFreq <= MAX_FREQUENCY, "Invalid Value %f", HighFreq);
-
-		m_LowShelfFilter.SetCutoffFrequency(LowFreq);
-		m_HighShelfFilter.SetCutoffFrequency(HighFreq);
+		m_LowShelfFilter.SetCutoffFrequency(Value);
+		m_HighShelfFilter.SetCutoffFrequency(Value);
 	}
 
-	//[-20dB, 20dB]
+	//[-12dB, 12dB]
 	void SetLowTone(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_LowTone = Value;
 
@@ -42,10 +38,10 @@ public:
 		return m_LowTone;
 	}
 
-	//[-20dB, 20dB]
+	//[-12dB, 12dB]
 	void SetHighTone(dBGain Value)
 	{
-		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
 		m_HighTone = Value;
 

@@ -16,7 +16,7 @@ public:
 		  m_WetRate(0)
 	{
 		SetDepth(0.5);
-		SetRate(10);
+		SetRate(Frequency(10));
 	}
 
 	//[0, 1]
@@ -32,13 +32,13 @@ public:
 	}
 
 	//(0Hz, 25Hz]
-	void SetRate(float Value)
+	void SetRate(Frequency Value)
 	{
 		ASSERT(0 < Value && Value <= 25, "Invalid Value %f", Value);
 
 		m_Oscillator.SetFrequency(Value);
 	}
-	float GetRate(void) const
+	Frequency GetRate(void) const
 	{
 		return m_Oscillator.GetFrequency();
 	}

@@ -28,7 +28,7 @@ public:
 		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
 		SetTime(MaxTime);
-		SetFeedback(0);
+		SetFeedback(NORMAL_GAIN);
 		SetOutputMixRate(0.5);
 	}
 

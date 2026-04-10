@@ -14,11 +14,11 @@ public:
 		: m_Tone(0)
 	{
 		SetTone(0.5);
-		SetBorderFrequency(1 KHz);
+		SetBorderFrequency((Frequency)(1 KHz));
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequency(float Value)
+	void SetBorderFrequency(Frequency Value)
 	{
 		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
@@ -33,10 +33,10 @@ public:
 
 		m_Tone = Value;
 
-		const dBGain Gain = 6;
+		const dBGain Gain(6);
 
-		m_LowShelfFilter.SetGain(Math::Map(1 - Value, 0.0F, 1, -Gain, (float)Gain));
-		m_HighShelfFilter.SetGain(Math::Map(Value, 0.0F, 1, -Gain, (float)Gain));
+		m_LowShelfFilter.SetGain((dBGain)Math::Map(1 - Value, 0.0F, 1, -Gain, Gain));
+		m_HighShelfFilter.SetGain((dBGain)Math::Map(Value, 0.0F, 1, -Gain, Gain));
 	}
 	float GetTone(void) const
 	{

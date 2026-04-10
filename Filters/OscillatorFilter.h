@@ -64,7 +64,7 @@ public:
 	}
 
 	//(0, MAX_FREQUENCY]
-	void SetFrequency(float Value)
+	void SetFrequency(Frequency Value)
 	{
 		ASSERT(0 < Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
@@ -72,7 +72,7 @@ public:
 
 		m_DeltaPhase = m_Frequency / SampleRate;
 	}
-	float GetFrequency(void) const
+	Frequency GetFrequency(void) const
 	{
 		return m_Frequency;
 	}
@@ -110,7 +110,7 @@ public:
 	}
 
 private:
-	float m_Frequency;
+	Frequency m_Frequency;
 	float m_PhaseOffset;
 	OscillatorFunction m_Function;
 

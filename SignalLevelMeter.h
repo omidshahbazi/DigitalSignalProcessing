@@ -27,7 +27,7 @@ public:
 		for (uint16 i = 0; i < SampleCount; ++i)
 			sum += Math::Absolute(m_Buffer[i]);
 
-		return sum / SampleCount;
+		return (LinearGain)(sum / SampleCount);
 	}
 
 	LinearGain GetMin(void) const
@@ -37,7 +37,7 @@ public:
 			if (min > m_Buffer[i])
 				min = m_Buffer[i];
 
-		return min;
+		return (LinearGain)min;
 	}
 
 	LinearGain GetMax(void) const
@@ -47,12 +47,12 @@ public:
 			if (max < m_Buffer[i])
 				max = m_Buffer[i];
 
-		return max;
+		return (LinearGain)max;
 	}
 
 	LinearGain GetPeak(void) const
 	{
-		return Math::Max(GetMax(), Math::Absolute(GetMin()));
+		return (LinearGain)Math::Max(GetMax(), Math::Absolute(GetMin()));
 	}
 
 	LinearGain GetRMS(void) const
@@ -61,7 +61,7 @@ public:
 		for (uint16 i = 0; i < SampleCount; ++i)
 			sum += Math::Power(m_Buffer[i], 2);
 
-		return Math::Max(0, Math::SquareRoot(sum / SampleCount));
+		return (LinearGain)Math::Max(0, Math::SquareRoot(sum / SampleCount));
 	}
 
 	T GetCrestFactor(void) const

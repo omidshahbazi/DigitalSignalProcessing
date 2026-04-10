@@ -138,19 +138,27 @@ public:
 	}
 
 	//[MIN_FREQUENCY, 200Hz]
-	void SetLowCutFrequency(float Value)
+	void SetLowCutFrequency(Frequency Value)
 	{
 		ASSERT(MIN_FREQUENCY <= Value && Value <= 200, "Invalid Value %f", Value);
 
 		m_HighPassFilter.SetCutoffFrequency(Value);
 	}
+	Frequency GetLowCutFrequency(void) const
+	{
+		return m_HighPassFilter.GetLowCutFrequency();
+	}
 
 	//[5KHz, MAX_FREQUENCY]
-	void SetHighCutFrequency(float Value)
+	void SetHighCutFrequency(Frequency Value)
 	{
 		ASSERT(5 KHz <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
 
 		m_LowPassFilter.SetCutoffFrequency(Value);
+	}
+	Frequency GetHighCutFrequency(void) const
+	{
+		return m_HighPassFilter.GetHighCutFrequency();
 	}
 
 	bool GetIsLastSample(void) const

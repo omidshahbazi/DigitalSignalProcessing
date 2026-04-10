@@ -37,8 +37,8 @@ public:
 			m_Envelope.SetMinValue(0);
 			m_Envelope.SetMaxValue(1);
 
-			m_Oscillator.SetFrequency(170);
-			m_Oscillator1.SetFrequency(80);
+			m_Oscillator.SetFrequency(Frequency(170));
+			m_Oscillator1.SetFrequency(Frequency(80));
 			break;
 
 		case Types::Middle:

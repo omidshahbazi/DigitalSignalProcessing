@@ -29,7 +29,7 @@ public:
 		m_FrequencyEnvelope.SetMinValue(60);
 		m_FrequencyEnvelope.SetMaxValue(140);
 
-		m_Oscillator.SetFrequency(80);
+		m_Oscillator.SetFrequency(Frequency(80));
 	}
 
 	void Beat(void) override
@@ -41,7 +41,7 @@ public:
 	
 	T Process(void) override
 	{
-		m_Oscillator.SetFrequency(m_FrequencyEnvelope.Process());
+		m_Oscillator.SetFrequency((Frequency)m_FrequencyEnvelope.Process());
 
 		return m_Envelope.Process() * m_Oscillator.Process();
 	}
