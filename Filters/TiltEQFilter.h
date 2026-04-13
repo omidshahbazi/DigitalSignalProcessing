@@ -1,11 +1,11 @@
 #pragma once
-#ifndef PEAK_EQ_FILTER_H
-#define PEAK_EQ_FILTER_H
+#ifndef TILT_EQ_FILTER_H
+#define TILT_EQ_FILTER_H
 
 #include "BiquadFilter.h"
 
 template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
-class PeakEQFilter : public BiquadEQBasedFilter<T, SampleRate, StageCount, Design>
+class TiltEQFilter : public BiquadEQBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
 	typedef BiquadEQBasedFilter<T, SampleRate, StageCount, Design> Base;
@@ -13,7 +13,7 @@ private:
 private:
 	void UpdateCoefficients(void) override
 	{
-		Base::SetAsPeakEQ();
+		Base::SetAsTiltEQ();
 	}
 };
 

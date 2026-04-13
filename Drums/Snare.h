@@ -40,7 +40,7 @@ private:
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_Envelope;
 	WhiteNoiseFilter<T, SampleRate> m_WhiteNoiseFilter;
 	MetalNoiseFilter<T, SampleRate> m_MetalNoiseFilter;
-	BandPassFilter<T, SampleRate> m_BandPass;
+	BandPassFilter<T, SampleRate, 1> m_BandPass;
 };
 
 #endif

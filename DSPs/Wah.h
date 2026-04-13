@@ -81,7 +81,7 @@ public:
 	}
 
 private:
-	PeakEQFilter<T, SampleRate> m_PeakEQFilter;
+	PeakEQFilter<T, SampleRate, 1> m_PeakEQFilter;
 	Types m_Type;
 	float m_Ratio;
 };

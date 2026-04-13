@@ -34,11 +34,17 @@ static const LogarithmicOctave OCTAVE_MINIMUM(0.1442);
 static const LogarithmicOctave OCTAVE_NORMAL(1.41);
 static const LogarithmicOctave OCTAVE_MAXIMUM(10);
 
-template <typename T, uint8 StageCount, uint32 SampleRateValue>
+enum class BiquadFilterDesign : uint8
+{
+	Identical = 0,
+	Butterworth,
+	LinkwitzRiley
+};
+
+template <typename T, uint32 SampleRateValue, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
 class BiquadFilter : public Filter<T, SampleRateValue>
 {
 	static_assert(StageCount != 0, "StageCount cannot be 0");
-	static_assert(StageCount < 2, "StageCount more than 1 is not implemented");
 
 #ifdef ARM_SIMD_BIQUAD
 	ASSERT_ON_ONLY_FLOAT_TYPE(T);
@@ -52,13 +58,6 @@ private:
 #endif
 
 public:
-	enum class FilterDesign : uint8
-	{
-		Identical,
-		Butterworth,
-		LinkwitzRiley
-	};
-
 	struct Coefficients
 	{
 	public:
@@ -155,11 +154,11 @@ public:
 	{
 		const ValueType omega = Math::TWO_PI_VALUE * Frequency / SampleRateValue;
 		const ValueType cosOmega = Math::Cos(omega);
-		const ValueType cos2Omega = Math::Cos(2.0 * omega);
+		const ValueType cos2Omega = Math::Cos(2 * omega);
 		const ValueType sinOmega = Math::Sin(omega);
-		const ValueType sin2Omega = Math::Sin(2.0 * omega);
+		const ValueType sin2Omega = Math::Sin(2 * omega);
 
-		ValueType gainTotal = 1.0;
+		ValueType gainTotal = 1;
 
 		for (uint8 i = 0; i < StageCount; ++i)
 		{
@@ -172,8 +171,8 @@ public:
 			ValueType numReal = coeffs.b0 + coeffs.b1 * cosOmega + coeffs.b2 * cos2Omega;
 			ValueType numImag = -(coeffs.b1 * sinOmega + coeffs.b2 * sin2Omega);
 
-			ValueType denReal = 1.0 + coeffs.a1 * cosOmega + coeffs.a2 * cos2Omega;
-			ValueType denImag = -(coeffs.a1 * sinOmega + coeffs.a2 * sin2Omega);
+			ValueType denReal = 1 - coeffs.a1 * cosOmega - coeffs.a2 * cos2Omega;
+			ValueType denImag = -(-coeffs.a1 * sinOmega - coeffs.a2 * sin2Omega);
 
 			ValueType powerNum = numReal * numReal + numImag * numImag;
 			ValueType powerDen = denReal * denReal + denImag * denImag;
@@ -196,11 +195,54 @@ public:
 		{
 			Coefficients &Coeffs = CoeffsArray[i];
 
-			Coeffs.b0 = 1.0;
-			Coeffs.b1 = 0.0;
-			Coeffs.b2 = 0.0;
-			Coeffs.a1 = 0.0;
-			Coeffs.a2 = 0.0;
+			Coeffs.b0 = 1;
+			Coeffs.b1 = 0;
+			Coeffs.b2 = 0;
+			Coeffs.a1 = 0;
+			Coeffs.a2 = 0;
+		}
+
+		Filter->SetCoefficients(CoeffsArray);
+	}
+
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	static void SetAllPassCoefficients(BiquadFilter *Filter, FrequencyBand Band)
+	{
+		SetAllPassCoefficients(Filter, SampleRateValue, Band);
+	}
+	// SampleRate: (0, ...]
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	static void SetAllPassCoefficients(BiquadFilter *Filter, uint32 SampleRate, FrequencyBand Band)
+	{
+		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
+		ASSERT(0 < Band.GetCenter() && Band.GetCenter() <= MAX_FREQUENCY, "Invalid Band.Center %f", Band.GetCenter());
+		ASSERT(QUALITY_FACTOR_MINIMUM < Band.GetQualityFactor() && Band.GetQualityFactor() <= QUALITY_FACTOR_MAXIMUM, "Invalid Band.QualityFactor %f", Band.GetQualityFactor());
+
+		const Frequency Center = Band.GetCenter();
+		const QualityFactor Quality(Band);
+
+		const ValueType Omega = Math::TWO_PI_VALUE * (float)Center / SampleRate;
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		Coefficients CoeffsArray[StageCount] = {};
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
+
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = 1 - Alpha;
+			Coeffs.b1 = -2 * CosOmega;
+			Coeffs.b2 = 1 + Alpha;
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
 		}
 
 		Filter->SetCoefficients(CoeffsArray);
@@ -219,21 +261,32 @@ public:
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
-		ASSERT(0 <= Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
+		ASSERT(0 < Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
 		ASSERT(QUALITY_FACTOR_MINIMUM <= Quality && Quality <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactor %f", Quality);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
-		const ValueType Alpha = Math::Sin(Omega) / (2.0 * Quality);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType bBase = (1 - CosOmega) / 2;
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = (1.0 - CosOmega) / 2.0;
-		CoeffsArray[0].b1 = 1.0 - CosOmega;
-		CoeffsArray[0].b2 = (1.0 - CosOmega) / 2.0;
-		CoeffsArray[0].a1 = -2.0 * CosOmega;
-		CoeffsArray[0].a2 = 1.0 - Alpha;
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], 1.0 + Alpha);
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = bBase;
+			Coeffs.b1 = 1 - CosOmega;
+			Coeffs.b2 = bBase;
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
+		}
+
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
@@ -250,21 +303,32 @@ public:
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
-		ASSERT(0 <= Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
+		ASSERT(0 < Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
 		ASSERT(QUALITY_FACTOR_MINIMUM <= Quality && Quality <= QUALITY_FACTOR_MAXIMUM, "Invalid QualityFactor %f", Quality);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
-		const ValueType Alpha = Math::Sin(Omega) / (2.0 * Quality);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType bCommon = (1 + CosOmega) / 2;
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = (1.0 + CosOmega) / 2.0;
-		CoeffsArray[0].b1 = -(1.0 + CosOmega);
-		CoeffsArray[0].b2 = (1.0 + CosOmega) / 2.0;
-		CoeffsArray[0].a1 = -2.0 * CosOmega;
-		CoeffsArray[0].a2 = 1.0 - Alpha;
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], 1.0 + Alpha);
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = bCommon;
+			Coeffs.b1 = -(1 + CosOmega);
+			Coeffs.b2 = bCommon;
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
+		}
+
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
@@ -289,16 +353,25 @@ public:
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
-		const ValueType Alpha = Math::Sin(Omega) / (2.0 * Quality);
+		const ValueType SinOmega = Math::Sin(Omega);
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = Alpha;
-		CoeffsArray[0].b1 = 0.0;
-		CoeffsArray[0].b2 = -Alpha;
-		CoeffsArray[0].a1 = -2.0 * CosOmega;
-		CoeffsArray[0].a2 = 1.0 - Alpha;
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], 1.0 + Alpha);
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = Alpha;
+			Coeffs.b1 = 0;
+			Coeffs.b2 = -Alpha;
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
+		}
+
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
@@ -323,16 +396,168 @@ public:
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
-		const ValueType Alpha = Math::Sin(Omega) / (2.0 * Quality);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType b1 = -2 * CosOmega;
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = 1.0;
-		CoeffsArray[0].b1 = -2.0 * CosOmega;
-		CoeffsArray[0].b2 = 1.0;
-		CoeffsArray[0].a1 = -2.0 * CosOmega;
-		CoeffsArray[0].a2 = 1.0 - Alpha;
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], 1.0 + Alpha);
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = 1;
+			Coeffs.b1 = b1;
+			Coeffs.b2 = 1;
+			Coeffs.a1 = b1;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
+		}
+
+		Filter->SetCoefficients(CoeffsArray);
+	}
+
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	static void SetPeakResonatorCoefficients(BiquadFilter *Filter, FrequencyBand Band)
+	{
+		SetPeakResonatorCoefficients(Filter, SampleRateValue, Band);
+	}
+	// SampleRate: (0, ...]
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	static void SetPeakResonatorCoefficients(BiquadFilter *Filter, uint32 SampleRate, FrequencyBand Band)
+	{
+		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
+		ASSERT(0 < Band.GetCenter() && Band.GetCenter() <= MAX_FREQUENCY, "Invalid Band.Center %f", Band.GetCenter());
+		ASSERT(QUALITY_FACTOR_MINIMUM < Band.GetQualityFactor() && Band.GetQualityFactor() <= QUALITY_FACTOR_MAXIMUM, "Invalid Band.QualityFactor %f", Band.GetQualityFactor());
+
+		const Frequency Center = Band.GetCenter();
+		const QualityFactor Quality(Band);
+
+		const ValueType Omega = Math::TWO_PI_VALUE * (float)Center / SampleRate;
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		Coefficients CoeffsArray[StageCount] = {};
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
+
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = Alpha;
+			Coeffs.b1 = 0;
+			Coeffs.b2 = -Alpha;
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - Alpha;
+
+			Normalize(Coeffs, 1 + Alpha);
+		}
+
+		Filter->SetCoefficients(CoeffsArray);
+	}
+
+	// Cutoff: (0, MAX_FREQUENCY]
+	// Gain: [-20dB, 20dB] Boost or cut below Cutoff frequency.
+	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
+	static void SetLowShelfCoefficients(BiquadFilter *Filter, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	{
+		SetLowShelfCoefficients(Filter, SampleRateValue, Cutoff, Gain, Slope);
+	}
+	// SampleRate: (0, ...]
+	// Cutoff: (0, MAX_FREQUENCY]
+	// Gain: [-20dB, 20dB] Boost or cut below Cutoff frequency.
+	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
+	static void SetLowShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	{
+		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
+		ASSERT(0 < Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+		ASSERT(SLOPE_FACTOR_MINIMUM <= Slope && Slope <= SLOPE_FACTOR_MAXIMUM, "Invalid Slope %f", Slope);
+
+		const ValueType A = Math::Power(10.0, Gain / 40);
+		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType Ap1 = A + 1;
+		const ValueType Am1 = A - 1;
+		const ValueType Am1Cos = Am1 * CosOmega;
+		const ValueType Ap1Cos = Ap1 * CosOmega;
+
+		Coefficients CoeffsArray[StageCount] = {};
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
+
+			const ValueType Alpha = (SinOmega / 2) * Math::SquareRoot((A + 1 / A) * (1 / (float)Slope - 1) + 2);
+			const ValueType TwoSqrtAAlpha = 2 * Math::SquareRoot(A) * Alpha;
+
+			Coeffs.b0 = A * (Ap1 - Am1Cos + TwoSqrtAAlpha);
+			Coeffs.b1 = 2 * A * (Am1 - Ap1Cos);
+			Coeffs.b2 = A * (Ap1 - Am1Cos - TwoSqrtAAlpha);
+			Coeffs.a1 = -2 * (Am1 + Ap1Cos);
+			Coeffs.a2 = Ap1 + Am1Cos - TwoSqrtAAlpha;
+
+			Normalize(Coeffs, Ap1 + Am1Cos + TwoSqrtAAlpha);
+		}
+
+		Filter->SetCoefficients(CoeffsArray);
+	}
+
+	// Cutoff: (0, MAX_FREQUENCY]
+	// Gain: [-20dB, 20dB] Boost or cut above Cutoff frequency.
+	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
+	static void SetHighShelfCoefficients(BiquadFilter *Filter, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	{
+		SetHighShelfCoefficients(Filter, SampleRateValue, Cutoff, Gain, Slope);
+	}
+	// SampleRate: (0, ...]
+	// Cutoff: (0, MAX_FREQUENCY]
+	// Gain: [-20dB, 20dB] Boost or cut above Cutoff frequency.
+	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
+	static void SetHighShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	{
+		ASSERT(Filter != nullptr, "Filter cannot be null");
+		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
+		ASSERT(0 < Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+		ASSERT(SLOPE_FACTOR_MINIMUM <= Slope && Slope <= SLOPE_FACTOR_MAXIMUM, "Invalid Slope %f", Slope);
+
+		const ValueType A = Math::Power(10.0, Gain / 40);
+		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType Ap1 = A + 1;
+		const ValueType Am1 = A - 1;
+		const ValueType Am1Cos = Am1 * CosOmega;
+		const ValueType Ap1Cos = Ap1 * CosOmega;
+
+		Coefficients CoeffsArray[StageCount] = {};
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
+
+			const ValueType Alpha = (SinOmega / 2) * Math::SquareRoot((A + 1 / A) * (1 / (float)Slope - 1) + 2);
+			const ValueType TwoSqrtAAlpha = 2 * Math::SquareRoot(A) * Alpha;
+
+			Coeffs.b0 = A * (Ap1 + Am1Cos + TwoSqrtAAlpha);
+			Coeffs.b1 = -2 * A * (Am1 + Ap1Cos);
+			Coeffs.b2 = A * (Ap1 + Am1Cos - TwoSqrtAAlpha);
+			Coeffs.a1 = 2 * (Am1 - Ap1Cos);
+			Coeffs.a2 = Ap1 - Am1Cos - TwoSqrtAAlpha;
+
+			Normalize(Coeffs, Ap1 - Am1Cos + TwoSqrtAAlpha);
+		}
+
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
@@ -358,101 +583,81 @@ public:
 		const Frequency Center = Band.GetCenter();
 		const QualityFactor Quality(Band);
 
-		const ValueType A = Math::Power(10.0, Gain / 40.0);
+		const ValueType A = Math::Power(10.0, Gain / 40);
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
-		const ValueType Sn = Math::Sin(Omega);
-		const ValueType Cs = Math::Cos(Omega);
-		const ValueType Alpha = Sn / (2.0 * Quality);
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = 1.0 + (Alpha * A);
-		CoeffsArray[0].b1 = -2.0 * Cs;
-		CoeffsArray[0].b2 = 1.0 - (Alpha * A);
-		CoeffsArray[0].a1 = -2.0 * Cs;
-		CoeffsArray[0].a2 = 1.0 - (Alpha / A);
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], 1.0 + (Alpha / A));
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+
+			Coeffs.b0 = 1 + (Alpha * A);
+			Coeffs.b1 = -2 * CosOmega;
+			Coeffs.b2 = 1 - (Alpha * A);
+			Coeffs.a1 = -2 * CosOmega;
+			Coeffs.a2 = 1 - (Alpha / A);
+
+			Normalize(Coeffs, 1 + (Alpha / A));
+		}
+
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
-	// Cutoff: (0, MAX_FREQUENCY]
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
 	// Gain: [-20dB, 20dB] Boost or cut below Cutoff frequency.
-	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
-	static void SetLowShelfCoefficients(BiquadFilter *Filter, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	static void SetTiltEQCoefficients(BiquadFilter *Filter, FrequencyBand Band, dBGain Gain)
 	{
-		SetLowShelfCoefficients(Filter, SampleRateValue, Cutoff, Gain, Slope);
+		SetTiltEQCoefficients(Filter, SampleRateValue, Band, Gain);
 	}
 	// SampleRate: (0, ...]
-	// Cutoff: (0, MAX_FREQUENCY]
+	// Band.Center: (0, MAX_FREQUENCY]
+	// Band.QualityFactor: [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
 	// Gain: [-20dB, 20dB] Boost or cut below Cutoff frequency.
-	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
-	static void SetLowShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
+	static void SetTiltEQCoefficients(BiquadFilter *Filter, uint32 SampleRate, FrequencyBand Band, dBGain Gain)
 	{
 		ASSERT(Filter != nullptr, "Filter cannot be null");
 		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
-		ASSERT(0 <= Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
+		ASSERT(0 < Band.GetCenter() && Band.GetCenter() <= MAX_FREQUENCY, "Invalid Band.Center %f", Band.GetCenter());
+		ASSERT(QUALITY_FACTOR_MINIMUM < Band.GetQualityFactor() && Band.GetQualityFactor() <= QUALITY_FACTOR_MAXIMUM, "Invalid Band.QualityFactor %f", Band.GetQualityFactor());
 		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
-		ASSERT(SLOPE_FACTOR_MINIMUM <= Slope && Slope <= SLOPE_FACTOR_MAXIMUM, "Invalid Slope %f", Slope);
 
-		const ValueType A = Math::Power(10.0, Gain / 40.0);
-		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
-		const ValueType Sn = Math::Sin(Omega);
-		const ValueType Cs = Math::Cos(Omega);
+		const Frequency Center = Band.GetCenter();
+		const QualityFactor Quality(Band);
 
-		const ValueType Alpha = Sn / 2.0 * Math::SquareRoot((A + 1.0 / A) * (1.0 / Slope - 1.0) + 2.0);
-		const ValueType TwoSqrtAAlpha = 2.0 * Math::SquareRoot(A) * Alpha;
+		const ValueType A = Math::Power(10.0, Gain / 40);
+		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
+		const ValueType CosOmega = Math::Cos(Omega);
+		const ValueType SinOmega = Math::Sin(Omega);
 
 		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = A * ((A + 1.0) - (A - 1.0) * Cs + TwoSqrtAAlpha);
-		CoeffsArray[0].b1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * Cs);
-		CoeffsArray[0].b2 = A * ((A + 1.0) - (A - 1.0) * Cs - TwoSqrtAAlpha);
-		CoeffsArray[0].a1 = -2.0 * ((A - 1.0) + (A + 1.0) * Cs);
-		CoeffsArray[0].a2 = (A + 1.0) + (A - 1.0) * Cs - TwoSqrtAAlpha;
+		for (uint8 i = 0; i < StageCount; ++i)
+		{
+			Coefficients &Coeffs = CoeffsArray[i];
 
-		Normalize(CoeffsArray[0], (A + 1.0) + (A - 1.0) * Cs + TwoSqrtAAlpha);
-		Filter->SetCoefficients(CoeffsArray);
-	}
+			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
+			const ValueType Alpha = SinOmega / (2 * DistributedQ);
+			const ValueType TwoSqrtAAlpha = 2 * Math::SquareRoot(A) * Alpha;
 
-	// Cutoff: (0, MAX_FREQUENCY]
-	// Gain: [-20dB, 20dB] Boost or cut above Cutoff frequency.
-	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
-	static void SetHighShelfCoefficients(BiquadFilter *Filter, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
-	{
-		SetHighShelfCoefficients(Filter, SampleRateValue, Cutoff, Gain, Slope);
-	}
-	// SampleRate: (0, ...]
-	// Cutoff: (0, MAX_FREQUENCY]
-	// Gain: [-20dB, 20dB] Boost or cut above Cutoff frequency.
-	// Slope: [SLOPE_FACTOR_MINIMUM, SLOPE_FACTOR_MAXIMUM]
-	static void SetHighShelfCoefficients(BiquadFilter *Filter, uint32 SampleRate, Frequency Cutoff, dBGain Gain, SlopeFactor Slope)
-	{
-		ASSERT(Filter != nullptr, "Filter cannot be null");
-		ASSERT(0 < SampleRate, "Invalid SampleRate %u", SampleRate);
-		ASSERT(0 < Cutoff && Cutoff <= MAX_FREQUENCY, "Invalid Cutoff %f", Cutoff);
-		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
-		ASSERT(SLOPE_FACTOR_MINIMUM <= Slope && Slope <= SLOPE_FACTOR_MAXIMUM, "Invalid Slope %f", Slope);
+			Coeffs.b0 = A * ((A + 1) + (A - 1) * CosOmega + TwoSqrtAAlpha);
+			Coeffs.b1 = -2 * A * ((A - 1) + (A + 1) * CosOmega);
+			Coeffs.b2 = A * ((A + 1) + (A - 1) * CosOmega - TwoSqrtAAlpha);
+			Coeffs.a1 = 2 * ((A - 1) - (A + 1) * CosOmega);
+			Coeffs.a2 = (A + 1) - (A - 1) * CosOmega - TwoSqrtAAlpha;
 
-		const ValueType A = Math::Power(10.0, Gain / 40.0);
-		const ValueType Omega = Math::TWO_PI_VALUE * Cutoff / SampleRate;
-		const ValueType Sn = Math::Sin(Omega);
-		const ValueType Cs = Math::Cos(Omega);
+			Normalize(Coeffs, (A + 1.0) - (A - 1.0) * CosOmega + TwoSqrtAAlpha);
+		}
 
-		const ValueType Alpha = Sn / 2.0 * Math::SquareRoot((A + 1.0 / A) * (1.0 / Slope - 1.0) + 2.0);
-		const ValueType TwoSqrtAAlpha = 2.0 * Math::SquareRoot(A) * Alpha;
-
-		Coefficients CoeffsArray[StageCount] = {};
-		CoeffsArray[0].b0 = A * ((A + 1.0) + (A - 1.0) * Cs + TwoSqrtAAlpha);
-		CoeffsArray[0].b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * Cs);
-		CoeffsArray[0].b2 = A * ((A + 1.0) + (A - 1.0) * Cs - TwoSqrtAAlpha);
-		CoeffsArray[0].a1 = 2.0 * ((A - 1.0) - (A + 1.0) * Cs);
-		CoeffsArray[0].a2 = (A + 1.0) - (A - 1.0) * Cs - TwoSqrtAAlpha;
-
-		Normalize(CoeffsArray[0], (A + 1.0) - (A - 1.0) * Cs + TwoSqrtAAlpha);
 		Filter->SetCoefficients(CoeffsArray);
 	}
 
 private:
-	static ValueType GetDistributedQualityFactor(uint8 StageIndex, QualityFactor Base, FilterDesign Design)
+	static ValueType GetDistributedQualityFactor(uint8 StageIndex, QualityFactor Base)
 	{
 		if constexpr (StageCount == 1)
 			return Base;
@@ -461,19 +666,19 @@ private:
 
 		switch (Design)
 		{
-		case FilterDesign::Identical:
+		case BiquadFilterDesign::Identical:
 			return (ValueType)Base;
 
-		case FilterDesign::Butterworth:
+		case BiquadFilterDesign::Butterworth:
 		{
 			const float angle = (2 * StageIndex + 1) * Math::PI_VALUE / (2 * n);
-			return 1.0 / (2.0 * Math::Sin(angle));
+			return 1 / (2 * Math::Sin(angle));
 		}
 
-		case FilterDesign::LinkwitzRiley:
+		case BiquadFilterDesign::LinkwitzRiley:
 		{
 			const float angle = (2 * (StageIndex / 2) + 1) * Math::PI_VALUE / n;
-			return 1.0 / (2.0 * Math::Sin(angle));
+			return 1 / (2 * Math::Sin(angle));
 		}
 		}
 
@@ -503,8 +708,8 @@ private:
 #endif
 };
 
-template <typename T, uint8 StageCount, uint32 SampleRate>
-class BiquadBasedFilter : protected BiquadFilter<T, StageCount, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadBasedFilter : protected BiquadFilter<T, SampleRate, StageCount, Design>
 {
 public:
 	BiquadBasedFilter(void)
@@ -512,17 +717,19 @@ public:
 		this->UpdateCoefficients();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
-	{
-		return BiquadFilter<T, StageCount, SampleRate>::Process(Buffer, Count);
-	}
+	// void Process(T *Buffer, uint8 Count) override
+	// {
+	// 	return BiquadFilter<T, SampleRate, StageCount, Design>::Process(Buffer, Count);
+	// }
 
-	T Process(T Value) override
-	{
-		BiquadFilter<T, StageCount, SampleRate>::Process(&Value, 1);
+	// T Process(T Value) override
+	// {
+	// 	BiquadFilter<T, SampleRate, StageCount, Design>::Process(&Value, 1);
 
-		return Value;
-	}
+	// 	return Value;
+	// }
+
+	using Filter<T, SampleRate>::Process;
 
 protected:
 	virtual void UpdateCoefficients(void)
@@ -530,11 +737,11 @@ protected:
 	}
 };
 
-template <typename T, uint8 StageCount, uint32 SampleRate>
-class BiquadBandBasedFilter : public BiquadBasedFilter<T, StageCount, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadBandBasedFilter : public BiquadBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
-	typedef BiquadBasedFilter<T, StageCount, SampleRate> Base;
+	typedef BiquadBasedFilter<T, SampleRate, StageCount, Design> Base;
 
 public:
 	BiquadBandBasedFilter(void)
@@ -628,13 +835,21 @@ public:
 	}
 
 protected:
+	void SetAsAllPass(void)
+	{
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetAllPassCoefficients(this, m_Band);
+	}
 	void SetAsBandPass(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetBandPassCoefficients(this, m_Band);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetBandPassCoefficients(this, m_Band);
 	}
 	void SetAsBandStop(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetBandStopCoefficients(this, m_Band);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetBandStopCoefficients(this, m_Band);
+	}
+	void SetAsPeakResonator(void)
+	{
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetPeakResonatorCoefficients(this, m_Band);
 	}
 
 	using Base::UpdateCoefficients;
@@ -643,11 +858,11 @@ protected:
 	FrequencyBand m_Band;
 };
 
-template <typename T, uint8 StageCount, uint32 SampleRate>
-class BiquadCutoffBasedFilter : public BiquadBasedFilter<T, StageCount, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadCutoffBasedFilter : public BiquadBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
-	typedef BiquadBasedFilter<T, StageCount, SampleRate> Base;
+	typedef BiquadBasedFilter<T, SampleRate, StageCount, Design> Base;
 
 public:
 	BiquadCutoffBasedFilter(void)
@@ -676,11 +891,11 @@ protected:
 	Frequency m_Cutoff;
 };
 
-template <typename T, uint8 StageCount, uint32 SampleRate>
-class BiquadCutoffPassBasedFilter : public BiquadCutoffBasedFilter<T, StageCount, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadCutoffPassBasedFilter : public BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
-	typedef BiquadCutoffBasedFilter<T, StageCount, SampleRate> Base;
+	typedef BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design> Base;
 
 public:
 	BiquadCutoffPassBasedFilter(void)
@@ -718,11 +933,11 @@ public:
 protected:
 	void SetAsLowPass(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetLowPassCoefficients(this, Base::m_Cutoff, m_Quality);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetLowPassCoefficients(this, Base::m_Cutoff, m_Quality);
 	}
 	void SetAsHighPass(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetHighPassCoefficients(this, Base::m_Cutoff, m_Quality);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetHighPassCoefficients(this, Base::m_Cutoff, m_Quality);
 	}
 
 	using Base::UpdateCoefficients;
@@ -731,11 +946,11 @@ protected:
 	QualityFactor m_Quality;
 };
 
-template <typename T, uint8 StageCount, uint32 SampleRate>
-class BiquadCutoffShelfBasedFilter : public BiquadCutoffBasedFilter<T, StageCount, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadCutoffShelfBasedFilter : public BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
-	typedef BiquadCutoffBasedFilter<T, StageCount, SampleRate> Base;
+	typedef BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design> Base;
 
 public:
 	BiquadCutoffShelfBasedFilter(void)
@@ -791,11 +1006,11 @@ public:
 protected:
 	void SetAsLowShelf(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetLowShelfCoefficients(this, Base::m_Cutoff, m_Gain, m_Slope);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetLowShelfCoefficients(this, Base::m_Cutoff, m_Gain, m_Slope);
 	}
 	void SetAsHighShelf(void)
 	{
-		BiquadFilter<T, StageCount, SampleRate>::SetHighShelfCoefficients(this, Base::m_Cutoff, m_Gain, m_Slope);
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetHighShelfCoefficients(this, Base::m_Cutoff, m_Gain, m_Slope);
 	}
 
 	using Base::UpdateCoefficients;
@@ -803,6 +1018,77 @@ protected:
 protected:
 	dBGain m_Gain;
 	SlopeFactor m_Slope;
+};
+
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class BiquadEQBasedFilter : public BiquadBandBasedFilter<T, SampleRate, StageCount, Design>
+{
+private:
+	typedef BiquadBandBasedFilter<T, SampleRate, StageCount, Design> Base;
+
+public:
+	// [-20dB, 20dB]
+	void SetGain(dBGain Value)
+	{
+		ASSERT(-20 <= Value && Value <= 20, "Invalid Value %f", Value);
+
+		m_Gain = Value;
+
+		UpdateCoefficients();
+	}
+	dBGain GetGain(void) const
+	{
+		return m_Gain;
+	}
+
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
+	// [-20dB, 20dB]
+	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	void SetParameters(FrequencyBand Band, dBGain Gain)
+	{
+		ASSERT(MIN_FREQUENCY <= Band.GetCenter() && Band.GetCenter() <= MAX_FREQUENCY, "Invalid Cutoff %f", Band.GetCenter());
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+
+		Base::m_Band = Band;
+		m_Gain = Gain;
+
+		UpdateCoefficients();
+	}
+
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
+	// [OCTAVE_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	void SetParameters(Frequency Center, LogarithmicOctave Bandwidth, dBGain Gain)
+	{
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+
+		m_Gain = Gain;
+		Base::SetParameters(Center, Bandwidth);
+	}
+
+	// [MIN_FREQUENCY, MAX_FREQUENCY]
+	// [QUALITY_FACTOR_MINIMUM, QUALITY_FACTOR_MAXIMUM]
+	void SetParameters(Frequency Center, QualityFactor Quality, dBGain Gain)
+	{
+		ASSERT(-20 <= Gain && Gain <= 20, "Invalid Gain %f", Gain);
+
+		m_Gain = Gain;
+		Base::SetParameters(Center, Quality);
+	}
+
+protected:
+	void SetAsPeakEQ(void)
+	{
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetPeakEQCoefficients(this, Base::m_Band, m_Gain);
+	}
+	void SetAsTiltEQ(void)
+	{
+		BiquadFilter<T, SampleRate, StageCount, Design>::SetTiltEQCoefficients(this, Base::m_Band, m_Gain);
+	}
+
+	using Base::UpdateCoefficients;
+
+protected:
+	dBGain m_Gain;
 };
 
 #endif

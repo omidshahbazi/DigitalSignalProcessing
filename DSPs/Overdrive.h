@@ -102,9 +102,9 @@ public:
 			{
 				T wet = Math::AsymmetricGain(upBuffer[i], m_AsymmetryLevel);
 
-				wet = Math::CrunchClip(wet * m_Drive, 0.2);
+				wet = Math::CrunchClip(wet * m_Drive, 0.2) / (m_Drive * 0.5);
 
-				upBuffer[i] = Math::LinearCrossFadeMix(upBuffer[i] * m_Drive, wet, m_WetRate);
+				upBuffer[i] = Math::LinearCrossFadeMix(upBuffer[i], wet, m_WetRate);
 			}
 
 			m_DCOffsetFilter.Process(upBuffer, upBufferLength);
@@ -121,9 +121,9 @@ public:
 	}
 
 private:
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PreFilter;
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_DCOffsetFilter;
-	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_PreFilter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_DCOffsetFilter;
+	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_PostFilter;
 
 	float m_Drive;
 	dBGain m_Gain;

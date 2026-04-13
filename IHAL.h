@@ -47,6 +47,8 @@ public:
 
 	virtual void PWMWrite(uint8 Pin, float Value) = 0;
 
+	virtual uint32 GetTimeFrequency(void) const = 0;
+	virtual uint32 GetTimeSinceStartupTicks(void) const = 0;
 	virtual uint32 GetTimeSinceStartupMs(void) const = 0;
 	virtual float GetTimeSinceStartup(void) const = 0;
 

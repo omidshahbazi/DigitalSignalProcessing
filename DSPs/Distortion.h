@@ -86,7 +86,7 @@ public:
 
 private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
-	BandPassFilter<T, SampleRate> m_BandPassFilter;
+	BandPassFilter<T, SampleRate, 1> m_BandPassFilter;
 
 	float m_Level;
 	dBGain m_Gain;

@@ -4,11 +4,11 @@
 
 #include "BiquadFilter.h"
 
-template <typename T, uint32 SampleRate>
-class LowPassFilter : public BiquadCutoffPassBasedFilter<T, 1, SampleRate>
+template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+class LowPassFilter : public BiquadCutoffPassBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
-	typedef BiquadCutoffPassBasedFilter<T, 1, SampleRate> Base;
+	typedef BiquadCutoffPassBasedFilter<T, SampleRate, StageCount, Design> Base;
 
 private:
 	void UpdateCoefficients(void) override

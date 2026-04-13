@@ -73,8 +73,8 @@ public:
 	}
 
 private:
-	LowShelfFilter<T, SampleRate> m_LowShelfFilter;
-	PeakEQFilter<T, SampleRate> m_PeakEQFilter;
-	HighShelfFilter<T, SampleRate> m_HighShelfFilter;
+	LowShelfFilter<T, SampleRate, 1> m_LowShelfFilter;
+	PeakEQFilter<T, SampleRate, 1> m_PeakEQFilter;
+	HighShelfFilter<T, SampleRate, 1> m_HighShelfFilter;
 };
 #endif

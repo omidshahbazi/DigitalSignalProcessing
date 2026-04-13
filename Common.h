@@ -5,17 +5,15 @@
 #include "Gain.h"
 #include "Frequency.h"
 #include "Notes.h"
+#include "Profiler.h"
 
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
-typedef long long int64;
+#define CONCAT_INNER(a, b) a##b
+#define CONCAT(a, b) CONCAT_INNER(a, b)
 
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef unsigned long long uint64;
-typedef const char *cstr;
+#define TURN_OFF_OPTIMIZER _Pragma("GCC push_options") \
+	_Pragma("GCC optimize (\"O0\")")
+
+#define TURN_ON_OPTIMIZER _Pragma("GCC pop_options")
 
 #define KB *1024
 #define MB *1048576
@@ -227,11 +225,7 @@ static cstr GetFrenchNoteName(uint8 MIDINumber)
 	return FrenchNoteNames[Math::Moderate(MIDINumber, TotalNoteCount)];
 }
 
-#ifdef ENABLE_TYPE_CHECK
 #define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
-#else
-#define ASSERT_ON_SAMPLE_RATE(SampleRate)
-#endif
 
 #ifdef MAX_FRAME_LENGTH
 static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");

@@ -9,7 +9,18 @@
 #endif
 #define STRINGIZE_NUMBER(Value) STRINGIZE(Value)
 
-#ifdef DEBUG
+#ifndef DEBUG
+#define DISABLE_ASSERTS
+#endif
+
+#ifdef DISABLE_ASSERTS
+#define ASSERT(Expression, Message, ...) \
+	do                                   \
+	{                                    \
+		(void)sizeof(Expression);        \
+		(void)sizeof(Message);           \
+	} while (false)
+#else
 #ifdef USE_BREAK_ONLY_ASSERT
 #define ASSERT(Expression, Message, ...)                 \
 	do                                                   \
@@ -29,13 +40,6 @@
                                                                                                         \
 	} while (false)
 #endif
-#else
-#define ASSERT(Expression, Message, ...) \
-	do                                   \
-	{                                    \
-		(void)sizeof(Expression);        \
-		(void)sizeof(Message);           \
-	} while (false)
 #endif
 
 #endif

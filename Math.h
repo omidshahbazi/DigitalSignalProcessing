@@ -37,6 +37,7 @@ private:
 			{
 				m_SinLUT[i] = std::sin((TWO_PI_VALUE * i) / (Size - 1));
 				m_TanHLUT[i] = std::tanh(-TanHRange + (2 * TanHRange * i) / (Size - 1));
+				m_LogLUT[i] = std::log(1.0f + (float)i / (Size - 1));
 			}
 		}
 
@@ -81,9 +82,39 @@ private:
 			return m_TanHLUT[index] + (frac * (m_TanHLUT[next] - m_TanHLUT[index]));
 		}
 
+		template <typename T>
+		inline T Log(T Value) const
+		{
+			ASSERT_ON_FLOATING_TYPE(T);
+
+			if (Value <= 0)
+				return -std::numeric_limits<T>::infinity();
+
+			int n;
+			float f = std::frexp((float)Value, &n);
+
+			f *= 2.0f;
+			n -= 1;
+
+			float pos = (f - 1.0f) * (Size - 1);
+			uint16 index = static_cast<uint16>(pos);
+			float frac = pos - index;
+
+			float result = m_LogLUT[index] + (frac * (m_LogLUT[index + 1] - m_LogLUT[index]));
+
+			return (T)(result + (n * LOG_NATURAL_2));
+		}
+
+		template <typename T>
+		inline T ASinh(T Value) const
+		{
+			return Log(Value + Math::SquareRoot(Value * Value + 1));
+		}
+
 	private:
 		float m_SinLUT[Size];
 		float m_TanHLUT[Size];
+		float m_LogLUT[Size];
 	};
 
 	static const LookupTable &GetLUT(void)
@@ -272,10 +303,6 @@ public:
 		return (Exponential(Value) - Exponential(-Value)) / 2;
 	}
 
-	float my_sinh(float x)
-	{
-	}
-
 	template <typename T>
 	static T Cos(T Value)
 	{
@@ -306,7 +333,7 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 #ifdef FAST_MATH
-		return Log(Value + SquareRoot(Value * Value + 1));
+		return (T)GetLUT().ASinh(Value);
 #else
 		return (T)std::asinh(Value);
 #endif
@@ -317,7 +344,11 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return logf(Value);
+#ifdef FAST_MATH
+		return (T)GetLUT().Log(Value);
+#else
+		return std::log(Value);
+#endif
 	}
 
 	template <typename T>
@@ -326,25 +357,27 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 #ifdef FAST_MATH
-		union
-		{
-			float f;
-			uint32 i;
-		} vx = {(float)Value};
-		union
-		{
-			uint32 i;
-			float f;
-		} mx;
+		// union
+		// {
+		// 	float f;
+		// 	uint32 i;
+		// } vx = {(float)Value};
+		// union
+		// {
+		// 	uint32 i;
+		// 	float f;
+		// } mx;
 
-		float exp = (float)((vx.i >> 23) & 0xFF) - 127;
+		// float exp = (float)((vx.i >> 23) & 0xFF) - 127;
 
-		mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
+		// mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
 
-		float y = mx.f;
-		float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
+		// float y = mx.f;
+		// float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
-		return (T)(exp + log_m);
+		// return (T)(exp + log_m);
+
+		return Log(Value) * (T)1.4426950408889634;
 #else
 		return (T)log2f(Value);
 #endif
@@ -432,10 +465,9 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float Positive = (1 - Factor);
-		const float Negative = (1 + Factor);
+		Factor *= Power(Value, 2);
 
-		return Value * (Value < 0 ? Negative : Positive);
+		return Value + Factor;
 	}
 
 	template <typename T>

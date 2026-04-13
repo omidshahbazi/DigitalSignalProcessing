@@ -20,7 +20,7 @@ public:
 		ASSERT(HAL->IsAnAnaloglPin(Pin), "Pin %i is not an analog pin", Pin);
 
 		if (m_FilterSwings)
-			BiquadFilter<float, 1, MIN_SAMPLE_RATE>::SetLowPassCoefficients(&m_Filter, Frequency(UpdateRate), QUALITY_FACTOR_CRITICAL_DAMPING);
+			BiquadFilter<float, MIN_SAMPLE_RATE, 1>::SetLowPassCoefficients(&m_Filter, Frequency(UpdateRate), QUALITY_FACTOR_CRITICAL_DAMPING);
 
 		SetCalibrationValues(0, 1);
 	}
@@ -68,7 +68,7 @@ protected:
 	}
 
 private:
-	BiquadFilter<float, 1, MIN_SAMPLE_RATE> m_Filter;
+	BiquadFilter<float, MIN_SAMPLE_RATE, 1> m_Filter;
 	bool m_FilterSwings;
 	float m_Value;
 	float m_CalibrationMin;

@@ -52,8 +52,8 @@ public:
 private:
 	float m_Tone;
 
-	LowShelfFilter<T, SampleRate> m_LowShelfFilter;
-	HighShelfFilter<T, SampleRate> m_HighShelfFilter;
+	LowShelfFilter<T, SampleRate, 1> m_LowShelfFilter;
+	HighShelfFilter<T, SampleRate, 1> m_HighShelfFilter;
 };
 
 #endif

@@ -97,7 +97,7 @@ protected:
 
 private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
-	LowPassFilter<T, SampleRate> m_Filter;
+	LowPassFilter<T, SampleRate, 1> m_Filter;
 
 	float m_Tone;
 	float m_Level;
