@@ -3,9 +3,10 @@
 #define OVERDRIVE_H
 
 #include "IDSP.h"
+#include "../Debug.h"
+#include "../Math.h"
 #include "../Filters/LowPassFilter.h"
 #include "../Filters/HighPassFilter.h"
-#include "../Debug.h"
 
 template <typename T, uint32 SampleRate>
 class Overdrive : public IDSP<T, SampleRate>
@@ -13,6 +14,7 @@ class Overdrive : public IDSP<T, SampleRate>
 public:
 	Overdrive(void)
 		: m_Drive(0),
+		  m_InvertedDrive(0),
 		  m_Gain(0),
 		  m_LinearGain(0),
 		  m_AsymmetryLevel(0),
@@ -46,6 +48,7 @@ public:
 		ASSERT(1 <= Value && Value <= 50, "Invalid Value %f", Value);
 
 		m_Drive = Value;
+		m_InvertedDrive = 1 / (m_Drive * 0.5);
 	}
 	float GetDrive(void) const
 	{
@@ -102,7 +105,7 @@ public:
 			{
 				T wet = Math::AsymmetricGain(upBuffer[i], m_AsymmetryLevel);
 
-				wet = Math::CrunchClip(wet * m_Drive, 0.2) / (m_Drive * 0.5);
+				wet = Math::CrunchClip(wet * m_Drive, 0.2) * m_InvertedDrive;
 
 				upBuffer[i] = Math::LinearCrossFadeMix(upBuffer[i], wet, m_WetRate);
 			}
@@ -114,21 +117,22 @@ public:
 		}
 
 		for (uint8 i = 0; i < Count; ++i)
-		{
 			Buffer[i] *= m_LinearGain;
+
+		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Buffer[i]);
-		}
 	}
 
 private:
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_PreFilter;
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_DCOffsetFilter;
-	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR, 1> m_PostFilter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PreFilter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_DCOffsetFilter;
+	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
 
 	float m_Drive;
+	float m_InvertedDrive;
+	float m_AsymmetryLevel;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
-	float m_AsymmetryLevel;
 	float m_WetRate;
 };
 

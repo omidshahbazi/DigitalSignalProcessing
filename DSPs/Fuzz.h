@@ -83,7 +83,7 @@ public:
 
 			value = Mix(Buffer[i], value);
 
-			value = Math::Clamp(value, -1, 1);
+			value = Math::ClampSignal(value);
 
 			Buffer[i] = Math::SoftClip(value);
 		}
@@ -97,7 +97,7 @@ protected:
 
 private:
 	WaveShaperFilter<T> m_WaveShaperFilter;
-	LowPassFilter<T, SampleRate, 1> m_Filter;
+	LowPassFilter<T, SampleRate> m_Filter;
 
 	float m_Tone;
 	float m_Level;

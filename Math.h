@@ -201,6 +201,12 @@ public:
 	}
 
 	template <typename T>
+	static auto ClampSignal(T Value)
+	{
+		return Clamp(Value, -1, 1);
+	}
+
+	template <typename T>
 	static auto ClampExcluded0To1(T Value)
 	{
 		return Clamp(Value, EPSILON, 1);
@@ -376,7 +382,7 @@ public:
 		// float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
 		// return (T)(exp + log_m);
-
+		
 		return Log(Value) * (T)1.4426950408889634;
 #else
 		return (T)log2f(Value);
@@ -465,9 +471,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		Factor *= Power(Value, 2);
+		const float Positive = (1 - Factor);
+		const float Negative = (1 + Factor);
 
-		return Value + Factor;
+		return Value * (Value < 0 ? Negative : Positive);
 	}
 
 	template <typename T>
@@ -489,15 +496,6 @@ public:
 
 	// Factor: [0, 1]
 	template <typename T, typename U>
-	static T HardClip(T Value, U Factor)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		return atan(Value * Factor) / atan(Factor);
-	}
-
-	// Factor: [0, 1]
-	template <typename T, typename U>
 	static T AgressiveClip(T Value, U Factor)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
@@ -512,6 +510,15 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value)));
+	}
+
+	// Factor: [0, 1)
+	template <typename T, typename U>
+	static T HardClip(T Value, U Factor)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return Clamp(Value, -Factor, Factor);
 	}
 
 	template <typename T>

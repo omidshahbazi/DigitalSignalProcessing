@@ -110,7 +110,7 @@ private:
 	AttackDecaySustainReleaseEnvelopeFilter<T, SampleRate> m_FrequencyEnvelope;
 	MetalNoiseFilter<T, SampleRate> m_Noise;
 	Frequency m_MaxCutoffFrequency;
-	BandPassFilter<T, SampleRate, 1> m_BandPass;
+	BandPassFilter<T, SampleRate> m_BandPass;
 };
 
 #endif

@@ -4,7 +4,7 @@
 
 #include "BiquadFilter.h"
 
-template <typename T, uint32 SampleRate, uint8 StageCount, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
 class HighPassFilter : public BiquadCutoffPassBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:

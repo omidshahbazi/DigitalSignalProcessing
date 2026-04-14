@@ -198,8 +198,8 @@ protected:
 private:
 	BufferFilter<T, SampleRate, MaxTime> m_UndoBuffer;
 	BufferFilter<T, SampleRate, MaxTime> m_Buffer;
-	LowPassFilter<SampleType, SampleRate, 1> m_LowPassFilter;
-	HighPassFilter<SampleType, SampleRate, 1> m_HighPassFilter;
+	LowPassFilter<SampleType, SampleRate> m_LowPassFilter;
+	HighPassFilter<SampleType, SampleRate> m_HighPassFilter;
 	float m_WetRate;
 	bool m_IsPlaying;
 	bool m_IsRecording;
