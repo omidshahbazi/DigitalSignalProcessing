@@ -382,7 +382,7 @@ public:
 		// float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
 		// return (T)(exp + log_m);
-		
+
 		return Log(Value) * (T)1.4426950408889634;
 #else
 		return (T)log2f(Value);
@@ -465,60 +465,72 @@ public:
 		return (T)(std::sqrt(Value));
 	}
 
+	// Amount [-1, 1]
+	template <typename T>
+	static float GetAsymmetricGain(T Value, float Amount)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float PositiveScale = 1 + Amount;
+		const float NegativeScale = 1 - Amount;
+
+		return (Value > 0 ? PositiveScale : NegativeScale);
+	}
+
+	// Asymmetry [-1, 1]
+	template <typename T>
+	static T SoftClip(T Value, float Asymmetry = 0)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+
+		return TanH(Value * SideFactor);
+	}
+
 	// Factor [0, 1)
+	// Asymmetry [-1, 1]
 	template <typename T>
-	static T AsymmetricGain(T Value, float Factor = 0)
+	static T CrunchClip(T Value, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float Positive = (1 - Factor);
-		const float Negative = (1 + Factor);
+		const float SideFactor = Clamp(Factor * GetAsymmetricGain(Value, Asymmetry), 0, 0.99);
 
-		return Value * (Value < 0 ? Negative : Positive);
+		return Value / ((1 - SideFactor) + Absolute(Value));
 	}
 
 	template <typename T>
-	static T SoftClip(T Value)
+	static T AgressiveClip(T Value, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return TanH(Value);
+		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+
+		return Value / (1 + Absolute(Value * SideFactor));
 	}
 
-	// Factor [0, 1)
 	template <typename T>
-	static T CrunchClip(T Value, float Factor = 0)
+	static T HarshClip(T Value, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Value / ((1 - Factor) + Absolute(Value));
-	}
+		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
 
-	// Factor: [0, 1]
-	template <typename T, typename U>
-	static T AgressiveClip(T Value, U Factor)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		return Value / (1 + Absolute(Value));
-	}
-
-	// Factor: [0, 1]
-	template <typename T, typename U>
-	static T HarshClip(T Value, U Factor)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value)));
+		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value * SideFactor)));
 	}
 
 	// Factor: [0, 1)
-	template <typename T, typename U>
-	static T HardClip(T Value, U Factor)
+	// Asymmetry [-1, 1]
+	template <typename T>
+	static T HardClip(T Value, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Clamp(Value, -Factor, Factor);
+		const float BottomThreshold = -Factor * GetAsymmetricGain(1.0, Asymmetry);
+		const float TopThreshold = Factor * GetAsymmetricGain(-1.0, Asymmetry);
+
+		return Clamp(Value, BottomThreshold, TopThreshold);
 	}
 
 	template <typename T>

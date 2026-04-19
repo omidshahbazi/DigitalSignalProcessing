@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Math.h"
 #include "../Debug.h"
-#include "../Filters/WaveShaperFilter.h"
+#include "../Filters/HighPassFilter.h"
 #include "../Filters/LowPassFilter.h"
 
 template <typename T, uint32 SampleRate>
@@ -13,17 +13,44 @@ class Fuzz : public IDSP<T, SampleRate>
 {
 public:
 	Fuzz(void)
-		: m_Level(0),
-		  m_WetRate(0),
-		  m_PreGain(0),
-		  m_PrevAbsValue(0)
+		: m_Drive(0),
+		  m_AsymmetryLevel(0),
+		  m_Tone(0),
+		  m_WetRate(0)
 	{
-		static typename WaveShaperFilter<T>::TablePoints points[] = {{-1, -1}, {-0.4, -1}, {0, 0}, {0.4, 1}, {1, 1}};
-		m_WaveShaperFilter.SetTable(points, 5);
+		m_PostFilter.SetParameters(Frequency(200), QualityFactor(1.1));
 
+		SetDrive(0.5);
 		SetTone(0.5);
-		SetLevel(0);
-		SetWetRate(0.5);
+		SetGain(NORMAL_GAIN);
+		SetWetRate(1);
+	}
+
+	//[0, 1]
+	void SetDrive(float Value)
+	{
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+
+		m_Drive = Value;
+
+		m_PreGain = (LinearGain)Math::Lerp(10, 500, m_Drive);
+		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
+	}
+	float GetDrive(void) const
+	{
+		return m_Drive;
+	}
+
+	//[-1, 1]
+	void SetAsymmetryLevel(float Value)
+	{
+		ASSERT(-1 <= Value && Value <= 1, "Invalid Value %f", Value);
+
+		m_AsymmetryLevel = Value;
+	}
+	float GetAsymmetryLevel(void) const
+	{
+		return m_AsymmetryLevel;
 	}
 
 	//[0, 1]
@@ -33,25 +60,25 @@ public:
 
 		m_Tone = Value;
 
-		m_Filter.SetParameters((Frequency)Math::FrequencyLerp(1.0 KHz, 5 KHz, m_Tone), QualityFactor(0.3));
+		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(1 KHz, 8 KHz, m_Tone));
 	}
 	float GetTone(void) const
 	{
 		return m_Tone;
 	}
 
-	//[0, 1]
-	void SetLevel(float Value)
+	//[-12dB, 12dB]
+	void SetGain(dBGain Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
 
-		m_Level = Value;
+		m_Gain = Value;
 
-		m_PreGain = (dBGain)Math::Lerp(LinearGain(dBGain(10.0)), LinearGain(dBGain(30)), m_Level);
+		m_LinearGain = m_Gain;
 	}
-	float GetLevel(void) const
+	dBGain GetGain(void) const
 	{
-		return m_Level;
+		return m_Gain;
 	}
 
 	//[0, 1]
@@ -68,44 +95,43 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
-		m_Filter.Process(Buffer, Count);
+		CLONE_BUFFER(dryBuffer);
+
+		CREATE_STANDARD_UP_SAMPLE_BUFFER(upBuffer);
+		{
+			Math::UpSample(Buffer, Count, upBuffer, upBufferFactor);
+
+			for (uint8 i = 0; i < upBufferLength; ++i)
+				upBuffer[i] = Math::HardClip(upBuffer[i] * m_PreGain, 0.7, m_AsymmetryLevel);
+
+			m_PostFilter.Process(upBuffer, upBufferLength);
+			m_ToneFilter.Process(upBuffer, upBufferLength);
+
+			for (uint8 i = 0; i < upBufferLength; ++i)
+				upBuffer[i] *= m_InvertedPreGain;
+
+			Math::DownSample(upBuffer, upBufferLength, Buffer, upBufferFactor);
+		}
 
 		for (uint8 i = 0; i < Count; ++i)
-		{
-			T value = Buffer[i];
+			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
 
-			T prevAbsValue = m_PrevAbsValue;
-			m_PrevAbsValue = Math::Absolute(value);
-			if (Math::Absolute(value) >= prevAbsValue)
-				value = 0;
-
-			value *= m_PreGain;
-
-			value = Mix(Buffer[i], value);
-
-			value = Math::ClampSignal(value);
-
-			Buffer[i] = Math::SoftClip(value);
-		}
-	}
-
-protected:
-	T Mix(T A, T B) override
-	{
-		return Math::LinearCrossFadeMix(A, B, m_WetRate);
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] *= m_LinearGain;
 	}
 
 private:
-	WaveShaperFilter<T> m_WaveShaperFilter;
-	LowPassFilter<T, SampleRate> m_Filter;
+	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
+	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_ToneFilter;
 
-	float m_Tone;
-	float m_Level;
-	float m_WetRate;
-
+	float m_Drive;
 	LinearGain m_PreGain;
-
-	T m_PrevAbsValue;
+	LinearGain m_InvertedPreGain;
+	float m_AsymmetryLevel;
+	float m_Tone;
+	dBGain m_Gain;
+	LinearGain m_LinearGain;
+	float m_WetRate;
 };
 
 #endif

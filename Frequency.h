@@ -9,7 +9,7 @@ struct LogarithmicOctave;
 struct QualityFactor;
 struct SlopeFactor;
 
-#define KHz *1'000
+#define KHz *1'000.0
 
 struct Frequency
 {

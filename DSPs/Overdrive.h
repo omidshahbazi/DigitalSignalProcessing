@@ -14,57 +14,44 @@ class Overdrive : public IDSP<T, SampleRate>
 public:
 	Overdrive(void)
 		: m_Drive(0),
-		  m_InvertedDrive(0),
-		  m_Gain(0),
-		  m_LinearGain(0),
-		  m_AsymmetryLevel(0),
+		  m_Tone(0),
 		  m_WetRate(0)
 	{
-		SetBassFilter(Frequency(720));
-		m_DCOffsetFilter.SetCutoffFrequency(Frequency(5));
-		m_PostFilter.SetCutoffFrequency(Frequency(4.5 KHz));
-
-		SetDrive(25);
+		SetDrive(0.5);
+		SetTone(0.5);
 		SetGain(NORMAL_GAIN);
-		SetAsymmetryLevel(0);
-		SetWetRate(0.5);
+		SetWetRate(1);
 	}
 
-	// [150, 800]
-	void SetBassFilter(Frequency Value)
-	{
-		ASSERT(150 <= Value && Value <= 800, "Invalid Value %f", Value);
-
-		m_PreFilter.SetCutoffFrequency(Value);
-	}
-	Frequency GetBassFilter(void) const
-	{
-		return m_PreFilter.GetCutoffFrequency();
-	}
-
-	//[1, 50]
+	//[0, 1]
 	void SetDrive(float Value)
 	{
-		ASSERT(1 <= Value && Value <= 50, "Invalid Value %f", Value);
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
 		m_Drive = Value;
-		m_InvertedDrive = 1 / (m_Drive * 0.5);
+
+		m_PreGain = (LinearGain)Math::Lerp(10, 100, m_Drive);
+		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
+
+		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(100.0, 720.0, m_Drive));
 	}
 	float GetDrive(void) const
 	{
 		return m_Drive;
 	}
 
-	//[0, 1)
-	void SetAsymmetryLevel(float Value)
+	//[0, 1]
+	void SetTone(float Value)
 	{
-		ASSERT(0 <= Value && Value < 1, "Invalid Value %f", Value);
+		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_AsymmetryLevel = Value;
+		m_Tone = Value;
+
+		m_PostFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(1 KHz, 8 KHz, m_Tone));
 	}
-	float GetAsymmetryLevel(void) const
+	float GetTone(void) const
 	{
-		return m_AsymmetryLevel;
+		return m_Tone;
 	}
 
 	//[-12dB, 12dB]
@@ -95,6 +82,8 @@ public:
 
 	void Process(T *Buffer, uint8 Count) override
 	{
+		CLONE_BUFFER(dryBuffer);
+
 		CREATE_STANDARD_UP_SAMPLE_BUFFER(upBuffer);
 		{
 			Math::UpSample(Buffer, Count, upBuffer, upBufferFactor);
@@ -102,19 +91,18 @@ public:
 			m_PreFilter.Process(upBuffer, upBufferLength);
 
 			for (uint8 i = 0; i < upBufferLength; ++i)
-			{
-				T wet = Math::AsymmetricGain(upBuffer[i], m_AsymmetryLevel);
+				upBuffer[i] = Math::SoftClip(upBuffer[i] * m_PreGain);
 
-				wet = Math::CrunchClip(wet * m_Drive, 0.2) * m_InvertedDrive;
-
-				upBuffer[i] = Math::LinearCrossFadeMix(upBuffer[i], wet, m_WetRate);
-			}
-
-			m_DCOffsetFilter.Process(upBuffer, upBufferLength);
 			m_PostFilter.Process(upBuffer, upBufferLength);
+
+			for (uint8 i = 0; i < upBufferLength; ++i)
+				upBuffer[i] *= m_InvertedPreGain;
 
 			Math::DownSample(upBuffer, upBufferLength, Buffer, upBufferFactor);
 		}
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
 
 		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] *= m_LinearGain;
@@ -125,12 +113,12 @@ public:
 
 private:
 	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PreFilter;
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_DCOffsetFilter;
 	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
 
 	float m_Drive;
-	float m_InvertedDrive;
-	float m_AsymmetryLevel;
+	LinearGain m_PreGain;
+	LinearGain m_InvertedPreGain;
+	float m_Tone;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
 	float m_WetRate;
