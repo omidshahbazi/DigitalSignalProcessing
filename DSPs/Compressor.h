@@ -12,14 +12,12 @@ class Compressor : public IDSP<T, SampleRate>
 {
 public:
 	Compressor(void)
-		: m_Ratio(2.0f),
-		  m_Threshold(NORMAL_GAIN),
-		  m_MakeupGain(1.0f)
 	{
 		SetAttackTime(10 ms);
 		SetReleaseTime(100 ms);
-		SetRatio(2.0f);
-		SetThreshold(dBGain(-12));
+		SetRatio(4);
+		SetThreshold(dBGain(-18));
+		SetMakeupGain(NORMAL_GAIN);
 	}
 
 	//[100ns, 500ms]
@@ -46,10 +44,10 @@ public:
 		return m_EnvelopeFollowerFilter.GetReleaseTime();
 	}
 
-	//[1, 40]
+	//[1, 10]
 	void SetRatio(float Value)
 	{
-		ASSERT(1 <= Value && Value <= 40, "Invalid Value %f", Value);
+		ASSERT(1 <= Value && Value <= 10, "Invalid Value %f", Value);
 
 		m_Ratio = Value;
 	}
@@ -76,7 +74,6 @@ public:
 		ASSERT(NORMAL_GAIN <= Value && Value <= 24, "Invalid Value %f", Value);
 
 		m_MakeupGain = Value;
-		m_MakeupGainLinear = m_MakeupGain;
 	}
 	dBGain GetMakeupGain(void) const
 	{
@@ -89,13 +86,14 @@ public:
 		{
 			dBGain envelop = (LinearGain)m_EnvelopeFollowerFilter.Process(Math::Absolute(Buffer[i]));
 
-			dBGain gainReduction = dBGain(0);
+			dBGain gainReduction;
 			if (envelop > m_Threshold)
-				gainReduction = dBGain((1.0f - (1.0f / m_Ratio)) * (m_Threshold - envelop));
+				gainReduction = dBGain(((1 / m_Ratio) - 1) * (envelop - m_Threshold));
 
-			float multiplier = LinearGain(gainReduction) * m_MakeupGainLinear;
+			LinearGain totalGain = gainReduction + m_MakeupGain;
 
-			Buffer[i] = Math::SoftClip(Buffer[i] * multiplier);
+			Buffer[i] *= totalGain;
+			// Buffer[i] = Math::SoftClip(Buffer[i] * totalGain);
 		}
 	}
 
@@ -104,7 +102,6 @@ private:
 	float m_Ratio;
 	dBGain m_Threshold;
 	dBGain m_MakeupGain;
-	LinearGain m_MakeupGainLinear;
 };
 
 #endif

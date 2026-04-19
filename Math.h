@@ -409,8 +409,16 @@ public:
 #ifdef FAST_MATH
 		return (T)Power2(Value * 1.4426950408);
 #else
-		return (T)expf(Value);
+		return AccurateExponential(Value);
 #endif
+	}
+
+	template <typename T>
+	static T AccurateExponential(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return (T)std::exp(Value);
 	}
 
 	template <typename T, typename U>

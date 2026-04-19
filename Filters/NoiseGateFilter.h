@@ -18,7 +18,7 @@ public:
 		SetHysteresis(dBGain(6));
 		SetSmoothing(0.01);
 		SetAttackTime(20 ms);
-		SetReleaseTime(70 ms);
+		SetReleaseTime(200 ms);
 	}
 
 	//[100ns, 100ms]
@@ -107,7 +107,7 @@ public:
 private:
 	void UpdateCloseThreshold(void)
 	{
-		m_LinearCloseThreshold = (LinearGain)dBGain(m_Threshold - m_Hysteresis);
+		m_LinearCloseThreshold = (LinearGain)(m_Threshold - m_Hysteresis);
 	}
 
 private:

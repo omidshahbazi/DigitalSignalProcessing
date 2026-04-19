@@ -15,7 +15,7 @@ public:
 		  m_ReleaseTime(0),
 		  m_AttackSlope(0),
 		  m_ReleaseSlope(0),
-		  m_Envelope(0.1)
+		  m_Envelope(0)
 	{
 		SetAttackTime(1 ms);
 		SetReleaseTime(10 ms);
@@ -28,7 +28,7 @@ public:
 
 		m_AttackTime = Value;
 
-		m_AttackSlope = Math::Exponential(-(1.0F / SampleRate) / m_AttackTime);
+		m_AttackSlope = Math::AccurateExponential(-(1.0F / SampleRate) / m_AttackTime);
 	}
 	float GetAttackTime(void) const
 	{
@@ -42,7 +42,7 @@ public:
 
 		m_ReleaseTime = Value;
 
-		m_ReleaseSlope = Math::Exponential(-(1.0F / SampleRate) / m_ReleaseTime);
+		m_ReleaseSlope = Math::AccurateExponential(-(1.0F / SampleRate) / m_ReleaseTime);
 	}
 	float GetReleaseTime(void) const
 	{

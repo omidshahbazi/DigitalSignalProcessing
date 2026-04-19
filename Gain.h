@@ -21,6 +21,16 @@ public:
 		return m_Value;
 	}
 
+	LinearGain operator+(const LinearGain &Other)
+	{
+		return LinearGain(m_Value + Other.m_Value);
+	}
+
+	LinearGain operator-(const LinearGain &Other)
+	{
+		return LinearGain(m_Value - Other.m_Value);
+	}
+
 private:
 	float m_Value = 1;
 };
@@ -41,6 +51,16 @@ public:
 	operator float(void) const
 	{
 		return m_Value;
+	}
+
+	dBGain operator+(const dBGain &Other)
+	{
+		return dBGain(m_Value + Other.m_Value);
+	}
+
+	dBGain operator-(const dBGain &Other)
+	{
+		return dBGain(m_Value - Other.m_Value);
 	}
 
 private:
