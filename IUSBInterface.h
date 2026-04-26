@@ -8,10 +8,10 @@
 class IUSBInterface
 {
 public:
-	typedef ContextCallback<void, const uint8*, uint32> EventHandler;
+	typedef ContextCallback<void, const uint8 *, uint16> EventHandler;
 
 public:
-	virtual void Transmit(const uint8* Buffer, uint32 Length) = 0;
+	virtual void Transmit(const uint8 *Buffer, uint16 Length) const = 0;
 
 	virtual void SetCallback(EventHandler Callback) = 0;
 };

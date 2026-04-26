@@ -7,7 +7,6 @@
 #include "../Debug.h"
 
 #ifdef ARM_SIMD_BIQUAD
-#define ARM_MATH_LOOPUNROLL
 #include "arm_math.h"
 
 static constexpr uint8 ARM_SIMD_BIQUAD_STATE_COUNT = 4;

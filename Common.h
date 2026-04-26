@@ -227,17 +227,15 @@ static cstr GetFrenchNoteName(uint8 MIDINumber)
 
 #define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
 
-#ifdef MAX_FRAME_LENGTH
-static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
-#else
+#ifndef MAX_FRAME_LENGTH
 #define MAX_FRAME_LENGTH 64
 #endif
+static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
 
 #ifdef STANDARD_UP_SAMPLE_FACTOR
-static_assert(STANDARD_UP_SAMPLE_FACTOR > 1, "Invalid STANDARD_UP_SAMPLE_FACTOR defined");
-#else
 #define STANDARD_UP_SAMPLE_FACTOR 2
 #endif
+static_assert(STANDARD_UP_SAMPLE_FACTOR > 1, "Invalid STANDARD_UP_SAMPLE_FACTOR defined");
 
 #define CLONE_BUFFER(Name)                                                                                      \
 	ASSERT(MAX_FRAME_LENGTH >= Count, "Insofficient buffer size for " #Name " %i<%i", MAX_FRAME_LENGTH, Count); \
