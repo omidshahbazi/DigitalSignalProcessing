@@ -158,7 +158,7 @@ public:
 	}
 	Frequency GetHighCutFrequency(void) const
 	{
-		return m_HighPassFilter.GetHighCutFrequency();
+		return m_LowPassFilter.GetHighCutFrequency();
 	}
 
 	bool GetIsLastSample(void) const

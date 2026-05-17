@@ -20,6 +20,12 @@ public:
 	static constexpr double LOG_NATURAL_2 = 0.69314718;
 	static constexpr double HALF_LOG_NATURAL_2 = LOG_NATURAL_2 * 0.5;
 
+	struct MIDIInfo
+	{
+		float MIDI;
+		uint8 Octave;
+	};
+
 #ifdef FAST_MATH
 private:
 	class LookupTable
@@ -541,6 +547,40 @@ public:
 		return Clamp(Value, BottomThreshold, TopThreshold);
 	}
 
+	// Factor: [0, 1)
+	// Asymmetry [-1, 1]
+	template <typename T>
+	static T SoftHardClip(T Value, float Asymmetry = 0)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		Value *= SideFactor;
+
+		if (Value > 1)
+			return 1;
+
+		if (Value < -1)
+			return -1;
+
+		return Value - (0.33333333333) * Power(Value, 3);
+	}
+
+	// Asymmetry [-1, 1]
+	template <typename T>
+	static T GermaniumDiodeClip(T Value, float Asymmetry = 0)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		Value *= SideFactor;
+
+		if (Absolute(Value) < 1.25)
+			return Value - (0.15 * Value * Value * Value);
+
+		return (Value > 0) ? 1 : -1;
+	}
+
 	template <typename T>
 	static T dBToLinear(T Value)
 	{
@@ -604,14 +644,19 @@ public:
 	// The integer MIDI note (440 -> 69 (A4))
 	// The deviation in cents +/-0.5
 	template <typename T>
-	static T FrequencyToMidi(T Value, T A4Frequencey = NOTE_A4)
+	static MIDIInfo FrequencyToMIDI(T Value, T A4Frequencey = NOTE_A4)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		if (Value <= 0)
-			return 0;
+		MIDIInfo info = {};
 
-		return Clamp(12 * Log2(Value / A4Frequencey) + 69, 0, 128);
+		if (Value > 0)
+		{
+			info.MIDI = Clamp(12 * Log2(Value / A4Frequencey) + 69, 0, 128);
+			info.Octave = uint8(info.MIDI / 12) - 1;
+		}
+
+		return info;
 	}
 
 	template <typename T>

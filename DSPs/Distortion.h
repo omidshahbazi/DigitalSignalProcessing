@@ -8,6 +8,7 @@
 #include "../Filters/HighPassFilter.h"
 #include "../Filters/LowPassFilter.h"
 
+//https://baltic-lab.com/2023/08/dsp-diode-clipping-algorithm-for-overdrive-and-distortion-effects/#:~:text=The%20easiest%20way%20to%20implement,of%20input%20voltage%20shown%20(blue)
 template <typename T, uint32 SampleRate>
 class Distortion : public IDSP<T, SampleRate>
 {
@@ -105,7 +106,8 @@ public:
 			m_PreFilter.Process(upBuffer, upBufferLength);
 
 			for (uint8 i = 0; i < upBufferLength; ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i] * m_PreGain, 0.7, m_AsymmetryLevel);
+				// upBuffer[i] = Math::HardClip(upBuffer[i] * m_PreGain, 0.7, m_AsymmetryLevel);
+				upBuffer[i] = Math::GermaniumDiodeClip(upBuffer[i] * m_PreGain, m_AsymmetryLevel);
 
 			m_PostFilter.Process(upBuffer, upBufferLength);
 			m_ToneFilter.Process(upBuffer, upBufferLength);

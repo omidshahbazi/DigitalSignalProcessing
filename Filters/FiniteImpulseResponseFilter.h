@@ -42,21 +42,30 @@ public:
 
 	void SetData(const T *Data, uint16 Length)
 	{
+		ASSERT(Data != nullptr, "Invalid Data");
+		ASSERT(Length != 0, "Invalid Length %u", Length);
 		ASSERT(Length <= MaxTaps, "Invalid Length %u", Length);
 
-		if (Data == nullptr || Length == 0)
-		{
-			static const T SingleTap = 1;
-			Data = &SingleTap;
-			Length = 1;
-		}
-
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
-		arm_fir_init_f32(&m_Instance, Length, Data, m_State, FrameLength);
+		m_Instance.numTaps = Length;
+		m_Instance.pCoeffs = Data;
+		// arm_fir_init_f32(&m_Instance, Length, Data, m_State, FrameLength);
 #else
 		m_Coefficients = Data;
 		m_TapCount = Length;
 #endif
+	}
+
+	void SetBypass(void)
+	{
+		static const T SingleTap = 1;
+		SetData(&SingleTap, 1);
+	}
+
+	void SetMute(void)
+	{
+		static const T SingleTap = 0;
+		SetData(&SingleTap, 1);
 	}
 
 	void Process(T *Buffer, uint8 Count) override
