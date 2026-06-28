@@ -41,7 +41,7 @@ public:
 		}
 	}
 
-	using Filter<T, SampleRate>::Process;
+	FILTER_FORWARD_DECLARATION()
 
 private:
 	float m_PhaseIncrement[6];

@@ -27,4 +27,7 @@ public:
 	}
 };
 
+#define FILTER_FORWARD_DECLARATION() \
+	using Filter<T, SampleRate>::Process;
+
 #endif

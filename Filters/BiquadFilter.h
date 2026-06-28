@@ -33,14 +33,14 @@ static const LogarithmicOctave OCTAVE_MINIMUM(0.1442);
 static const LogarithmicOctave OCTAVE_NORMAL(1.41);
 static const LogarithmicOctave OCTAVE_MAXIMUM(10);
 
-enum class BiquadFilterDesign : uint8
+enum class BiquadFilterDesigns : uint8
 {
 	Identical = 0,
 	Butterworth,
 	LinkwitzRiley
 };
 
-template <typename T, uint32 SampleRateValue, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRateValue, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadFilter : public Filter<T, SampleRateValue>
 {
 	static_assert(StageCount != 0, "StageCount cannot be 0");
@@ -665,16 +665,16 @@ private:
 
 		switch (Design)
 		{
-		case BiquadFilterDesign::Identical:
+		case BiquadFilterDesigns::Identical:
 			return (ValueType)Base;
 
-		case BiquadFilterDesign::Butterworth:
+		case BiquadFilterDesigns::Butterworth:
 		{
 			const float angle = (2 * StageIndex + 1) * Math::PI_VALUE / (2 * n);
 			return 1 / (2 * Math::Sin(angle));
 		}
 
-		case BiquadFilterDesign::LinkwitzRiley:
+		case BiquadFilterDesigns::LinkwitzRiley:
 		{
 			const float angle = (2 * (StageIndex / 2) + 1) * Math::PI_VALUE / n;
 			return 1 / (2 * Math::Sin(angle));
@@ -707,7 +707,7 @@ private:
 #endif
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadBasedFilter : protected BiquadFilter<T, SampleRate, StageCount, Design>
 {
 public:
@@ -715,8 +715,8 @@ public:
 	{
 		this->UpdateCoefficients();
 	}
-
-	using Filter<T, SampleRate>::Process;
+	
+	FILTER_FORWARD_DECLARATION()
 
 protected:
 	virtual void UpdateCoefficients(void)
@@ -724,7 +724,7 @@ protected:
 	}
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadBandBasedFilter : public BiquadBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
@@ -845,7 +845,7 @@ protected:
 	FrequencyBand m_Band;
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadCutoffBasedFilter : public BiquadBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
@@ -878,7 +878,7 @@ protected:
 	Frequency m_Cutoff;
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadCutoffPassBasedFilter : public BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
@@ -933,7 +933,7 @@ protected:
 	QualityFactor m_Quality;
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadCutoffShelfBasedFilter : public BiquadCutoffBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
@@ -1007,7 +1007,7 @@ protected:
 	SlopeFactor m_Slope;
 };
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesign Design = BiquadFilterDesign::Identical>
+template <typename T, uint32 SampleRate, uint8 StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadEQBasedFilter : public BiquadBandBasedFilter<T, SampleRate, StageCount, Design>
 {
 private:
