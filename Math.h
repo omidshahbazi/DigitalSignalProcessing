@@ -34,18 +34,23 @@ private:
 	private:
 		static constexpr uint16 Size = 512;
 		static constexpr float SinScale = (Size - 1) / TWO_PI_VALUE;
-		static constexpr float TanHRange = 3.0;
-		static constexpr float TanHScale = (Size - 1) / (2.0 * TanHRange);
+		static constexpr float TanHRange = 3;
+		static constexpr float TanHScale = (Size - 1) / (2 * TanHRange);
 
 	public:
 		LookupTable(void)
 		{
 			for (uint16 i = 0; i < Size; i++)
 			{
-				m_SinLUT[i] = std::sin((TWO_PI_VALUE * i) / (Size - 1));
-				m_TanHLUT[i] = std::tanh(-TanHRange + (2 * TanHRange * i) / (Size - 1));
-				m_LogLUT[i] = std::log(1.0f + (float)i / (Size - 1));
+				const float Ratio = (float)i / (Size - 1);
+
+				m_SinLUT[i] = std::sin(TWO_PI_VALUE * Ratio);
+				m_TanHLUT[i] = std::tanh(-TanHRange + (2 * TanHRange) * Ratio);
+				m_LogLUT[i] = std::log(1 + Ratio);
 			}
+
+			m_TanHLUT[0] = -1;
+			m_TanHLUT[Size - 1] = 1;
 		}
 
 		template <typename T>
@@ -83,7 +88,9 @@ private:
 
 			float pos = (Value + TanHRange) * TanHScale;
 			uint16 index = static_cast<uint16>(pos);
-			uint16 next = (index + 1) % Size;
+			if (index >= Size)
+				index = Size - 1;
+			uint16 next = (index < Size - 1) ? index + 1 : index;
 			float frac = pos - index;
 
 			return m_TanHLUT[index] + (frac * (m_TanHLUT[next] - m_TanHLUT[index]));
@@ -124,7 +131,7 @@ private:
 		float m_LogLUT[Size];
 	};
 
-	static const LookupTable& GetLUT(void)
+	static const LookupTable &GetLUT(void)
 	{
 		static LookupTable lut;
 		return lut;
@@ -172,13 +179,13 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto Min(T A, U B) -> decltype(A* B)
+	static auto Min(T A, U B) -> decltype(A * B)
 	{
 		return (A < B ? A : B);
 	}
 
 	template <typename T, typename U>
-	static auto Max(T A, U B) -> decltype(A* B)
+	static auto Max(T A, U B) -> decltype(A * B)
 	{
 		return (A > B ? A : B);
 	}
@@ -190,7 +197,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Clamp(T Value, U Min, V Max) -> decltype(Value* Min* Max)
+	static auto Clamp(T Value, U Min, V Max) -> decltype(Value * Min * Max)
 	{
 		if (Value < Min)
 			return Min;
@@ -220,7 +227,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Wrap(T Value, U Min, V Max) -> decltype(Value* Min* Max)
+	static auto Wrap(T Value, U Min, V Max) -> decltype(Value * Min * Max)
 	{
 		ASSERT_ON_NOT_FLOATING_TYPE(T);
 		ASSERT_ON_NOT_FLOATING_TYPE(U);
@@ -235,13 +242,13 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
+	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		return (Value - OldMin) / (float)(OldMax - OldMin) * (float)(NewMax - NewMin) + NewMin;
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLinearToLogarithmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
+	static auto MapLinearToLogarithmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		float newMinLog = Log2(NewMin);
 		float newMaxLog = Log2(NewMax);
@@ -250,7 +257,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLogarithmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
+	static auto MapLogarithmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
 	{
 		float oldMinLog = Log2(OldMin);
 		float oldMaxLog = Log2(OldMax);
@@ -259,7 +266,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Lerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
+	static auto Lerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
 	{
 		ASSERT_ON_FLOATING_TYPE(V);
 
@@ -269,7 +276,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
+	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
 	{
 		ASSERT_ON_FLOATING_TYPE(V);
 
@@ -277,7 +284,7 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto FrequencyDiff(T Min, U Max) -> decltype(Min* Max)
+	static auto FrequencyDiff(T Min, U Max) -> decltype(Min * Max)
 	{
 		return Log2(Max / Min);
 	}
@@ -429,7 +436,7 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto Power(T Value, U N) -> decltype(Value* N)
+	static auto Power(T Value, U N) -> decltype(Value * N)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -482,7 +489,7 @@ public:
 
 	// Amount [-1, 1]
 	template <typename T>
-	static float GetAsymmetricGain(T Value, float Amount)
+	static float GetSignedAsymmetryScale(T Value, float Amount)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -492,88 +499,110 @@ public:
 		return (Value > 0 ? PositiveScale : NegativeScale);
 	}
 
+	// Gain [1, ...]
 	// Asymmetry [-1, 1]
-	template <typename T>
-	static T SoftClip(T Value, float Asymmetry = 0)
+	template <typename T, bool EvenHarmonics = false>
+	static T SoftClip(T Value, T Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		if constexpr (EvenHarmonics)
+		{
+			float input = (float)Value * Gain;
 
-		return TanH(Value * SideFactor);
+			return (T)TanH(input + (Asymmetry * input * input)) / TanH(Gain);
+		}
+		else
+		{
+			const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
+
+			return TanH(Value * Gain * SideFactor) / TanH(Gain);
+		}
 	}
 
+	// Gain [1, ...]
 	// Factor [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T CrunchClip(T Value, float Factor = 0, float Asymmetry = 0)
+	static T CrunchClip(T Value, T Gain = 1, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = Clamp(Factor * GetAsymmetricGain(Value, Asymmetry), 0, 0.99);
+		const float SideFactor = Clamp(Factor * GetSignedAsymmetryScale(Value, Asymmetry), 0, 0.99);
 
-		return Value / ((1 - SideFactor) + Absolute(Value));
+		return Value * Gain / ((1 - SideFactor) + Absolute(Value * Gain));
 	}
 
+	// Gain [1, ...]
+	// Asymmetry [-1, 1]
 	template <typename T>
-	static T AgressiveClip(T Value, float Asymmetry = 0)
+	static T GentleClip(T Value, T Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
 
-		return Value / (1 + Absolute(Value * SideFactor));
+		return Value * Gain / (1 + Absolute(Value * Gain * SideFactor));
 	}
 
+	// Gain [1, ...]
+	// Asymmetry [-1, 1]
 	template <typename T>
-	static T HarshClip(T Value, float Asymmetry = 0)
+	static T HarshClip(T Value, T Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
 
-		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value * SideFactor)));
+		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value * Gain * SideFactor)));
 	}
 
+	// Gain [1, ...]
 	// Factor: [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T HardClip(T Value, float Factor = 0, float Asymmetry = 0)
+	static T HardClip(T Value, T Gain = 1, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float BottomThreshold = -Factor * GetAsymmetricGain(1.0, Asymmetry);
-		const float TopThreshold = Factor * GetAsymmetricGain(-1.0, Asymmetry);
+		const float BottomThreshold = -(1 - Factor) * GetSignedAsymmetryScale(1.0, Asymmetry);
+		const float TopThreshold = (1 - Factor) * GetSignedAsymmetryScale(-1.0, Asymmetry);
 
-		return Clamp(Value, BottomThreshold, TopThreshold);
+		return Clamp(Value * Gain, BottomThreshold, TopThreshold);
 	}
 
+	// Gain [1, ...]
 	// Factor: [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T SoftHardClip(T Value, float Asymmetry = 0)
+	static T SoftHardClip(T Value, T Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		Value *= Gain;
+
+		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
 		Value *= SideFactor;
 
 		if (Value > 1)
-			return 1;
+			return 2 / 3.0;
 
 		if (Value < -1)
-			return -1;
+			return -2 / 3.0;
 
 		return Value - (0.33333333333) * Power(Value, 3);
 	}
 
+	// Gain [1, ...]
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T GermaniumDiodeClip(T Value, float Asymmetry = 0)
+	static T GermaniumDiodeClip(T Value, T Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		const float SideFactor = GetAsymmetricGain(Value, Asymmetry);
+		Value *= Gain;
+
+		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
 		Value *= SideFactor;
 
 		if (Absolute(Value) < 1.25)
@@ -660,14 +689,20 @@ public:
 		return info;
 	}
 
-	template <typename T, bool DoLerp = false>
-	static void UpSample(const T* Input, uint16 Count, T* Output, uint8 Ratio)
+	template <typename T, bool ZeroStuffing = true>
+	static void UpSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
 	{
-		Memory::Set(Output, 0, Count * Ratio);
-
-		if constexpr (DoLerp)
+		if constexpr (ZeroStuffing)
 		{
-			const float invRatio = 1.0 / Ratio;
+			Memory::Set(Output, 0, Count * Ratio);
+
+			for (uint16 i = 0; i < Count; ++i)
+				Output[i * Ratio] = Input[i];
+		}
+		else
+		{
+			const float InvRatio = 1.0 / Ratio;
+
 			for (uint16 i = 0; i < Count - 1; ++i)
 			{
 				T current = Input[i];
@@ -675,35 +710,50 @@ public:
 
 				for (uint16 j = 0; j < Ratio; ++j)
 				{
-					float fraction = j * invRatio;
+					float fraction = j * InvRatio;
 
 					Output[i * Ratio + j] = Lerp(current, next, fraction);
 				}
 			}
+
+			Output[(Count * Ratio) - 1] = Input[Count - 1];
 		}
-		else
-			for (uint16 i = 0; i < Count; ++i)
-				Output[i * Ratio] = Input[i];
 	}
 
-	template <typename T, bool DoLerp = false>
-	static void UpSampleMakeup(T* Buffer, uint16 Count, uint8 Ratio)
+	template <typename T>
+	static void UpSampleMakeup(T *Buffer, uint16 Count, uint8 Ratio)
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] *= Ratio;
 	}
 
-	template <typename T>
-	static void DownSample(const T* Input, uint16 Count, T* Output, uint8 Ratio)
+	template <typename T, bool ZeroStuffing = true>
+	static void DownSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
 	{
 		uint16 outputIndex = 0;
 
-		for (uint16 i = 0; i < Count; i += Ratio)
-			Output[outputIndex++] = Input[i];
+		if constexpr (ZeroStuffing)
+		{
+			for (uint16 i = 0; i < Count; i += Ratio)
+				Output[outputIndex++] = Input[i];
+		}
+		else
+		{
+			const float InvRatio = 1.0f / (float)Ratio;
+
+			for (uint16 i = 0; i < Count; i += Ratio)
+			{
+				float sum = 0;
+				for (uint8 j = i; j < i + Ratio; ++j)
+					sum += (float)Input[j];
+
+				Output[outputIndex++] = (T)(sum * InvRatio);
+			}
+		}
 	}
 
 	template <typename T>
-	static T GetMeanValue(T* Buffer, uint16 Count)
+	static T GetMeanValue(T *Buffer, uint16 Count)
 	{
 		if (Buffer == nullptr)
 			return 0;
@@ -711,7 +761,7 @@ public:
 		if (Count == 0)
 			return 0;
 
-		T* middle = Buffer + (Count / 2);
+		T *middle = Buffer + (Count / 2);
 
 		std::nth_element(Buffer, middle, Buffer + Count);
 
@@ -729,7 +779,7 @@ public:
 	}
 
 	template <typename T, uint16 SampleCount>
-	static void HannWindow(T* Buffer, uint16 Count)
+	static void HannWindow(T *Buffer, uint16 Count)
 	{
 		for (uint16 i = 0; i < Count; ++i)
 			Buffer[i] *= HannWindow(Buffer[i], i);

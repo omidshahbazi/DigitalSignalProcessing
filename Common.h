@@ -233,7 +233,7 @@ static cstr GetFrenchNoteName(uint8 MIDINumber)
 static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
 
 #ifdef STANDARD_UP_SAMPLE_FACTOR
-#define STANDARD_UP_SAMPLE_FACTOR 2
+#define STANDARD_UP_SAMPLE_FACTOR 4
 #endif
 static_assert(STANDARD_UP_SAMPLE_FACTOR > 1, "Invalid STANDARD_UP_SAMPLE_FACTOR defined");
 
