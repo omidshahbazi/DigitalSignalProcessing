@@ -49,7 +49,7 @@ public:
 
 		m_Tone = Value;
 
-		m_PostFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(500, 5 KHz, m_Tone));
+		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(500, 5 KHz, m_Tone));
 	}
 	float GetTone(void) const
 	{
@@ -98,20 +98,20 @@ public:
 
 		m_DCBlockerFilter.Process(Buffer, Count);
 
-		m_PostFilter.Process(Buffer, Count);
-
-		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
+		m_ToneFilter.Process(Buffer, Count);
 
 		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] *= m_LinearGain;
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
 	}
 
 private:
 	HighPassFilter<T, SampleRate> m_PreFilter;
 	UpSamplerFilter<T, SampleRate, FrameLength, STANDARD_UP_SAMPLE_FACTOR, true> m_UpSampler;
 	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
-	LowPassFilter<T, SampleRate> m_PostFilter;
+	LowPassFilter<T, SampleRate> m_ToneFilter;
 
 	float m_Drive;
 	float m_Asymmetry;

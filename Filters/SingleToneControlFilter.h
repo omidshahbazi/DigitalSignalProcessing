@@ -35,8 +35,8 @@ public:
 
 		const dBGain Gain(6);
 
-		m_LowShelfFilter.SetGain((dBGain)Math::Map(1 - Value, 0.0F, 1, -Gain, Gain));
-		m_HighShelfFilter.SetGain((dBGain)Math::Map(Value, 0.0F, 1, -Gain, Gain));
+		m_LowShelfFilter.SetGain((dBGain)Math::Map(1 - m_Tone, 0.0F, 1, -Gain, Gain));
+		m_HighShelfFilter.SetGain((dBGain)Math::Map(m_Tone, 0.0F, 1, -Gain, Gain));
 	}
 	float GetTone(void) const
 	{

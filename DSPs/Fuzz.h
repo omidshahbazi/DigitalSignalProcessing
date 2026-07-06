@@ -5,6 +5,7 @@
 #include "IDSP.h"
 #include "../Math.h"
 #include "../Debug.h"
+#include "../Filters/UpSamplerFilter.h"
 #include "../Filters/HighPassFilter.h"
 #include "../Filters/LowPassFilter.h"
 
@@ -18,7 +19,7 @@ public:
 		  m_Tone(0),
 		  m_WetRate(0)
 	{
-		m_PostFilter.SetParameters(Frequency(200), QualityFactor(1.1));
+		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
 
 		SetDrive(0.5);
 		SetTone(0.5);
@@ -35,6 +36,7 @@ public:
 
 		m_PreGain = (LinearGain)Math::Lerp(10, 500, m_Drive);
 		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
+		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 800.0, m_Drive));
 	}
 	float GetDrive(void) const
 	{
@@ -97,32 +99,31 @@ public:
 	{
 		CLONE_BUFFER(dryBuffer);
 
-		CREATE_STANDARD_UP_SAMPLE_BUFFER(upBuffer);
+		m_PreFilter.Process(Buffer, Count);
+
+		T *upBuffer = m_UpSampler.Process(Buffer);
 		{
-			Math::UpSample(Buffer, Count, upBuffer, upBufferFactor);
+			for (uint8 i = 0; i < m_UpSampler.GetCount(); ++i)
+				upBuffer[i] = Math::HardClip(upBuffer[i], (float)m_PreGain, 0.7, m_AsymmetryLevel) * m_InvertedPreGain;
 
-			for (uint8 i = 0; i < upBufferLength; ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i] * m_PreGain, 0.7, m_AsymmetryLevel);
-
-			m_PostFilter.Process(upBuffer, upBufferLength);
-			m_ToneFilter.Process(upBuffer, upBufferLength);
-
-			for (uint8 i = 0; i < upBufferLength; ++i)
-				upBuffer[i] *= m_InvertedPreGain;
-
-			Math::DownSample(upBuffer, upBufferLength, Buffer, upBufferFactor);
+			m_UpSampler.DownSample(Buffer);
 		}
 
-		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
+		m_DCBlockerFilter.Process(Buffer, Count);
+		m_ToneFilter.Process(Buffer, Count);
 
 		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] *= m_LinearGain;
+
+		for (uint8 i = 0; i < Count; ++i)
+			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
 	}
 
 private:
-	HighPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_PostFilter;
-	LowPassFilter<T, SampleRate * STANDARD_UP_SAMPLE_FACTOR> m_ToneFilter;
+	HighPassFilter<T, SampleRate> m_PreFilter;
+	UpSamplerFilter<T, SampleRate, FrameLength, STANDARD_UP_SAMPLE_FACTOR, true> m_UpSampler;
+	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
+	LowPassFilter<T, SampleRate> m_ToneFilter;
 
 	float m_Drive;
 	LinearGain m_PreGain;
