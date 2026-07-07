@@ -18,7 +18,7 @@ public:
 	};
 
 public:
-	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false, bool USBTransmissionMode = false, bool WaitForDebugger = false) = 0;
+	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false, bool WaitForDebugger = false) = 0;
 	virtual void StartAudio(AudioPassthrough Callback) = 0;
 
 	virtual void *Allocate(uint32 Size, bool OnSDRAM = false) = 0;

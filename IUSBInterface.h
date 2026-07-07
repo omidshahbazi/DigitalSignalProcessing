@@ -11,6 +11,10 @@ public:
 	typedef ContextCallback<void, const uint8 *, uint16> EventHandler;
 
 public:
+	virtual void Start(void) = 0;
+
+	virtual void Stop(void) = 0;
+
 	virtual void Transmit(const uint8 *Buffer, uint16 Length) const = 0;
 
 	virtual void SetCallback(EventHandler Callback) = 0;
