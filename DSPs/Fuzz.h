@@ -22,6 +22,7 @@ public:
 		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
 
 		SetDrive(0.5);
+		SetAsymmetryLevel(0);
 		SetTone(0.5);
 		SetGain(NORMAL_GAIN);
 		SetWetRate(1);
@@ -36,7 +37,7 @@ public:
 
 		m_PreGain = (LinearGain)Math::Lerp(10, 500, m_Drive);
 		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
-		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 800.0, m_Drive));
+		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 400.0, m_Drive));
 	}
 	float GetDrive(void) const
 	{
@@ -104,7 +105,7 @@ public:
 		T *upBuffer = m_UpSampler.Process(Buffer);
 		{
 			for (uint8 i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i], (float)m_PreGain, 0.7, m_AsymmetryLevel) * m_InvertedPreGain;
+				upBuffer[i] = Math::HardClip(upBuffer[i], m_PreGain, 0.7, m_AsymmetryLevel) * m_InvertedPreGain;
 
 			m_UpSampler.DownSample(Buffer);
 		}

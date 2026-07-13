@@ -1,24 +1,28 @@
 #pragma once
-#ifndef OVERDRIVE_H
-#define OVERDRIVE_H
+#ifndef BIG_MUFF_H
+#define BIG_MUFF_H
 
 #include "IDSP.h"
-#include "../Debug.h"
 #include "../Math.h"
+#include "../Debug.h"
 #include "../Filters/UpSamplerFilter.h"
-#include "../Filters/LowPassFilter.h"
 #include "../Filters/HighPassFilter.h"
+#include "../Filters/LowPassFilter.h"
+#include "../Filters/ToneStackFilter.h"
 
 template <typename T, uint32 SampleRate>
-class Overdrive : public IDSP<T, SampleRate>
+class BigMuff : public IDSP<T, SampleRate>
 {
 public:
-	Overdrive(void)
+	BigMuff(void)
 		: m_Drive(0),
-		  m_Tone(0),
-		  m_WetRate(0)
+		m_Tone(0),
+		m_WetRate(0)
 	{
+		m_PreFilter.SetCutoffFrequency(Frequency(200));
 		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
+		m_ToneStackFilter.SetLowPassFrequency(Frequency(200));
+		m_ToneStackFilter.SetHighPassFrequency(Frequency(1.4 KHz));
 
 		SetDrive(0.5);
 		SetTone(0.5);
@@ -33,9 +37,8 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = (LinearGain)Math::Lerp(2, 60, m_Drive);
-		m_Asymmetry = Math::Lerp(0.3, 0.12, m_Drive);
-		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 650.0, m_Drive));
+		m_PreGain = (LinearGain)Math::SquareRoot(Math::Lerp(10, 800, m_Drive));
+		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
 	}
 	float GetDrive(void) const
 	{
@@ -47,13 +50,11 @@ public:
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_Tone = Value;
-
-		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(500, 5 KHz, m_Tone));
+		m_ToneStackFilter.SetTone(Value);
 	}
 	float GetTone(void) const
 	{
-		return m_Tone;
+		return m_ToneStackFilter.GetTone();
 	}
 
 	//[-12dB, 12dB]
@@ -82,40 +83,39 @@ public:
 		return m_WetRate;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8 Count) override
 	{
 		CLONE_BUFFER(dryBuffer);
 
 		m_PreFilter.Process(Buffer, Count);
 
-		T *upBuffer = m_UpSampler.Process(Buffer);
+		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
 			for (uint8 i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = Math::SoftClip<T, true>(upBuffer[i], m_PreGain, m_Asymmetry);
+			{
+				upBuffer[i] = Math::SoftClip(upBuffer[i], m_PreGain, 0.1);
+				upBuffer[i] = Math::SoftClip(upBuffer[i], m_PreGain, 0.05) * m_InvertedPreGain;
+			}
 
 			m_UpSampler.DownSample(Buffer);
 		}
 
 		m_DCBlockerFilter.Process(Buffer, Count);
-
-		m_ToneFilter.Process(Buffer, Count);
-
-		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] *= m_LinearGain;
+		m_ToneStackFilter.Process(Buffer, Count);
 
 		for (uint8 i = 0; i < Count; ++i)
-			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
+			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i] * m_LinearGain, m_WetRate);
 	}
 
 private:
 	HighPassFilter<T, SampleRate> m_PreFilter;
 	UpSamplerFilter<T, SampleRate, FrameLength, STANDARD_UP_SAMPLE_FACTOR, true> m_UpSampler;
 	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
-	LowPassFilter<T, SampleRate> m_ToneFilter;
+	ToneStackFilter<T, SampleRate> m_ToneStackFilter;
 
 	float m_Drive;
-	float m_Asymmetry;
 	LinearGain m_PreGain;
+	LinearGain m_InvertedPreGain;
 	float m_Tone;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;

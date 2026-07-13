@@ -10,10 +10,17 @@
 #define CONCAT_INNER(a, b) a##b
 #define CONCAT(a, b) CONCAT_INNER(a, b)
 
-#define TURN_OFF_OPTIMIZER _Pragma("GCC push_options") \
-	_Pragma("GCC optimize (\"O0\")")
-
-#define TURN_ON_OPTIMIZER _Pragma("GCC pop_options")
+#if defined(DEBUG)
+	#define TURN_OFF_OPTIMIZER() \
+ 		_Pragma("GCC push_options") \
+ 		_Pragma("GCC optimize (\"O0\")")
+	#define TURN_ON_OPTIMIZER() _Pragma("GCC pop_options")
+#elif defined(RELEASE)
+	#define TURN_OFF_OPTIMIZER()
+	#define TURN_ON_OPTIMIZER()
+#else
+#error "Neither of DEBUG or RELASE are defined"
+#endif
 
 #define KB *1024
 #define MB *1048576
@@ -64,27 +71,24 @@ struct Color
 public:
 	Color(void)
 		: R(0),
-		  G(0),
-		  B(0),
-		  A(255)
-	{
-	}
+		G(0),
+		B(0),
+		A(255)
+	{}
 
 	Color(uint8 R, uint8 G, uint8 B)
 		: R(R),
-		  G(G),
-		  B(B),
-		  A(255)
-	{
-	}
+		G(G),
+		B(B),
+		A(255)
+	{}
 
 	Color(uint8 R, uint8 G, uint8 B, uint8 A)
 		: R(R),
-		  G(G),
-		  B(B),
-		  A(A)
-	{
-	}
+		G(G),
+		B(B),
+		A(A)
+	{}
 
 	template <typename T>
 	Color operator*(T Value) const
@@ -95,7 +99,7 @@ public:
 	}
 
 	template <typename T>
-	Color &operator*=(T Value)
+	Color& operator*=(T Value)
 	{
 		R = CombineValues(R, Value);
 		G = CombineValues(G, Value);
@@ -147,23 +151,23 @@ public:
 	uint8 A;
 };
 
-static const Color ColorBlack = {0, 0, 0, 255};
-static const Color ColorWhite = {255, 255, 255, 255};
+static const Color ColorBlack = { 0, 0, 0, 255 };
+static const Color ColorWhite = { 255, 255, 255, 255 };
 
-static const Color ColorDarkGray = {100, 100, 100, 255};
-static const Color ColorGray = {127, 127, 127, 255};
-static const Color ColorLightGray = {186, 186, 186, 255};
+static const Color ColorDarkGray = { 100, 100, 100, 255 };
+static const Color ColorGray = { 127, 127, 127, 255 };
+static const Color ColorLightGray = { 186, 186, 186, 255 };
 
-static const Color ColorDarkRed = {100, 0, 0, 255};
-static const Color ColorRed = {186, 0, 0, 255};
-static const Color ColorLightRed = {255, 0, 0, 255};
+static const Color ColorDarkRed = { 100, 0, 0, 255 };
+static const Color ColorRed = { 186, 0, 0, 255 };
+static const Color ColorLightRed = { 255, 0, 0, 255 };
 
-static const Color ColorDarkGreen = {0, 100, 0, 255};
-static const Color ColorGreen = {0, 186, 0, 255};
-static const Color ColorLightGreen = {0, 255, 0, 255};
+static const Color ColorDarkGreen = { 0, 100, 0, 255 };
+static const Color ColorGreen = { 0, 186, 0, 255 };
+static const Color ColorLightGreen = { 0, 255, 0, 255 };
 
-static const Color ColorBlue = {0, 0, 186, 255};
-static const Color ColorLightBlue = {0, 0, 255, 255};
+static const Color ColorBlue = { 0, 0, 186, 255 };
+static const Color ColorLightBlue = { 0, 0, 255, 255 };
 
 static uint16 GetStringLength(cstr Value)
 {
@@ -232,7 +236,7 @@ static cstr GetFrenchNoteName(uint8 MIDINumber)
 #endif
 static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
 
-#ifdef STANDARD_UP_SAMPLE_FACTOR
+#ifndef STANDARD_UP_SAMPLE_FACTOR
 #define STANDARD_UP_SAMPLE_FACTOR 4
 #endif
 static_assert(STANDARD_UP_SAMPLE_FACTOR > 1, "Invalid STANDARD_UP_SAMPLE_FACTOR defined");

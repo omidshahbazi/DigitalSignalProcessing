@@ -502,7 +502,7 @@ public:
 	// Gain [1, ...]
 	// Asymmetry [-1, 1]
 	template <typename T, bool EvenHarmonics = false>
-	static T SoftClip(T Value, T Gain = 1, float Asymmetry = 0)
+	static T SoftClip(T Value, float Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -524,7 +524,7 @@ public:
 	// Factor [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T CrunchClip(T Value, T Gain = 1, float Factor = 0, float Asymmetry = 0)
+	static T CrunchClip(T Value, float Gain = 1, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -536,7 +536,7 @@ public:
 	// Gain [1, ...]
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T GentleClip(T Value, T Gain = 1, float Asymmetry = 0)
+	static T GentleClip(T Value, float Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -548,7 +548,7 @@ public:
 	// Gain [1, ...]
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T HarshClip(T Value, T Gain = 1, float Asymmetry = 0)
+	static T HarshClip(T Value, float Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -561,7 +561,7 @@ public:
 	// Factor: [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T HardClip(T Value, T Gain = 1, float Factor = 0, float Asymmetry = 0)
+	static T HardClip(T Value, float Gain = 1, float Factor = 0, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -575,7 +575,7 @@ public:
 	// Factor: [0, 1)
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T SoftHardClip(T Value, T Gain = 1, float Asymmetry = 0)
+	static T SoftHardClip(T Value, float Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -596,7 +596,7 @@ public:
 	// Gain [1, ...]
 	// Asymmetry [-1, 1]
 	template <typename T>
-	static T GermaniumDiodeClip(T Value, T Gain = 1, float Asymmetry = 0)
+	static T GermaniumDiodeClip(T Value, float Gain = 1, float Asymmetry = 0)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 

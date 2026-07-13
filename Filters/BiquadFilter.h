@@ -1062,6 +1062,8 @@ public:
 		Base::SetParameters(Center, Quality);
 	}
 
+	using Base::SetParameters;
+
 protected:
 	void SetAsPeakEQ(void)
 	{

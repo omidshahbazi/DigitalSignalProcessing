@@ -102,7 +102,7 @@ public:
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
 			for (uint8 i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i], (float)m_PreGain, 0, m_AsymmetryLevel) * m_InvertedPreGain;
+				upBuffer[i] = Math::HardClip(upBuffer[i], m_PreGain, 0, m_AsymmetryLevel) * m_InvertedPreGain;
 
 			m_UpSampler.DownSample(Buffer);
 		}
