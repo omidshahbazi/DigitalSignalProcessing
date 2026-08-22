@@ -5,12 +5,16 @@
 #include "Log.h"
 
 #ifndef STRINGIZE
-#define STRINGIZE(Value) #Value
+#define DEBUG_STRINGIZE_EXPANDED(Value) #Value
+#define DEBUG_STRINGIZE(Value) DEBUG_STRINGIZE_EXPANDED(Value)
 #endif
-#define STRINGIZE_NUMBER(Value) STRINGIZE(Value)
 
 #ifndef DEBUG
 #define DISABLE_ASSERTS
+#endif
+
+#ifndef DEBUG
+#define ENABLE_WAIT_FOR_DEBUGGER
 #endif
 
 #ifdef DISABLE_ASSERTS
@@ -28,6 +32,7 @@
 		if (Expression)                                  \
 			break;                                       \
 		Log::Break(#Expression, Message, ##__VA_ARGS__); \
+		std::abort();									 \
                                                          \
 	} while (false)
 #else
@@ -36,7 +41,8 @@
 	{                                                                                                   \
 		if (Expression)                                                                                 \
 			break;                                                                                      \
-		Log::Break(__FILE__ ":Ln" STRINGIZE_NUMBER(__LINE__) ", " #Expression, Message, ##__VA_ARGS__); \
+		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__); \
+		std::abort();																					\
                                                                                                         \
 	} while (false)
 #endif

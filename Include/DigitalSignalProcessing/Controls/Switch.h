@@ -51,7 +51,7 @@ public:
 protected:
 	virtual void Update(void) override
 	{
-		bool newValue = (DigitalStateRead() == 0b11111111);
+		bool newValue = (DigitalStateRead() == (uint8)-1);
 
 		if (m_TurnedOn == newValue)
 		{

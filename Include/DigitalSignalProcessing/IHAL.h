@@ -18,13 +18,13 @@ public:
 	};
 
 public:
-	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false, bool WaitForDebugger = false) = 0;
+	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false) = 0;
 	virtual void StartAudio(AudioPassthrough Callback) = 0;
 
 	virtual void *Allocate(uint32 Size, bool OnSDRAM = false) = 0;
 	virtual void Deallocate(void *Memory) = 0;
 
-	virtual bool IsAnAnaloglPin(uint8 Pin) const = 0;
+	virtual bool IsAnAnalogPin(uint8 Pin) const = 0;
 	virtual bool IsADigitalPin(uint8 Pin) const = 0;
 
 	virtual bool IsAnInputPin(uint8 Pin) const = 0;
@@ -54,9 +54,10 @@ public:
 
 	virtual void Print(cstr Value) = 0;
 
+	virtual bool IsDebuggerPresent(void) const = 0;
 	virtual void Crash(void) const = 0;
 	virtual void Break(void) const = 0;
-	virtual void Reset(void) const = 0;
+	virtual void Reset(bool InfiniteTime = true) const = 0;
 
 	virtual void Delay(uint16 Ms) const = 0;
 

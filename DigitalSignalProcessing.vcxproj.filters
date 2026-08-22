@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="VisualGDB settings">
+      <UniqueIdentifier>{fbc44b65-369c-45e1-8640-5a80c48ff67f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{5236ec17-c6b0-4b28-9a19-9c43d507fe74}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{75033c8d-dc02-48a6-b6e1-87ea6b62479a}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source\Device-specific files">
+      <UniqueIdentifier>{09aba287-5e82-4499-88d4-77c35f9aec27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\DigitalSignalProcessing">
+      <UniqueIdentifier>{55fe498b-2dee-4060-8127-fad642eeaf36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\DigitalSignalProcessing\Controls">
+      <UniqueIdentifier>{c6c2a31e-ee3a-4df6-a683-e98ab5c9c474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\DigitalSignalProcessing\Drums">
+      <UniqueIdentifier>{18a3a8a5-6a20-464e-a667-7077f7ca1b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\DigitalSignalProcessing\DSPs">
+      <UniqueIdentifier>{2bd7c58a-1d0f-4a0d-b7d0-33bec4810136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\DigitalSignalProcessing\Filters">
+      <UniqueIdentifier>{3490d96d-43c5-4a51-9387-4e19c0e3e11a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="stm32.props">
+      <Filter>Source\Device-specific files</Filter>
+    </None>
+    <None Include="DigitalSignalProcessing-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="DigitalSignalProcessing-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32.xml">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\CompileHelper.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\DigitalSignalProcessing\Bitwise.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Common.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\ContextCallback.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DataTypes.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Debug.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\FastFourierTransformer.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Frequency.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\FrequencyDetector.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Gain.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\IHAL.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\IUSBAudioInterface.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\IUSBInterface.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Log.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Math.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Memory.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Notes.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Profiler.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\Button.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\Control.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\ControlBase.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\ControlFactory.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\DualLED.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\LEDBase.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\Potentiometer.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\Rotary.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\RotaryButton.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\SingleLED.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\Switch.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Controls\TripleLED.h">
+      <Filter>Include\DigitalSignalProcessing\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\Cymbal.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\DrumsMachine.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\DrumsPart.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\Kick.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\Snare.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Drums\Tom.h">
+      <Filter>Include\DigitalSignalProcessing\Drums</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\AutoWah.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\BigMuff.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Chorus.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Compressor.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Distortion.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Flanger.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Fuzz.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\IDSP.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Looper.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\NoiseGate.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Overdrive.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Phaser.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Reverb.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Tremolo.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Wah.h">
+      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\AllPassFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\AttackDecayEnvelopeFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\AttackDecaySustainReleaseEnvelopeFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\BandPassFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\BandStopFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\BiquadFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\BufferFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\BypassFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ClipperDiodeFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\DelayFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\DualToneControlFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\EnvelopeFollowerFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\Filter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\FiniteImpulseResponseFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\HighPassFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\HighShelfFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\LowPassFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\LowShelfFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\MetalNoiseFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\NoiseGateFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\OscillatorFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\PeakEQFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\PeakResonatorFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ResistorCapacitorFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\SignalClipperFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\SingleToneControlFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\TiltEQFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ToneStackFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\TripleToneControlFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\UpSamplerFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\WaveShaperFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\WhiteNoiseFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -17,7 +17,7 @@ public:
 		  m_FilterSwings(FilterSwings),
 		  m_Value(-1)
 	{
-		ASSERT(HAL->IsAnAnaloglPin(Pin), "Pin %i is not an analog pin", Pin);
+		ASSERT(HAL->IsAnAnalogPin(Pin), "Pin %i is not an analog pin", Pin);
 
 		if (m_FilterSwings)
 			BiquadFilter<float, MIN_SAMPLE_RATE>::SetLowPassCoefficients(&m_Filter, Frequency(UpdateRate), QUALITY_FACTOR_CRITICAL_DAMPING);
