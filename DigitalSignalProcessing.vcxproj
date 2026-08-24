@@ -66,6 +66,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
       <CPPLanguageStandard>CPP17</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>Include;Libraries</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ProduceRelocationRecords>true</ProduceRelocationRecords>
@@ -74,6 +75,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ClCompile>
       <CPPLanguageStandard>CPP17</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>Include;Libraries</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ProduceRelocationRecords>true</ProduceRelocationRecords>
