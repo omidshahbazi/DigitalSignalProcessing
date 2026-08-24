@@ -7,7 +7,7 @@
 #include "../Debug.h"
 
 #ifdef ARM_SIMD_BIQUAD
-#include "arm_math.h"
+#include <CMSIS-DSP/Include/arm_math.h>
 
 static constexpr uint8 ARM_SIMD_BIQUAD_STATE_COUNT = 4;
 

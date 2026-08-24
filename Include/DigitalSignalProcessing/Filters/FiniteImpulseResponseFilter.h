@@ -6,7 +6,7 @@
 #include "../Memory.h"
 
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
-#include "arm_math.h"
+#include <CMSIS-DSP/Include/arm_math.h>
 #endif
 
 template <typename T, uint32 SampleRate, uint8 FrameLength, uint16 MaxTaps>

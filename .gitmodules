@@ -1,0 +1,4 @@
+[submodule "CMSIS-DSP"]
+	path = Libraries/CMSIS-DSP
+	url = git@github.com:omidshahbazi/CMSIS-DSP.git
+	branch = main
