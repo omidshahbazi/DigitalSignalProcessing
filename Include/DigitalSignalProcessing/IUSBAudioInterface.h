@@ -4,15 +4,27 @@
 
 #include "Common.h"
 
-template <typename T>
 class IUSBAudioInterface
 {
 public:
-	virtual void Start(void) = 0;
+	enum class USBInterfaces
+	{
+		Internal = 0,
+		External
+	};
+
+public:
+	virtual void Start(USBInterfaces Interface) = 0;
 
 	virtual void Stop(void) = 0;
 
-	virtual void Transmit(const T *BufferL, const T *BufferR, uint8 Count) = 0;
+	virtual void Push(const uint8* BufferL, const uint8* BufferR, uint8 Count) = 0;
+
+	template<typename T>
+	void PushFrame(const T* FrameBufferL, const T* FrameBufferR, uint8 Length)
+	{
+		Push(reinterpret_cast<const uint8*>(FrameBufferL), reinterpret_cast<const uint8*>(FrameBufferR), Length);
+	}
 };
 
 #endif

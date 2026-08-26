@@ -43,10 +43,7 @@ public:
 		: m_Value(Value)
 	{
 	}
-	dBGain(const LinearGain &gain)
-	{
-		m_Value = Math::LinearTodB((float)gain);
-	}
+	dBGain(const LinearGain& gain);
 
 	operator float(void) const
 	{
@@ -67,9 +64,10 @@ private:
 	float m_Value = 0;
 };
 
-inline LinearGain::LinearGain(const dBGain &gain)
-{
-	m_Value = Math::dBToLinear((float)gain);
-}
+// https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
+static const dBGain MIN_GAIN(-90);
+static const dBGain SILENCE_GAIN(-40);
+static const dBGain NORMAL_GAIN(0);
+static const dBGain MAX_GAIN(6);
 
 #endif

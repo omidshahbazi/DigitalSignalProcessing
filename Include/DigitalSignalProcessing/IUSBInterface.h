@@ -8,10 +8,16 @@
 class IUSBInterface
 {
 public:
+	enum class USBInterfaces
+	{
+		Internal = 0,
+		External
+	};
+
 	typedef ContextCallback<void, const uint8 *, uint16> EventHandler;
 
 public:
-	virtual void Start(void) = 0;
+	virtual void Start(USBInterfaces Interface) = 0;
 
 	virtual void Stop(void) = 0;
 

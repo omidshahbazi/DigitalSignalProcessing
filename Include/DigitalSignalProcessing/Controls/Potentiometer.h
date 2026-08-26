@@ -3,7 +3,6 @@
 #define POTENTIOMETER_H
 
 #include "Control.h"
-#include "../Log.h"
 #include "../Filters/BiquadFilter.h"
 
 class Potentiometer : public Control
@@ -12,18 +11,7 @@ public:
 	typedef ContextCallback<void, float> EventHandler;
 
 public:
-	Potentiometer(IHAL *HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false)
-		: Control(HAL, Pin, IHAL::PinModes::AnalogInput, UpdateRate),
-		  m_FilterSwings(FilterSwings),
-		  m_Value(-1)
-	{
-		ASSERT(HAL->IsAnAnalogPin(Pin), "Pin %i is not an analog pin", Pin);
-
-		if (m_FilterSwings)
-			BiquadFilter<float, MIN_SAMPLE_RATE>::SetLowPassCoefficients(&m_Filter, Frequency(UpdateRate), QUALITY_FACTOR_CRITICAL_DAMPING);
-
-		SetCalibrationValues(0, 1);
-	}
+	Potentiometer(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false);
 
 	float GetValue(void) const
 	{
@@ -42,30 +30,7 @@ public:
 	}
 
 protected:
-	void Update(void) override
-	{
-		float prevValue = m_Value;
-
-		m_Value = Math::Clamp01(Math::Map(AnalogRead(), m_CalibrationMin, m_CalibrationMax, 0, 1));
-
-		if (m_FilterSwings)
-		{
-			if (0 < m_Value && m_Value < 1)
-			{
-				m_Filter.Process(&m_Value, 1);
-				m_Value = Math::Clamp01(m_Value);
-			}
-
-			if (Math::Absolute(prevValue - m_Value) < 0.005F)
-				return;
-		}
-		else if (m_Value == prevValue)
-			return;
-
-		Log::WriteDebug("Potentiometer", "Potentiometer GPIOPins::Pin%i value: %f, diff %f", (uint8)GetPin(), m_Value, Math::Absolute(prevValue - m_Value));
-
-		m_OnChanged(m_Value);
-	}
+	void Update(void) override;
 
 private:
 	BiquadFilter<float, MIN_SAMPLE_RATE> m_Filter;

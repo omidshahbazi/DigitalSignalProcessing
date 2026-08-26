@@ -30,6 +30,9 @@
     <Filter Include="Include\DigitalSignalProcessing\Filters">
       <UniqueIdentifier>{3490d96d-43c5-4a51-9387-4e19c0e3e11a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Controls">
+      <UniqueIdentifier>{1a0993cb-41e7-449f-81a3-83c2da7c69b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.props">
@@ -46,8 +49,50 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\CompileHelper.cpp">
+    <ClCompile Include="Source\Color.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StringUtils.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Frequency.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\ControlBase.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\Control.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\Button.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\DualLED.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\LEDBase.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\Potentiometer.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\Rotary.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\RotaryButton.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\SingleLED.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\Switch.cpp">
+      <Filter>Source\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controls\TripleLED.cpp">
+      <Filter>Source\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +142,6 @@
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Notes.h">
-      <Filter>Include\DigitalSignalProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\Profiler.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h">
@@ -302,6 +344,12 @@
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\WhiteNoiseFilter.h">
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Color.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

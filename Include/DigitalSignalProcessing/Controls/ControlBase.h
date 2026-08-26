@@ -4,7 +4,6 @@
 
 #include "../Common.h"
 #include "../IHAL.h"
-#include "../Debug.h"
 
 class ControlBase
 {
@@ -12,13 +11,7 @@ class ControlBase
 	friend class ControlFactory;
 
 public:
-	ControlBase(IHAL *HAL, uint16 UpdateRate)
-		: m_HAL(HAL),
-		  m_Enabled(true),
-		  m_UpdateStep(1000 / UpdateRate),
-		  m_NextUpdateTime(0)
-	{
-	}
+	ControlBase(IHAL* HAL, uint16 UpdateRate);
 
 	virtual void SetEnabled(bool Value)
 	{
@@ -32,56 +25,28 @@ public:
 protected:
 	virtual void Update(void) = 0;
 
-	void SetPinMode(uint8 Pin, IHAL::PinModes Mode)
-	{
-		m_HAL->SetPinMode(Pin, Mode);
-	}
+	void SetPinMode(uint8 Pin, IHAL::PinModes Mode);
 
-	float AnalogRead(uint8 Pin) const
-	{
-		return m_HAL->AnalogRead(Pin);
-	}
+	float AnalogRead(uint8 Pin) const;
 
-	bool DigitalRead(uint8 Pin) const
-	{
-		return m_HAL->DigitalRead(Pin);
-	}
+	bool DigitalRead(uint8 Pin) const;
 
-	void DigitalWrite(uint8 Pin, bool Value)
-	{
-		m_HAL->DigitalWrite(Pin, Value);
-	}
+	void DigitalWrite(uint8 Pin, bool Value);
 
 	//[0, 1]
-	void PWMWrite(uint8 Pin, float Value)
-	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
-		m_HAL->PWMWrite(Pin, Value);
-	}
+	void PWMWrite(uint8 Pin, float Value);
 
 protected:
-	IHAL *GetHAL(void) const
+	IHAL* GetHAL(void) const
 	{
 		return m_HAL;
 	}
 
 private:
-	void Process(void)
-	{
-		if (!m_Enabled)
-			return;
-
-		uint32 time = m_HAL->GetTimeSinceStartupMs();
-		if (time < m_NextUpdateTime)
-			return;
-		m_NextUpdateTime = time + m_UpdateStep;
-
-		Update();
-	}
+	void Process(void);
 
 private:
-	IHAL *m_HAL;
+	IHAL* m_HAL;
 	bool m_Enabled;
 	uint16 m_UpdateStep;
 	uint32 m_NextUpdateTime;

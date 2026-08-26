@@ -2,9 +2,6 @@
 #ifndef FREQUENCY_H
 #define FREQUENCY_H
 
-#include "Math.h"
-#include "Gain.h"
-
 struct LogarithmicOctave;
 struct QualityFactor;
 struct SlopeFactor;
@@ -33,21 +30,7 @@ static const Frequency LOWEST_FREQUENCY(5);
 static const Frequency HIGHEST_FREQUENCY(20 KHz);
 
 // So we won't run into out of range QualityFactor values [0.01, 10]
-static void FixBandFrequency(Frequency &Low, Frequency &High)
-{
-	// LowerBoundRatio = e^(2 * ASinH(1/20))
-	const double LowerBoundRatio = 1.1053423;
-	const double UpperBoundRatio = 10000;
-
-	High = (Frequency)Math::Clamp(High, Low * LowerBoundRatio, Low * UpperBoundRatio);
-
-	if (High > HIGHEST_FREQUENCY)
-	{
-		High = HIGHEST_FREQUENCY;
-
-		Low = (Frequency)(High / LowerBoundRatio);
-	}
-}
+void FixBandFrequency(Frequency& Low, Frequency& High);
 
 struct LinearOctave
 {
@@ -58,13 +41,7 @@ public:
 	{
 	}
 	LinearOctave(LogarithmicOctave Value);
-	LinearOctave(Frequency Low, Frequency High)
-		: m_Value(0)
-	{
-		FixBandFrequency(Low, High);
-
-		m_Value = High / Low;
-	}
+	LinearOctave(Frequency Low, Frequency High);
 
 	operator float(void) const
 	{
@@ -83,14 +60,8 @@ public:
 		: m_Value(Value)
 	{
 	}
-	LogarithmicOctave(LinearOctave Value)
-		: m_Value(Math::Log2((float)Value))
-	{
-	}
-	LogarithmicOctave(Frequency Low, Frequency High)
-		: m_Value((float)(LogarithmicOctave)LinearOctave(Low, High))
-	{
-	}
+	LogarithmicOctave(LinearOctave Value);
+	LogarithmicOctave(Frequency Low, Frequency High);
 
 	operator float(void) const
 	{
@@ -101,33 +72,16 @@ private:
 	float m_Value = 0;
 };
 
-inline LinearOctave::LinearOctave(LogarithmicOctave Value)
-	: m_Value(Math::Power2((float)Value))
-{
-}
-
 typedef LogarithmicOctave LogarithmicRatio;
 typedef LinearOctave LinearRatio;
 
-inline Frequency operator*(Frequency Frequency, LinearOctave Octave)
-{
-	return ::Frequency((float)Frequency * (float)Octave);
-}
+Frequency operator*(Frequency Frequency, LinearOctave Octave);
 
-inline Frequency operator/(Frequency Frequency, LinearOctave Octave)
-{
-	return ::Frequency((float)Frequency / (float)Octave);
-}
+Frequency operator/(Frequency Frequency, LinearOctave Octave);
 
-inline Frequency operator*(Frequency Frequency, LogarithmicOctave Octave)
-{
-	return Frequency * LinearOctave(Octave);
-}
+Frequency operator*(Frequency Frequency, LogarithmicOctave Octave);
 
-inline Frequency operator/(Frequency Frequency, LogarithmicOctave Octave)
-{
-	return Frequency / LinearOctave(Octave);
-}
+Frequency operator/(Frequency Frequency, LogarithmicOctave Octave);
 
 struct FrequencyBand
 {
@@ -139,13 +93,7 @@ public:
 	{
 	}
 	FrequencyBand(Frequency Center, QualityFactor Quality);
-	FrequencyBand(Frequency Low, Frequency High)
-	{
-		FixBandFrequency(Low, High);
-
-		m_Center = (Frequency)Math::FrequencyLerp(Low, High, 0.5);
-		m_Bandwidth = LogarithmicOctave(Low, High);
-	}
+	FrequencyBand(Frequency Low, Frequency High);
 
 	void SetCenter(Frequency Center)
 	{
@@ -168,15 +116,9 @@ public:
 	void SetQualityFactor(QualityFactor Quality);
 	QualityFactor GetQualityFactor(void) const;
 
-	Frequency GetLow(void) const
-	{
-		return (Frequency)Math::Max(LOWEST_FREQUENCY, m_Center / LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
-	}
+	Frequency GetLow(void) const;
 
-	Frequency GetHigh(void) const
-	{
-		return (Frequency)Math::Min(HIGHEST_FREQUENCY, m_Center * LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
-	}
+	Frequency GetHigh(void) const;
 
 	operator QualityFactor(void) const;
 
@@ -194,10 +136,7 @@ public:
 	{
 	}
 
-	QualityFactor(FrequencyBand Band)
-	{
-		m_Value = 1 / (2 * Math::SinH(Math::HALF_LOG_NATURAL_2 * Band.GetBandwidth()));
-	}
+	QualityFactor(FrequencyBand Band);
 
 	operator float(void) const
 	{
@@ -207,27 +146,6 @@ public:
 private:
 	float m_Value = 0.707;
 };
-
-inline FrequencyBand::FrequencyBand(Frequency Center, QualityFactor Quality)
-	: m_Center(Center)
-{
-	SetQualityFactor(Quality);
-}
-
-inline void FrequencyBand::SetQualityFactor(QualityFactor Quality)
-{
-	m_Bandwidth = LogarithmicOctave(2 * Math::ASinh(1 / (2 * Quality)) / Math::LOG_NATURAL_2);
-}
-
-inline QualityFactor FrequencyBand::GetQualityFactor(void) const
-{
-	return QualityFactor(*this);
-}
-
-inline FrequencyBand::operator QualityFactor(void) const
-{
-	return GetQualityFactor();
-}
 
 struct SlopeFactor
 {
@@ -246,5 +164,8 @@ public:
 private:
 	float m_Value = 1;
 };
+
+static const Frequency MIN_FREQUENCY = LOWEST_FREQUENCY;
+static const Frequency MAX_FREQUENCY = HIGHEST_FREQUENCY;
 
 #endif

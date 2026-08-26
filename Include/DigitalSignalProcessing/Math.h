@@ -7,7 +7,6 @@
 #include <algorithm>
 #include "DataTypes.h"
 #include "Notes.h"
-#include "Memory.h"
 
 class Math
 {
@@ -694,7 +693,8 @@ public:
 	{
 		if constexpr (ZeroStuffing)
 		{
-			Memory::Set(Output, 0, Count * Ratio);
+			for (uint16 i = 0; i < Count * Ratio; ++i)
+				Output[i] = 0;
 
 			for (uint16 i = 0; i < Count; ++i)
 				Output[i * Ratio] = Input[i];

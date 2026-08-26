@@ -11,11 +11,7 @@ public:
 	typedef Rotary::RotatedEventHandler RotatedEventHandler;
 
 public:
-	RotaryButton(IHAL *HAL, uint8 APin, uint8 BPin, uint8 ButtonPin)
-		: Button(HAL, ButtonPin),
-		  m_Rotary(HAL, APin, BPin)
-	{
-	}
+	RotaryButton(IHAL* HAL, uint8 APin, uint8 BPin, uint8 ButtonPin);
 
 	void SetOnRotatedListener(RotatedEventHandler Listener)
 	{
@@ -23,12 +19,7 @@ public:
 	}
 
 protected:
-	virtual void Update(void) override
-	{
-		m_Rotary.Update();
-
-		Button::Update();
-	}
+	virtual void Update(void) override;
 
 private:
 	Rotary m_Rotary;

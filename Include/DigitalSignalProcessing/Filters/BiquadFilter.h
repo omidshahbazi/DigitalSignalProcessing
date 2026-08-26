@@ -3,6 +3,8 @@
 #define BIQUAD_FILTER_H
 
 #include "Filter.h"
+#include "../Frequency.h"
+#include "../Gain.h"
 #include "../Math.h"
 #include "../Debug.h"
 

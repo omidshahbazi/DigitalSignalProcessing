@@ -10,10 +10,7 @@ public:
 	typedef ContextCallback<void, float> HoldEventHandler;
 
 public:
-	Button(IHAL *HAL, uint8 Pin)
-		: Switch(HAL, Pin)
-	{
-	}
+	Button(IHAL* HAL, uint8 Pin);
 
 	void SetOnHoldListener(HoldEventHandler Listener)
 	{
@@ -21,13 +18,7 @@ public:
 	}
 
 protected:
-	void Update(void) override
-	{
-		Switch::Update();
-
-		if (GetTurnedOn())
-			m_OnHold(GetHeldTime());
-	}
+	void Update(void) override;
 
 private:
 	HoldEventHandler m_OnHold;

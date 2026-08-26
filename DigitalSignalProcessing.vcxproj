@@ -85,19 +85,35 @@
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RELEASE</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="source\CompileHelper.cpp" />
+    <ClCompile Include="Source\Color.cpp" />
+    <ClCompile Include="Source\Controls\Button.cpp" />
+    <ClCompile Include="Source\Controls\Control.cpp" />
+    <ClCompile Include="Source\Controls\ControlBase.cpp" />
+    <ClCompile Include="Source\Controls\DualLED.cpp" />
+    <ClCompile Include="Source\Controls\LEDBase.cpp" />
+    <ClCompile Include="Source\Controls\Potentiometer.cpp" />
+    <ClCompile Include="Source\Controls\Rotary.cpp" />
+    <ClCompile Include="Source\Controls\RotaryButton.cpp" />
+    <ClCompile Include="Source\Controls\SingleLED.cpp" />
+    <ClCompile Include="Source\Controls\Switch.cpp" />
+    <ClCompile Include="Source\Controls\TripleLED.cpp" />
+    <ClCompile Include="Source\Frequency.cpp" />
+    <ClCompile Include="Source\Gain.cpp" />
+    <ClCompile Include="Source\StringUtils.cpp" />
     <None Include="stm32.props" />
     <None Include="DigitalSignalProcessing-Debug.vgdbsettings" />
     <None Include="DigitalSignalProcessing-Release.vgdbsettings" />
@@ -105,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\DigitalSignalProcessing\Bitwise.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Color.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Common.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\ContextCallback.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Controls\Button.h" />
@@ -185,8 +202,8 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Math.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Memory.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Notes.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\Profiler.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
   </ItemGroup>
 </Project>

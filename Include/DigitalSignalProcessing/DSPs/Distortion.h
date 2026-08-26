@@ -119,7 +119,7 @@ public:
 	}
 
 private:
-	UpSamplerFilter<T, SampleRate, FrameLength, STANDARD_UP_SAMPLE_FACTOR, true> m_UpSampler;
+	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
 	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
 	LowPassFilter<T, SampleRate> m_ToneFilter;
 

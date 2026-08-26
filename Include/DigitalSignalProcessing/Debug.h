@@ -4,7 +4,7 @@
 
 #include "Log.h"
 
-#ifndef STRINGIZE
+#ifndef DEBUG_STRINGIZE
 #define DEBUG_STRINGIZE_EXPANDED(Value) #Value
 #define DEBUG_STRINGIZE(Value) DEBUG_STRINGIZE_EXPANDED(Value)
 #endif
@@ -18,14 +18,18 @@
 #endif
 
 #ifdef DISABLE_ASSERTS
+
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
 		(void)sizeof(Expression);        \
 		(void)sizeof(Message);           \
 	} while (false)
+
 #else
+
 #ifdef USE_BREAK_ONLY_ASSERT
+
 #define ASSERT(Expression, Message, ...)                 \
 	do                                                   \
 	{                                                    \
@@ -35,7 +39,11 @@
 		std::abort();									 \
                                                          \
 	} while (false)
+
 #else
+
+#include <cstdlib>
+
 #define ASSERT(Expression, Message, ...)                                                                \
 	do                                                                                                  \
 	{                                                                                                   \
@@ -45,6 +53,7 @@
 		std::abort();																					\
                                                                                                         \
 	} while (false)
+
 #endif
 #endif
 
