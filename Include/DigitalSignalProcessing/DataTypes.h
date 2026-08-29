@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef __GNUC__
+#include <stdint.h>
+#else
 #include <cstdint>
+#endif
 
 typedef int8_t int8;
 typedef int16_t int16;

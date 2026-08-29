@@ -192,6 +192,7 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\UpSamplerFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\WaveShaperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\WhiteNoiseFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\FixedFunction.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Frequency.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\FrequencyDetector.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Gain.h" />
@@ -205,5 +206,8 @@
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\ICDCUSB.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\USBProfile.h" />
   </ItemGroup>
 </Project>

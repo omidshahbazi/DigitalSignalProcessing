@@ -2,12 +2,12 @@
 #ifndef I_HAL_H
 #define I_HAL_H
 
-#include "IUSBInterface.h"
+class IUSBInterface;
 
 class IHAL
 {
 public:
-	typedef void (*AudioPassthrough)(const float *const *In, float **Out, uint32 Size);
+	typedef void (*AudioPassthrough)(const float* const* In, float** Out, uint32 Size);
 
 	enum class PinModes
 	{
@@ -21,8 +21,8 @@ public:
 	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false) = 0;
 	virtual void StartAudio(AudioPassthrough Callback) = 0;
 
-	virtual void *Allocate(uint32 Size, bool OnSDRAM = false) = 0;
-	virtual void Deallocate(void *Memory) = 0;
+	virtual void* Allocate(uint32 Size, bool OnSDRAM = false) = 0;
+	virtual void Deallocate(void* Memory) = 0;
 
 	virtual bool IsAnAnalogPin(uint8 Pin) const = 0;
 	virtual bool IsADigitalPin(uint8 Pin) const = 0;
@@ -61,7 +61,8 @@ public:
 
 	virtual void Delay(uint16 Ms) const = 0;
 
-	virtual IUSBInterface *GetUSBInterface(void) = 0;
+	virtual IUSBInterface* GetPrimaryUSB(void) = 0;
+	virtual IUSBInterface* GetSecondaryUSB(void) = 0;
 
 	virtual void EraseQSPIData(void) = 0;
 };

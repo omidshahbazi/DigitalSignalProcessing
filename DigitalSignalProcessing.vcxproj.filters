@@ -33,6 +33,9 @@
     <Filter Include="Source\Controls">
       <UniqueIdentifier>{1a0993cb-41e7-449f-81a3-83c2da7c69b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\DigitalSignalProcessing\USB">
+      <UniqueIdentifier>{faa2d100-358a-4031-9899-b1b11cfdee73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.props">
@@ -350,6 +353,18 @@
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\USBProfile.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\FixedFunction.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\ICDCUSB.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
