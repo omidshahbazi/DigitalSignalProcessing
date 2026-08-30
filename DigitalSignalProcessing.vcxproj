@@ -206,8 +206,10 @@
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\USB\ICDCUSB.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBAMCInterface.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBCDCInterface.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSB.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\USBProfile.h" />
   </ItemGroup>
 </Project>

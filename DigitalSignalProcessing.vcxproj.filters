@@ -360,10 +360,16 @@
     <ClInclude Include="Include\DigitalSignalProcessing\FixedFunction.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h">
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSB.h">
       <Filter>Include\DigitalSignalProcessing\USB</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\USB\ICDCUSB.h">
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBCDCInterface.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBAMCInterface.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h">
       <Filter>Include\DigitalSignalProcessing\USB</Filter>
     </ClInclude>
   </ItemGroup>
