@@ -6,6 +6,16 @@
 
 static constexpr uint8 MaxClassCount = 4;
 
+enum class PacketSizes : uint8
+{
+	PacketSizes8 = 8,
+	PacketSizes16 = 16,
+	PacketSizes32 = 32,
+	PacketSizes64 = 64,
+
+	Max = PacketSizes64
+};
+
 struct AMCClassConfig
 {
 public:
@@ -29,16 +39,8 @@ public:
 struct CDCClassConfig
 {
 public:
-	uint16 ReceiveBufferSize;
-	uint16 SendBufferSize;
-
-	uint8 CustomEndpointIn;
-	uint8 CustomEndpointOut;
-	uint8 CustomEndpointCommand;
-
-	uint32 Timeout;
-
-	cstr PortName;
+	PacketSizes ReceiveBufferSize;
+	PacketSizes SendBufferSize;
 };
 
 enum class USBDeviceClassses

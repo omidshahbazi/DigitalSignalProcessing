@@ -11,6 +11,8 @@ public:
 	typedef FixedFunction<void(const uint8* Buffer, uint16 Length)> ReceiveCallback;
 
 public:
+	virtual bool IsConnected(void) const = 0;
+
 	virtual void SetReceiveCallback(ReceiveCallback Callback) = 0;
 
 	virtual void Transmit(const uint8* Buffer, uint16 Length) = 0;
