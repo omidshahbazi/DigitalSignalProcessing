@@ -20,12 +20,12 @@ struct AMCClassConfig
 {
 public:
 	uint32 SupportedSampleRates[SAMPLE_RATE_COUNT];
-	uint8 SupportedSampleRateNum;
-	uint32 DefaultSampleRate;
+	uint8 SupportedSampleRateCount;
+	uint8 DefaultSampleRateIndex;
 
-	uint32 SupportedBitDepths[BIT_DEPTH_COUNT];
-	uint8 SupportedBitDepthNum;
-	uint32 DefaultBitDepth;
+	uint8 SupportedBitDepths[BIT_DEPTH_COUNT];
+	uint8 SupportedBitDepthCount;
+	uint8 DefaultBitDepthIndex;
 
 	uint8 InputChannelCount;
 	uint8 OutputChannelCount;
