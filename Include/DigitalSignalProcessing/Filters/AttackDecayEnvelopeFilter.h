@@ -22,13 +22,13 @@ public:
 public:
 	AttackDecayEnvelopeFilter(void)
 		: m_CurrSegment(Segments::Idle),
-		  m_SegmentTime{},
-		  m_MinValue(0),
-		  m_MaxValue(1),
-		  m_Curve(0),
-		  m_RawValue(0.0f),
-		  m_TargetValue(0.0f),
-		  m_Coeff(0.0f)
+		m_SegmentTime{},
+		m_MinValue(0),
+		m_MaxValue(1),
+		m_Curve(0),
+		m_RawValue(0.0f),
+		m_TargetValue(0.0f),
+		m_Coeff(0.0f)
 	{
 		m_SegmentTime[(uint8)Segments::Idle] = 0.05;
 
@@ -115,7 +115,7 @@ public:
 		return m_CurrSegment;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8 Count) override
 	{
 		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] = Process();
@@ -152,7 +152,6 @@ public:
 
 		if (segmentFinished)
 		{
-			// حرکت به سگمنت بعدی با استفاده از Moderate خودت
 			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
 			PrepareSegment();
 		}
@@ -164,7 +163,7 @@ private:
 	void PrepareSegment(void)
 	{
 		float timeInSeconds = m_SegmentTime[(uint8)m_CurrSegment];
-		uint32 sampleCount = static_cast<uint32>(timeInSeconds * SampleRate);
+		uint32 sampleCount = (uint32)(timeInSeconds * SampleRate);
 
 		if (m_CurrSegment == Segments::Idle || sampleCount == 0)
 		{

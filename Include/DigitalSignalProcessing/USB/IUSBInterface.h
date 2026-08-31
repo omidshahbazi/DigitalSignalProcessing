@@ -7,7 +7,7 @@
 class IUSBInterface
 {
 public:
-
+	virtual bool IsConnected(void) const = 0;
 };
 
 #endif

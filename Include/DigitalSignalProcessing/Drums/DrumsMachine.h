@@ -165,7 +165,7 @@ private:
 	void UpdateData(void)
 	{
 		float beatsPerSecond = (m_BeatsPerMinute * (float)m_NoteDuration) / 60;
-		m_SampleCountPerBeat = static_cast<uint32>((float)SampleRate / beatsPerSecond);
+		m_SampleCountPerBeat = (uint32)((float)SampleRate / beatsPerSecond);
 		m_ElapsedSampleCount = 0;
 	}
 

@@ -61,7 +61,7 @@ public:
             float input = Math::Clamp(Buffer[i], minIn, maxIn);
             
             float pos = (input - minIn) * rangeInv;
-            uint8 index = static_cast<uint8>(pos);
+            uint8 index = (uint8)pos;
             float frac = pos - index;
 
             if (index >= maxIdx) 

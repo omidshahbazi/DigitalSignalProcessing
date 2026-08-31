@@ -221,7 +221,7 @@ private:
 	void PrepareSegment(void)
 	{
 		float time = m_SegmentTime[(uint8)m_CurrSegment];
-		uint32 samples = static_cast<uint32>(time * SampleRate);
+		uint32 samples = (uint32)(time * SampleRate);
 		m_AutoReleaseCounter = 0;
 
 		if (m_CurrSegment == Segments::Idle || (samples == 0 && m_CurrSegment != Segments::Sustain))

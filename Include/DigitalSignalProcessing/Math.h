@@ -62,7 +62,7 @@ private:
 				Value += TWO_PI_VALUE;
 
 			float pos = Value * SinScale;
-			uint16 index = static_cast<uint16>(pos);
+			uint16 index = (uint16)pos;
 			uint16 next = (index + 1) % Size;
 			float frac = pos - index;
 
@@ -86,7 +86,7 @@ private:
 				return 1;
 
 			float pos = (Value + TanHRange) * TanHScale;
-			uint16 index = static_cast<uint16>(pos);
+			uint16 index = (uint16)pos;
 			if (index >= Size)
 				index = Size - 1;
 			uint16 next = (index < Size - 1) ? index + 1 : index;
@@ -110,7 +110,7 @@ private:
 			n -= 1;
 
 			float pos = (f - 1.0f) * (Size - 1);
-			uint16 index = static_cast<uint16>(pos);
+			uint16 index = (uint16)pos;
 			float frac = pos - index;
 
 			float result = m_LogLUT[index] + (frac * (m_LogLUT[index + 1] - m_LogLUT[index]));

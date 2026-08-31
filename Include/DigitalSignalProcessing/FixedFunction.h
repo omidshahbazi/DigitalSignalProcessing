@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CONTEXT_CALLBACK_H
-#define CONTEXT_CALLBACK_H
+#ifndef FIXED_FUNCTION_H
+#define FIXED_FUNCTION_H
 
 #include "DataTypes.h"
 #include <utility>
@@ -21,13 +21,13 @@ public:
 	FixedFunction(F Callable)
 	{
 		static_assert(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage!");
-		static_assert(alignof(F) <= alignof(std::max_align_t), "Callable alignment mismatch!");
+		static_assert(alignof(F) <= alignof(4), "Callable alignment mismatch!");
 
 		new (static_cast<void*>(m_Storage)) F(std::move(Callable));
 
-		m_Invoker = [](void* src, ArgsT&&... Args) -> Ret
+		m_Invoker = [](void* Src, ArgsT&&... Args) -> Ret
 			{
-				return (*reinterpret_cast<F*>(src))(std::forward<ArgsT>(Args)...);
+				return (*reinterpret_cast<F*>(Src))(std::forward<ArgsT>(Args)...);
 			};
 	}
 
@@ -36,10 +36,10 @@ public:
 	{
 		struct BoundMethod
 		{
-			using MemberFuctionT = Ret(C::* Method)(ArgsT...);
+			using MemberFunctionT = Ret(C::*)(ArgsT...);
 
 			C* Instance;
-			MemberFuctionT MemberFunction;
+			MemberFunctionT MemberFunction;
 
 			Ret operator()(ArgsT&&... Args)
 			{
@@ -76,7 +76,7 @@ private:
 	using InvokerFuctionT = Ret(*)(void*, ArgsT&&...);
 
 	InvokerFuctionT m_Invoker;
-	alignas(std::max_align_t) char m_Storage[StorageSize];
+	alignas(4) uint8 m_Storage[StorageSize];
 };
 
 #endif
