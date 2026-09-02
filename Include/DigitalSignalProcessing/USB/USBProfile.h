@@ -33,7 +33,7 @@ public:
 	bool EnableHardwareVolumeControl;
 	bool EnableHardwareMute;
 
-	uint16 BufferSizeFrames;
+	//uint16 BufferSizeFrames;
 };
 
 struct CDCClassConfig
@@ -43,7 +43,7 @@ public:
 	PacketSizes SendBufferSize;
 };
 
-enum class USBDeviceClassses
+enum class USBDeviceClasses
 {
 	//Multi Channel Audio
 	AMC = 0,
@@ -55,7 +55,7 @@ enum class USBDeviceClassses
 struct USBClassNode
 {
 public:
-	USBDeviceClassses Class;
+	USBDeviceClasses Class;
 
 	union
 	{
