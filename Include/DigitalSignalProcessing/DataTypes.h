@@ -18,6 +18,32 @@ typedef uint64_t uint64;
 
 typedef const char* cstr;
 
+struct uint24
+{
+	uint24(void) = default;
+	uint24(int32 Value)
+		: full(Value)
+	{}
+	uint24(uint32 Value)
+		: full(Value)
+	{}
+	uint24(const uint24& Other)
+		: full(Other.full)
+	{}
+
+	operator uint32(void) const
+	{
+		return full;
+	}
+
+	union
+	{
+	public:
+		uint32 full;
+		uint8 bytes[3];
+	};
+};
+
 #ifdef DEBUG
 #ifdef ENABLE_TYPE_CHECK
 #include <type_traits>

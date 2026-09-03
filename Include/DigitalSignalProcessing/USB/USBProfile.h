@@ -3,6 +3,7 @@
 #define USB_DEVICE_PROFILE_H
 
 #include "../Common.h"
+#include "../Gain.h"
 
 // Maximum number of classes that can be registered in a profile.
 static constexpr uint8 MaxClassCount = 4;
@@ -16,6 +17,15 @@ enum class PacketSizes : uint8
 	PacketSizes64 = 64, // 64 bytes packet size.
 
 	Max = PacketSizes64 // Maximum allowed packet size.
+};
+
+// Defines standard packet sizes used for USB endpoints.
+enum class BitDepths : uint8
+{
+	BitDepths8 = 8,   // 8 bits bit depth.
+	BitDepths16 = 16, // 16 bits bit depth.
+	BitDepths24 = 24, // 24 bits bit depth.
+	BitDepths32 = 32 // 32 bits bit depth.
 };
 
 // Configuration parameters for the CDC (Communication Device Class).
@@ -34,7 +44,7 @@ public:
 	uint8 SupportedSampleRateCount;                 // Total number of supported sample rates.
 	uint8 DefaultSampleRateIndex;                   // Array index for the default sample rate.
 
-	uint8 SupportedBitDepths[BIT_DEPTH_COUNT];      // Array of supported bit depths (e.g., 16, 24).
+	BitDepths SupportedBitDepths[BIT_DEPTH_COUNT];  // Array of supported bit depths (e.g., 16, 24).
 	uint8 SupportedBitDepthCount;                   // Total number of supported bit depths.
 	uint8 DefaultBitDepthIndex;                     // Array index for the default bit depth.
 
@@ -42,6 +52,9 @@ public:
 	uint8 OutputChannelCount;                       // Number of output (playback) audio channels.
 
 	bool EnableHardwareVolumeControl;               // Indicates if hardware volume control is supported/enabled.
+	dBGain MinimumVolume;                           // Minimum volume level (in dB).
+	dBGain MaximumVolume;                           // Maximum volume level (in dB).
+	dBGain VolumeResolution;                        // Volume resolution (in dB).
 	bool EnableHardwareMute;                        // Indicates if hardware mute control is supported/enabled.
 };
 
@@ -55,6 +68,14 @@ enum class USBDeviceClasses
 // Represents a node containing a specific USB class configuration.
 struct USBClassNode
 {
+public:
+	USBClassNode(void)
+		: Class(USBDeviceClasses::CDC),
+		CDC{}
+	{}
+
+	~USBClassNode(void) {}
+
 public:
 	USBDeviceClasses Class; // The selected USB class type for this node.
 
@@ -131,6 +152,14 @@ enum class USBModes
 // The primary profile structure configuring the entire USB peripheral.
 struct USBProfile
 {
+public:
+	USBProfile(void)
+		: Mode(USBModes::Device),
+		Device{}
+	{}
+
+	~USBProfile(void) {}
+
 public:
 	USBModes Mode; // The operational mode determining how the USB hardware behaves.
 
