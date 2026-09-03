@@ -67,12 +67,3 @@ static_assert(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 	const uint8 Name##Length = Count * FactorValue;
 
 #define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, UP_SAMPLE_FACTOR)
-
-#if defined(__GNUC__)
-#define STRINGIFY_PRAGMA(x) _Pragma(#x)
-#define BEGIN_PACK(n)       STRINGIFY_PRAGMA(pack(push, n))
-#define END_PACK()          STRINGIFY_PRAGMA(pack(pop))
-#else
-#define BEGIN_PACK(n) __pragma(pack(push, n))
-#define END_PACK()    __pragma(pack(pop))
-#endif

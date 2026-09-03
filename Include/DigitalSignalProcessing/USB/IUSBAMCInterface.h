@@ -25,10 +25,13 @@ public:
 	typedef FixedFunction<void(ControlTypes Type)> ControlChangedCallback;
 
 public:
-	virtual void SetControlChangedCallback(ControlChangedCallback Callback) = 0;
+	virtual void Read(float* InterleavedBuffer, uint16 TotalSampleCount) = 0;
+	virtual void Read(double* InterleavedBuffer, uint16 TotalSampleCount) = 0;
 
 	virtual void Write(const float* const InterleavedBuffer, uint16 TotalSampleCount) = 0;
 	virtual void Write(const double* const InterleavedBuffer, uint16 TotalSampleCount) = 0;
+
+	virtual void SetControlChangedCallback(ControlChangedCallback Callback) = 0;
 
 	virtual uint32 GetCurrentOutSampleRate(void) const = 0;
 	virtual uint32 GetCurrentInSampleRate(void) const = 0;
