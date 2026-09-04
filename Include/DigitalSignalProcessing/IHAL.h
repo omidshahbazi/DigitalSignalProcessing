@@ -61,8 +61,7 @@ public:
 
 	virtual void Delay(uint16 Ms) const = 0;
 
-	virtual IUSB* GetPrimaryUSB(void) = 0;
-	virtual IUSB* GetSecondaryUSB(void) = 0;
+	virtual IUSB* GetUSB(uint8 Index = 0) = 0;
 
 	virtual void EraseQSPIData(void) = 0;
 };
