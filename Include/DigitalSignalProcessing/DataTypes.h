@@ -47,39 +47,8 @@ typedef uint16_t uint16;
 typedef uint32_t uint32;
 typedef uint64_t uint64;
 
+typedef char* str;
 typedef const char* cstr;
-
-BEGIN_PACK(1);
-struct uint24_t
-{
-private:
-	uint8_t m_Bytes[3];
-
-public:
-	uint24_t(void) = default;
-
-	uint24_t(uint32_t Value)
-	{
-		*this = Value;
-	}
-
-	uint24_t& operator=(uint32_t Value)
-	{
-		m_Bytes[0] = static_cast<uint8_t>(Value & 0xFF);
-		m_Bytes[1] = static_cast<uint8_t>((Value >> 8) & 0xFF);
-		m_Bytes[2] = static_cast<uint8_t>((Value >> 16) & 0xFF);
-
-		return *this;
-	}
-
-	operator uint32_t() const
-	{
-		return static_cast<uint32_t>(m_Bytes[0]) |
-			(static_cast<uint32_t>(m_Bytes[1]) << 8) |
-			(static_cast<uint32_t>(m_Bytes[2]) << 16);
-	}
-};
-END_PACK();
 
 BEGIN_PACK(1);
 struct int24_t
@@ -114,6 +83,38 @@ public:
 			value |= 0xFF000000;
 
 		return static_cast<int32_t>(value);
+	}
+};
+END_PACK();
+
+BEGIN_PACK(1);
+struct uint24_t
+{
+private:
+	uint8_t m_Bytes[3];
+
+public:
+	uint24_t(void) = default;
+
+	uint24_t(uint32_t Value)
+	{
+		*this = Value;
+	}
+
+	uint24_t& operator=(uint32_t Value)
+	{
+		m_Bytes[0] = static_cast<uint8_t>(Value & 0xFF);
+		m_Bytes[1] = static_cast<uint8_t>((Value >> 8) & 0xFF);
+		m_Bytes[2] = static_cast<uint8_t>((Value >> 16) & 0xFF);
+
+		return *this;
+	}
+
+	operator uint32_t() const
+	{
+		return static_cast<uint32_t>(m_Bytes[0]) |
+			(static_cast<uint32_t>(m_Bytes[1]) << 8) |
+			(static_cast<uint32_t>(m_Bytes[2]) << 16);
 	}
 };
 END_PACK();
