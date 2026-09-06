@@ -372,5 +372,11 @@
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h">
       <Filter>Include\DigitalSignalProcessing\USB</Filter>
     </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBDevice.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBHost.h">
+      <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

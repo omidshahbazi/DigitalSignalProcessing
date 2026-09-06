@@ -208,6 +208,8 @@
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBAMCInterface.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBCDCInterface.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBDevice.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBHost.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBInterface.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSB.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\USBProfile.h" />
