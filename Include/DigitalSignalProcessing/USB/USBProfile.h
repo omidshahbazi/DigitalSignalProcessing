@@ -56,6 +56,9 @@ public:
 	dBGain MaximumVolume;                           // Maximum volume level (in dB).
 	dBGain VolumeResolution;                        // Volume resolution (in dB).
 	bool EnableHardwareMute;                        // Indicates if hardware mute control is supported/enabled.
+
+	cstr InputTitle;										// Terminal title for the audio interface (e.g., "Line In", "Microphone").
+	cstr OutputTitle;										// Terminal title for the audio interface (e.g., "Line Out", "Speakers").
 };
 
 // Enumeration of supported USB device classes.

@@ -11,7 +11,7 @@ class IUSBAMCInterface : public IUSBInterface
 public:
 	enum class ControlTypes : uint8
 	{
-		OutSampleRate = 0,
+		OutSampleRate = 1,
 		InSampleRate,
 		OutBitDepth,
 		InBitDepth,
