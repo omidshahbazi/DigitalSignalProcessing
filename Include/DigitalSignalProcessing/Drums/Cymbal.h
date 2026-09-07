@@ -81,7 +81,7 @@ public:
 			break;
 
 		default:
-			ASSERT(false, "Unhandled Type");
+			NOT_IMPLEMENTED();
 		}
 	}
 	Types GetType(void) const

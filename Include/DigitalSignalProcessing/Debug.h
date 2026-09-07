@@ -13,10 +13,6 @@
 #define DISABLE_ASSERTS
 #endif
 
-#ifndef DEBUG
-#define ENABLE_WAIT_FOR_DEBUGGER
-#endif
-
 #ifdef DISABLE_ASSERTS
 
 #define ASSERT(Expression, Message, ...) \
@@ -26,9 +22,38 @@
 		(void)sizeof(Message);           \
 	} while (false)
 
+#define BREAK(Message, ...)				\
+	do                                  \
+	{                                   \
+		(void)sizeof(Message);			\
+                                        \
+	} while (false)
+
 #else
 
-#ifdef USE_BREAK_ONLY_ASSERT
+#ifdef ENABLE_BREAK_FILE_LINE_INFO
+
+#include <cstdlib>
+
+#define ASSERT(Expression, Message, ...)                                                                \
+	do                                                                                                  \
+	{                                                                                                   \
+		if (Expression)                                                                                 \
+			break;                                                                                      \
+		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__);  \
+		std::abort();																					\
+                                                                                                        \
+	} while (false)
+
+#define BREAK(Message, ...)																\
+	do                                                                                  \
+	{                                                                                   \
+		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__);	\
+		std::abort();																	\
+                                                                                        \
+	} while (false)
+
+#else
 
 #define ASSERT(Expression, Message, ...)                 \
 	do                                                   \
@@ -40,21 +65,17 @@
                                                          \
 	} while (false)
 
-#else
-
-#include <cstdlib>
-
-#define ASSERT(Expression, Message, ...)                                                                \
-	do                                                                                                  \
-	{                                                                                                   \
-		if (Expression)                                                                                 \
-			break;                                                                                      \
-		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__); \
-		std::abort();																					\
-                                                                                                        \
+#define BREAK(Message, ...)								\
+	do                                                  \
+	{                                                   \
+		Log::Break("Break", Message, ##__VA_ARGS__);	\
+		std::abort();									\
+                                                        \
 	} while (false)
 
 #endif
 #endif
+
+#define NOT_IMPLEMENTED() BREAK("Not Implemented.")
 
 #endif
