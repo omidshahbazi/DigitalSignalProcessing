@@ -7,7 +7,7 @@
 class Button : public Switch
 {
 public:
-	typedef ContextCallback<void, float> HoldEventHandler;
+	typedef FixedFunction<void(float)> HoldEventHandler;
 
 public:
 	Button(IHAL* HAL, uint8 Pin);

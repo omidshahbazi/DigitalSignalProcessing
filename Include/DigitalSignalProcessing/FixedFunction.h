@@ -14,14 +14,15 @@ class FixedFunction<Ret(ArgsT...), StorageSize>
 {
 public:
 	FixedFunction(void)
-		: m_Invoker(nullptr)
+		: m_Invoker(nullptr),
+		m_Storage{}
 	{}
 
 	template <typename F>
 	FixedFunction(F Callable)
 	{
 		static_assert(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage!");
-		static_assert(alignof(F) <= alignof(4), "Callable alignment mismatch!");
+		static_assert(alignof(F) <= alignof(void*), "Callable alignment mismatch!");
 
 		new (static_cast<void*>(m_Storage)) F(std::move(Callable));
 
@@ -67,10 +68,21 @@ public:
 		return Ret();
 	}
 
-	explicit operator bool() const
+	explicit operator bool(void) const
 	{
 		return m_Invoker != nullptr;
 	}
+
+	bool operator==(std::nullptr_t) const
+	{
+		return m_Invoker == nullptr;
+	}
+
+	bool operator!=(std::nullptr_t) const
+	{
+		return m_Invoker != nullptr;
+	}
+
 	template <typename C>
 	static FixedFunction Bind(C* Instance, Ret(C::* Method)(ArgsT...))
 	{
@@ -81,7 +93,7 @@ private:
 	using InvokerFuctionT = Ret(*)(void*, ArgsT&&...);
 
 	InvokerFuctionT m_Invoker;
-	alignas(4) uint8 m_Storage[StorageSize];
+	alignas(void*) uint8 m_Storage[StorageSize];
 };
 
 #endif

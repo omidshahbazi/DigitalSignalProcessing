@@ -6,6 +6,8 @@
 
 class IUSBInterface
 {
+public:
+	virtual ~IUSBInterface(void) = default;
 };
 
 #endif

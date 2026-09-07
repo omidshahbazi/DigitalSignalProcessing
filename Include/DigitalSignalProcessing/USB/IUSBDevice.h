@@ -2,7 +2,7 @@
 #ifndef I_USB_DEVICE_H
 #define I_USB_DEVICE_H
 
-#include "USBProfile.h"
+#include "../DataTypes.h"
 
 class IUSBInterface;
 

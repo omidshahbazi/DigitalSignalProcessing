@@ -5,20 +5,20 @@
 #include "Filter.h"
 #include "../Math.h"
 #include "../Debug.h"
-#include "../ContextCallback.h"
+#include "../FixedFunction.h"
 
 template <typename T, uint32 SampleRate>
 class OscillatorFilter : public Filter<T, SampleRate>
 {
 public:
-	typedef ContextCallback<T, T> OscillatorFunction;
+	typedef FixedFunction<T(T)> OscillatorFunction;
 
 public:
 	OscillatorFilter(void)
 		: m_Frequency(0),
-		  m_PhaseOffset(0),
-		  m_DeltaPhase(0),
-		  m_Phase(0)
+		m_PhaseOffset(0),
+		m_DeltaPhase(0),
+		m_Phase(0)
 	{
 		SetSineWaveFunction();
 	}
@@ -32,35 +32,27 @@ public:
 
 	void SetSineWaveFunction(void)
 	{
-		SetFunction({this, [](void *Context, T Value)
-					 { return (T)Math::Sin(Value * Math::TWO_PI_VALUE); }});
+		SetFunction([](T Value) { return (T)Math::Sin(Value * Math::TWO_PI_VALUE); });
 	}
 
 	void SetTriangleWaveFunction(void)
 	{
-		SetFunction({this, [](void *Context, T Value)
-					 {
-						 T t = (2 * Value) - 1;
-						 return 2 * Math::Absolute(t) - 1;
-					 }});
+		SetFunction([](T Value) { return (T)Math::Triangle(Value); });
 	}
 
 	void SetSawtoothWaveFunction(void)
 	{
-		SetFunction({this, [](void *Context, T Value)
-					 { return -1 * ((Value * 2) - 1); }});
-	}
-
-	void SetRampWaveFunction(void)
-	{
-		SetFunction({this, [](void *Context, T Value)
-					 { return (Value * 2) - 1; }});
+		SetFunction([](T Value) { return (T)Math::Sawtooth(Value); });
 	}
 
 	void SetSquareWaveFunction(void)
 	{
-		SetFunction({this, [](void *Context, T Value)
-					 { return (T)(Value < 0.5 ? 1 : -1); }});
+		SetFunction([](T Value) { return (T)(Value < 0.5 ? 1 : -1); });
+	}
+
+	void SetRampWaveFunction(void)
+	{
+		SetFunction([](T Value) { return (Value * 2) - 1; });
 	}
 
 	//(0, MAX_FREQUENCY]
@@ -94,7 +86,7 @@ public:
 		m_Phase = 0;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8 Count) override
 	{
 		for (uint8 i = 0; i < Count; ++i)
 			Buffer[i] = Process();

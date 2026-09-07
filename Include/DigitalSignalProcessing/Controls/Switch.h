@@ -7,9 +7,9 @@
 class Switch : public Control
 {
 public:
-	typedef ContextCallback<void, bool> StateChangedEventHandler;
-	typedef ContextCallback<void> TurnedOnEventHandler;
-	typedef ContextCallback<void, float> TurnedOffEventHandler;
+	typedef FixedFunction<void(bool)> StateChangedEventHandler;
+	typedef FixedFunction<void(void)> TurnedOnEventHandler;
+	typedef FixedFunction<void(float)> TurnedOffEventHandler;
 
 public:
 	Switch(IHAL* HAL, uint8 Pin);

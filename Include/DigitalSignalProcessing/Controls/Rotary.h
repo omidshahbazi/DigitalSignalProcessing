@@ -11,7 +11,7 @@ class Rotary : public ControlBase
 	friend class RotaryButton;
 
 public:
-	typedef ContextCallback<void, int8, float> RotatedEventHandler;
+	typedef FixedFunction<void(int8, float)> RotatedEventHandler;
 
 public:
 	Rotary(IHAL* HAL, uint8 APin, uint8 BPin, uint8 Sensitivity = 50);

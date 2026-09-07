@@ -16,11 +16,7 @@ void LEDBase::SetConstantBrightness(float Value)
 
 	m_DefaultValue = Value;
 
-	SetBrightnessFunction({ this,
-						   [](void* Context)
-						   {
-							   return static_cast<LEDBase*>(Context)->m_DefaultValue;
-						   } });
+	SetBrightnessFunction([Value](void) { return Value; });
 }
 
 void LEDBase::SetBlinkingBrightness(float MinValue, float MaxValue, float Rate)
@@ -33,15 +29,12 @@ void LEDBase::SetBlinkingBrightness(float MinValue, float MaxValue, float Rate)
 	m_DefaultMaxValue = MaxValue;
 	m_DefaultRate = Rate;
 
-	SetBrightnessFunction({ this,
-						   [](void* Context)
-						   {
-							   LEDBase* led = static_cast<LEDBase*>(Context);
+	SetBrightnessFunction([this](void)
+		{
+			float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * m_DefaultRate, 2);
 
-							   float value = Math::Moderate(led->m_HAL->GetTimeSinceStartup() * 2 * led->m_DefaultRate, 2);
-
-							   return ((int32)value == 0 ? led->m_DefaultMinValue : led->m_DefaultMaxValue);
-						   } });
+			return ((int32)value == 0 ? m_DefaultMinValue : m_DefaultMaxValue);
+		});
 }
 
 void LEDBase::SetFadingBrightness(float MinValue, float MaxValue, float Rate)
@@ -54,15 +47,12 @@ void LEDBase::SetFadingBrightness(float MinValue, float MaxValue, float Rate)
 	m_DefaultMaxValue = MaxValue;
 	m_DefaultRate = Rate;
 
-	SetBrightnessFunction({ this,
-						   [](void* Context)
-						   {
-							   LEDBase* led = static_cast<LEDBase*>(Context);
+	SetBrightnessFunction([this](void)
+		{
+			float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * m_DefaultRate, 2);
+			if (value > 1)
+				value = 1 - (value - 1);
 
-							   float value = Math::Moderate(led->m_HAL->GetTimeSinceStartup() * 2 * led->m_DefaultRate, 2);
-							   if (value > 1)
-								   value = 1 - (value - 1);
-
-							   return Math::Lerp(led->m_DefaultMinValue, led->m_DefaultMaxValue, value);
-						   } });
+			return Math::Lerp(m_DefaultMinValue, m_DefaultMaxValue, value);
+		});
 }

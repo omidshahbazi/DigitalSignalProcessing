@@ -11,6 +11,8 @@ public:
 	typedef FixedFunction<void(const uint8* Buffer, uint8 Length)> ReceiveCallback;
 
 public:
+	virtual ~IUSBCDCInterface(void) = default;
+
 	virtual bool IsConnected(void) const = 0;
 
 	virtual void SetReceiveCallback(ReceiveCallback Callback) = 0;

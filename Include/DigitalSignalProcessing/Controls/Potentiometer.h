@@ -8,7 +8,7 @@
 class Potentiometer : public Control
 {
 public:
-	typedef ContextCallback<void, float> EventHandler;
+	typedef FixedFunction<void(float)> EventHandler;
 
 public:
 	Potentiometer(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false);

@@ -5,12 +5,12 @@
 #include "../Debug.h"
 #include "../Math.h"
 #include "../IHAL.h"
-#include "../ContextCallback.h"
+#include "../FixedFunction.h"
 
 class LEDBase
 {
 public:
-	typedef ContextCallback<float> BrightnessFunction;
+	typedef FixedFunction<float(void)> BrightnessFunction;
 
 public:
 	LEDBase(IHAL* HAL);

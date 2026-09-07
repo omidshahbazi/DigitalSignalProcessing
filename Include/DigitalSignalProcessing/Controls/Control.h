@@ -3,7 +3,7 @@
 #define CONTROL_H
 
 #include "ControlBase.h"
-#include "../ContextCallback.h"
+#include "../FixedFunction.h"
 
 class DualLED;
 class TripleLED;
