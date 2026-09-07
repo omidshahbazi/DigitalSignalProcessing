@@ -11,7 +11,7 @@
 #include "Potentiometer.h"
 #include "RotaryButton.h"
 
-template <uint8 MaxControlCount, uint16 ProcessRate>
+template <uint8_t MaxControlCount, uint16_t ProcessRate>
 class ControlFactory
 {
 public:
@@ -23,20 +23,20 @@ public:
 	{
 	}
 
-	SingleLED *CreateSingleLED(uint8 Pin)
+	SingleLED *CreateSingleLED(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<SingleLED>(m_HAL, Pin, ProcessRate);
 	}
-	DualLED *CreateDualLED(uint8 RedPin, uint8 GreenPin)
+	DualLED *CreateDualLED(uint8_t RedPin, uint8_t GreenPin)
 	{
 		MarkGPIOAsUsed(RedPin);
 		MarkGPIOAsUsed(GreenPin);
 
 		return Create<DualLED>(m_HAL, RedPin, GreenPin, ProcessRate);
 	}
-	TripleLED *CreateTripleLED(uint8 RedPin, uint8 GreenPin, uint8 BluePin)
+	TripleLED *CreateTripleLED(uint8_t RedPin, uint8_t GreenPin, uint8_t BluePin)
 	{
 		MarkGPIOAsUsed(RedPin);
 		MarkGPIOAsUsed(GreenPin);
@@ -45,28 +45,28 @@ public:
 		return Create<TripleLED>(m_HAL, RedPin, GreenPin, BluePin, ProcessRate);
 	}
 
-	Button *CreateButton(uint8 Pin)
+	Button *CreateButton(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Button>(m_HAL, Pin);
 	}
 
-	Switch *CreateSwitch(uint8 Pin)
+	Switch *CreateSwitch(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Switch>(m_HAL, Pin);
 	}
 
-	Potentiometer *CreatePotentiometer(uint8 Pin, bool FilterSwings = false)
+	Potentiometer *CreatePotentiometer(uint8_t Pin, bool FilterSwings = false)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Potentiometer>(m_HAL, Pin, ProcessRate, FilterSwings);
 	}
 
-	Rotary *CreateRotary(uint8 LeftPin, uint8 RightPin)
+	Rotary *CreateRotary(uint8_t LeftPin, uint8_t RightPin)
 	{
 		MarkGPIOAsUsed(LeftPin);
 		MarkGPIOAsUsed(RightPin);
@@ -74,7 +74,7 @@ public:
 		return Create<Rotary>(m_HAL, LeftPin, RightPin);
 	}
 
-	RotaryButton *CreateRotaryButton(uint8 APin, uint8 BPin, uint8 ButtonPin)
+	RotaryButton *CreateRotaryButton(uint8_t APin, uint8_t BPin, uint8_t ButtonPin)
 	{
 		MarkGPIOAsUsed(APin);
 		MarkGPIOAsUsed(BPin);
@@ -85,7 +85,7 @@ public:
 
 	void Process(void)
 	{
-		for (uint8 i = 0; i < m_ControlCount; ++i)
+		for (uint8_t i = 0; i < m_ControlCount; ++i)
 			m_Controls[i]->Process();
 	}
 
@@ -101,7 +101,7 @@ private:
 		return control;
 	}
 
-	void MarkGPIOAsUsed(uint8 Pin)
+	void MarkGPIOAsUsed(uint8_t Pin)
 	{
 		ASSERT(!m_UsedGPIOs[Pin], "GPIOPin%i is already in use", Pin);
 
@@ -112,7 +112,7 @@ private:
 	IHAL *m_HAL;
 	bool m_UsedGPIOs[MaxControlCount];
 	ControlBase *m_Controls[MaxControlCount];
-	uint8 m_ControlCount;
+	uint8_t m_ControlCount;
 };
 
 #endif

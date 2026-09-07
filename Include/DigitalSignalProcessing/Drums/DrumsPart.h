@@ -4,7 +4,7 @@
 
 #include "../Common.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class DrumsPart
 {
 	ASSERT_ON_FLOATING_TYPE(T);

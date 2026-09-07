@@ -11,7 +11,7 @@ public:
 	typedef FixedFunction<void(float)> EventHandler;
 
 public:
-	Potentiometer(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings = false);
+	Potentiometer(IHAL* HAL, uint8_t Pin, uint16_t UpdateRate, bool FilterSwings = false);
 
 	float GetValue(void) const
 	{

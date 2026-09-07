@@ -4,14 +4,14 @@
 
 #include "../Common.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Filter
 {
 	ASSERT_ON_FLOATING_TYPE(T);
 	ASSERT_ON_SAMPLE_RATE(SampleRate);
 
 public:
-	virtual void Process(T *Buffer, uint8 Count) = 0;
+	virtual void Process(T *Buffer, uint8_t Count) = 0;
 
 	virtual T Process(T Value)
 	{

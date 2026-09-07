@@ -7,7 +7,7 @@
 #include "../Math.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Compressor : public IDSP<T, SampleRate>
 {
 public:
@@ -80,9 +80,9 @@ public:
 		return m_MakeupGain;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			dBGain envelop = (LinearGain)m_EnvelopeFollowerFilter.Process(Math::Absolute(Buffer[i]));
 

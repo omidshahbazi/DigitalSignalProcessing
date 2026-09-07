@@ -7,7 +7,7 @@
 #include "../Filters/MetalNoiseFilter.h"
 #include "../Filters/BandPassFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Cymbal : public DrumsPart<T, SampleRate>
 {
 public:

@@ -3,19 +3,19 @@
 #include "DigitalSignalProcessing/Math.h"
 #include <stdio.h>
 
-uint16 GetStringLength(cstr Value)
+uint16_t GetStringLength(cstr Value)
 {
 	if (Value == nullptr)
 		return 0;
 
-	uint16 len = 0;
+	uint16_t len = 0;
 	while (Value[len] != '\0')
 		++len;
 
 	return len;
 }
 
-cstr IntToString(int32 Value)
+cstr IntToString(int32_t Value)
 {
 	static char buffer[8];
 
@@ -84,17 +84,17 @@ cstr FloatToString(float Value, int Decimals)
 	return buffer;
 }
 
-uint8 GetNoteIndex(uint8 MIDINumber)
+uint8_t GetNoteIndex(uint8_t MIDINumber)
 {
 	return Math::Moderate(MIDINumber, TotalNoteCount);
 }
 
-cstr GetEnglishNoteName(uint8 MIDINumber)
+cstr GetEnglishNoteName(uint8_t MIDINumber)
 {
 	return EnglishNoteNames[GetNoteIndex(MIDINumber)];
 }
 
-cstr GetFrenchNoteName(uint8 MIDINumber)
+cstr GetFrenchNoteName(uint8_t MIDINumber)
 {
 	return FrenchNoteNames[Math::Moderate(MIDINumber, TotalNoteCount)];
 }

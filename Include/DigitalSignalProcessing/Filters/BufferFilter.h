@@ -6,7 +6,7 @@
 #include "../Math.h"
 #include "../Memory.h"
 
-template <typename T, uint32 SampleRate, uint16 MaxTime>
+template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class BufferFilter : public Filter<T, SampleRate>
 {
 	static_assert(0 < MaxTime, "Invalid MaxTime");
@@ -106,14 +106,14 @@ public:
 		return m_IsLastSample;
 	}
 
-	T GetSample(uint32 Offset = 0) const
+	T GetSample(uint32_t Offset = 0) const
 	{
 		return GetCircularSample(m_ReadBufferIndex + Offset);
 	}
 
-	T GetLerpedSample(uint32 Offset, float Fraction) const
+	T GetLerpedSample(uint32_t Offset, float Fraction) const
 	{
-		uint32 index = m_ReadBufferIndex + Offset;
+		uint32_t index = m_ReadBufferIndex + Offset;
 
 		return Math::Lerp(GetCircularSample(index), GetCircularSample(index + 1), Fraction);
 	}
@@ -127,9 +127,9 @@ public:
 		m_ReadBufferIndex = Math::Wrap(m_ReadBufferIndex + (m_Reverse ? -1 : 1), 0, m_BufferLength - 1);
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Process(Buffer[i]);
 	}
 
@@ -172,7 +172,7 @@ public:
 	}
 
 private:
-	T GetCircularSample(uint32 Index) const
+	T GetCircularSample(uint32_t Index) const
 	{
 		return m_Buffer[Math::Wrap(Index, 0, m_BufferLength - 1)];
 	}
@@ -187,10 +187,10 @@ private:
 	LinearGain m_FeedbackCoef;
 
 	T *m_Buffer;
-	uint32 m_TotalBufferLength;
-	uint32 m_BufferLength;
-	uint32 m_WriteBufferIndex;
-	uint32 m_ReadBufferIndex;
+	uint32_t m_TotalBufferLength;
+	uint32_t m_BufferLength;
+	uint32_t m_WriteBufferIndex;
+	uint32_t m_ReadBufferIndex;
 	bool m_IsLastSample;
 };
 

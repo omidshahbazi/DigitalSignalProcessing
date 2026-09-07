@@ -7,7 +7,7 @@
 #include "PeakEQFilter.h"
 #include "HighShelfFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class TripleToneControlFilter : public Filter<T, SampleRate>
 {
 public:
@@ -65,7 +65,7 @@ public:
 		return m_HighShelfFilter.GetGain();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		m_LowShelfFilter.Process(Buffer, Count);
 		m_PeakEQFilter.Process(Buffer, Count);

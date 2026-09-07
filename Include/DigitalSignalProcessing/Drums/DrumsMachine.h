@@ -7,7 +7,7 @@
 #include "Cymbal.h"
 #include "Tom.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class DrumsMachine
 {
 	ASSERT_ON_FLOATING_TYPE(T);
@@ -38,7 +38,7 @@ public:
 	};
 
 private:
-	static constexpr uint8 NOTES_COUNT = 8;
+	static constexpr uint8_t NOTES_COUNT = 8;
 
 public:
 	DrumsMachine(void)
@@ -62,7 +62,7 @@ public:
 		m_TomMiddle.SetType(Tom<T, SampleRate>::Types::Middle);
 		m_TomHigh.SetType(Tom<T, SampleRate>::Types::High);
 
-		uint8 index = 0;
+		uint8_t index = 0;
 		m_Parts[index++] = &m_Kick;
 		m_Parts[index++] = &m_Snare;
 		m_Parts[index++] = &m_CymbalHiHat;
@@ -106,15 +106,15 @@ public:
 		return m_BeatsPerMinute;
 	}
 
-	void SetNotes(Parts *Parts, uint8 Length)
+	void SetNotes(Parts *Parts, uint8_t Length)
 	{
 		m_Pattern = Parts;
 		m_PatternLength = Length;
 	}
 
-	void Process(T *Buffer, uint8 Count)
+	void Process(T *Buffer, uint8_t Count)
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			Buffer[i] = Process();
 		}
@@ -131,10 +131,10 @@ public:
 				Parts parts = m_Pattern[m_PatternIndex];
 				m_PatternIndex = (m_PatternIndex + 1) % m_PatternLength;
 
-				for (uint8 i = 0; i < NOTES_COUNT; ++i)
+				for (uint8_t i = 0; i < NOTES_COUNT; ++i)
 				{
-					uint8 id = (1 << i);
-					if (((uint8)m_EnabledParts & id) && ((uint8)parts & id))
+					uint8_t id = (1 << i);
+					if (((uint8_t)m_EnabledParts & id) && ((uint8_t)parts & id))
 					{
 						m_Parts[i]->Beat();
 					}
@@ -143,11 +143,11 @@ public:
 		}
 
 		T samplesSum = 0;
-		uint8 enabledCount = 0;
+		uint8_t enabledCount = 0;
 
-		for (uint8 i = 0; i < NOTES_COUNT; ++i)
+		for (uint8_t i = 0; i < NOTES_COUNT; ++i)
 		{
-			if (((uint8)m_EnabledParts & (1 << i)))
+			if (((uint8_t)m_EnabledParts & (1 << i)))
 			{
 				T tempSample = m_Parts[i]->Process();
 				samplesSum += tempSample;
@@ -165,7 +165,7 @@ private:
 	void UpdateData(void)
 	{
 		float beatsPerSecond = (m_BeatsPerMinute * (float)m_NoteDuration) / 60;
-		m_SampleCountPerBeat = (uint32)((float)SampleRate / beatsPerSecond);
+		m_SampleCountPerBeat = (uint32_t)((float)SampleRate / beatsPerSecond);
 		m_ElapsedSampleCount = 0;
 	}
 
@@ -174,12 +174,12 @@ private:
 	NoteDurations m_NoteDuration;
 	float m_BeatsPerMinute;
 
-	uint32 m_SampleCountPerBeat;
-	uint32 m_ElapsedSampleCount;
+	uint32_t m_SampleCountPerBeat;
+	uint32_t m_ElapsedSampleCount;
 
 	Parts *m_Pattern;
-	uint8 m_PatternLength;
-	uint8 m_PatternIndex;
+	uint8_t m_PatternLength;
+	uint8_t m_PatternIndex;
 	DrumsPart<T, SampleRate> *m_Parts[NOTES_COUNT];
 
 	Kick<T, SampleRate> m_Kick;

@@ -5,7 +5,7 @@
 #include "Wah.h"
 #include "../Filters/EnvelopeFollowerFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class AutoWah : private Wah<T, SampleRate>
 {
 public:
@@ -28,7 +28,7 @@ public:
 		return m_Sensitivity;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		m_EnvelopeFollowerFilter.Process(Buffer, Count);
 		Wah<T, SampleRate>::SetRatio(Math::Clamp01(m_EnvelopeFollowerFilter.GetCurrentEnvelope() * m_Sensitivity));

@@ -11,10 +11,10 @@ class Rotary : public ControlBase
 	friend class RotaryButton;
 
 public:
-	typedef FixedFunction<void(int8, float)> RotatedEventHandler;
+	typedef FixedFunction<void(int8_t, float)> RotatedEventHandler;
 
 public:
-	Rotary(IHAL* HAL, uint8 APin, uint8 BPin, uint8 Sensitivity = 50);
+	Rotary(IHAL* HAL, uint8_t APin, uint8_t BPin, uint8_t Sensitivity = 50);
 
 	void SetOnRotatedListener(RotatedEventHandler Listener)
 	{
@@ -27,8 +27,8 @@ protected:
 private:
 	Control m_AControl;
 	Control m_BControl;
-	uint8 m_Sensitivity;
-	uint32 m_LastChangeTime;
+	uint8_t m_Sensitivity;
+	uint32_t m_LastChangeTime;
 
 	RotatedEventHandler m_OnRotated;
 };

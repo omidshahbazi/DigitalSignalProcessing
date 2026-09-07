@@ -8,7 +8,7 @@
 #include "../Filters/OscillatorFilter.h"
 #include "../Filters/BufferFilter.h"
 
-template <typename T, uint32 SampleRate, uint8 StageCount = 2>
+template <typename T, uint32_t SampleRate, uint8_t StageCount = 2>
 class Phaser : public IDSP<T, SampleRate>
 {
 public:
@@ -16,7 +16,7 @@ public:
 		: m_Depth(0),
 		  m_WetRate(0)
 	{
-		for (uint8 i = 0; i < StageCount; ++i)
+		for (uint8_t i = 0; i < StageCount; ++i)
 		{
 			m_Buffers[i].SetFeedback(MIN_GAIN);
 			m_Buffers[i].SetTime(50 ms);
@@ -66,19 +66,19 @@ public:
 
 	void Clear(void)
 	{
-		for (uint8 j = 0; j < StageCount; ++j)
+		for (uint8_t j = 0; j < StageCount; ++j)
 			m_Buffers[j].Clear();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			T output = Buffer[i];
 
 			T modulationIndex = Math::Absolute(m_Oscillator.Process()) * (m_Depth * SampleRate);
 
-			for (uint8 j = 0; j < StageCount; ++j)
+			for (uint8_t j = 0; j < StageCount; ++j)
 			{
 				m_Buffers[j].Record(output);
 

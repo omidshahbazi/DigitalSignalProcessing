@@ -1,6 +1,6 @@
 #include "DigitalSignalProcessing/Controls/RotaryButton.h"
 
-RotaryButton::RotaryButton(IHAL* HAL, uint8 APin, uint8 BPin, uint8 ButtonPin)
+RotaryButton::RotaryButton(IHAL* HAL, uint8_t APin, uint8_t BPin, uint8_t ButtonPin)
 	: Button(HAL, ButtonPin),
 	m_Rotary(HAL, APin, BPin)
 {}

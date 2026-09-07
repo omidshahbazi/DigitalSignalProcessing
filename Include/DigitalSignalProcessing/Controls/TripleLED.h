@@ -9,7 +9,7 @@
 class TripleLED : public ControlBase, public LEDBase
 {
 public:
-	TripleLED(IHAL* HAL, uint8 RedPin, uint8 GreenPin, uint8 BluePin, uint16 UpdateRate, bool UsePWM = false);
+	TripleLED(IHAL* HAL, uint8_t RedPin, uint8_t GreenPin, uint8_t BluePin, uint16_t UpdateRate, bool UsePWM = false);
 
 	void SetColor(const Color& Value);
 	const Color &GetColor(void) const

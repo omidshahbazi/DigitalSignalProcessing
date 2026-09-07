@@ -4,9 +4,9 @@
 
 #include "DataTypes.h"
 
-uint16 GetStringLength(cstr Value);
+uint16_t GetStringLength(cstr Value);
 
-cstr IntToString(int32 Value);
+cstr IntToString(int32_t Value);
 
 cstr FloatToString(float Value, int Decimals = 1);
 
@@ -22,10 +22,10 @@ cstr ToString<float>(float Value)
 	return FloatToString(Value);
 }
 
-uint8 GetNoteIndex(uint8 MIDINumber);
+uint8_t GetNoteIndex(uint8_t MIDINumber);
 
-cstr GetEnglishNoteName(uint8 MIDINumber);
+cstr GetEnglishNoteName(uint8_t MIDINumber);
 
-cstr GetFrenchNoteName(uint8 MIDINumber);
+cstr GetFrenchNoteName(uint8_t MIDINumber);
 
 #endif

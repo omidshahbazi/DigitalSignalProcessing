@@ -4,7 +4,7 @@
 
 #include "BufferFilter.h"
 
-template <typename T, uint32 SampleRate, uint16 MaxTime>
+template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class DelayFilter : public BufferFilter<T, SampleRate, MaxTime>
 {
 };

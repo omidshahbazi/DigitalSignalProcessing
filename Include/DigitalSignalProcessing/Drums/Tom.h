@@ -7,7 +7,7 @@
 #include "../Filters/WhiteNoiseFilter.h"
 #include "../Filters/OscillatorFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Tom : public DrumsPart<T, SampleRate>
 {
 public:

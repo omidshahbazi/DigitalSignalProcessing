@@ -14,27 +14,27 @@
 #error "Neither of DEBUG or RELASE are defined"
 #endif
 
-static constexpr uint32 SAMPLE_RATE_8000 = 8'000;
-static constexpr uint32 SAMPLE_RATE_15750 = 15'750;
-static constexpr uint32 SAMPLE_RATE_16000 = 16'000;
-static constexpr uint32 SAMPLE_RATE_22050 = 220'500;
-static constexpr uint32 SAMPLE_RATE_24000 = 24'000;
-static constexpr uint32 SAMPLE_RATE_32000 = 32'000;
-static constexpr uint32 SAMPLE_RATE_44100 = 44'100;
-static constexpr uint32 SAMPLE_RATE_48000 = 48'000;
-static constexpr uint32 SAMPLE_RATE_96000 = 96'000;
-static constexpr uint32 SAMPLE_RATE_192000 = 192'000;
-static constexpr uint32 SAMPLE_RATE_320000 = 320'000;
-static constexpr uint8 SAMPLE_RATE_COUNT = 11;
+static constexpr uint32_t SAMPLE_RATE_8000 = 8'000;
+static constexpr uint32_t SAMPLE_RATE_15750 = 15'750;
+static constexpr uint32_t SAMPLE_RATE_16000 = 16'000;
+static constexpr uint32_t SAMPLE_RATE_22050 = 220'500;
+static constexpr uint32_t SAMPLE_RATE_24000 = 24'000;
+static constexpr uint32_t SAMPLE_RATE_32000 = 32'000;
+static constexpr uint32_t SAMPLE_RATE_44100 = 44'100;
+static constexpr uint32_t SAMPLE_RATE_48000 = 48'000;
+static constexpr uint32_t SAMPLE_RATE_96000 = 96'000;
+static constexpr uint32_t SAMPLE_RATE_192000 = 192'000;
+static constexpr uint32_t SAMPLE_RATE_320000 = 320'000;
+static constexpr uint8_t SAMPLE_RATE_COUNT = 11;
 
-static constexpr uint32 MIN_SAMPLE_RATE = SAMPLE_RATE_8000;
-static constexpr uint32 MAX_SAMPLE_RATE = SAMPLE_RATE_320000;
+static constexpr uint32_t MIN_SAMPLE_RATE = SAMPLE_RATE_8000;
+static constexpr uint32_t MAX_SAMPLE_RATE = SAMPLE_RATE_320000;
 
-static constexpr uint8 BIT_DEPTH_8 = 8;
-static constexpr uint8 BIT_DEPTH_16 = 16;
-static constexpr uint8 BIT_DEPTH_24 = 24;
-static constexpr uint8 BIT_DEPTH_32 = 32;
-static constexpr uint8 BIT_DEPTH_COUNT = 4;
+static constexpr uint8_t BIT_DEPTH_8 = 8;
+static constexpr uint8_t BIT_DEPTH_16 = 16;
+static constexpr uint8_t BIT_DEPTH_24 = 24;
+static constexpr uint8_t BIT_DEPTH_32 = 32;
+static constexpr uint8_t BIT_DEPTH_COUNT = 4;
 
 #define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
 
@@ -62,8 +62,8 @@ static_assert(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 	Memory::Copy(Buffer, Name, Count);
 
 #define CREATE_UP_SAMPLE_BUFFER(Name, FactorValue) \
-	const uint8 Name##Factor = FactorValue;        \
+	const uint8_t Name##Factor = FactorValue;        \
 	T Name[MAX_FRAME_LENGTH * FactorValue];        \
-	const uint8 Name##Length = Count * FactorValue;
+	const uint8_t Name##Length = Count * FactorValue;
 
 #define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, UP_SAMPLE_FACTOR)

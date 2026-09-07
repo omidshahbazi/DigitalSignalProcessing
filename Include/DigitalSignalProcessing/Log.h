@@ -44,10 +44,10 @@ public:
 		if (FormattedMessage == nullptr)
 			return;
 
-		const int16 SIZE = 512;
+		const int16_t SIZE = 512;
 		static char buff[SIZE];
 
-		int16 index = 0;
+		int16_t index = 0;
 
 		buff[index++] = '[';
 

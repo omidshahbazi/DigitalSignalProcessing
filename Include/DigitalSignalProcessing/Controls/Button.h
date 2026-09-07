@@ -10,7 +10,7 @@ public:
 	typedef FixedFunction<void(float)> HoldEventHandler;
 
 public:
-	Button(IHAL* HAL, uint8 Pin);
+	Button(IHAL* HAL, uint8_t Pin);
 
 	void SetOnHoldListener(HoldEventHandler Listener)
 	{

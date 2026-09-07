@@ -5,7 +5,7 @@
 #include "Filter.h"
 #include "../Debug.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class MetalNoiseFilter : public Filter<T, SampleRate>
 {
 public:
@@ -15,20 +15,20 @@ public:
 		// TR-808 based inharmonic frequencies for metallic texture
 		const float Frequencies[6] = {245, 306, 384, 522, 650, 800};
 
-		for (uint8 i = 0; i < 6; ++i)
+		for (uint8_t i = 0; i < 6; ++i)
 		{
 			m_PhaseIncrement[i] = Frequencies[i] / SampleRate;
 			m_Phase[i] = 0.0f;
 		}
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 j = 0; j < Count; ++j)
+		for (uint8_t j = 0; j < Count; ++j)
 		{
 			float combinedSource = 0.0f;
 
-			for (uint8 i = 0; i < 6; ++i)
+			for (uint8_t i = 0; i < 6; ++i)
 			{
 				m_Phase[i] += m_PhaseIncrement[i];
 				if (m_Phase[i] >= 1.0f)

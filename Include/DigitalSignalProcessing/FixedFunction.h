@@ -6,10 +6,10 @@
 #include <utility>
 #include <new>
 
-template <typename Signature, uint8 StorageSize = 16>
+template <typename Signature, uint8_t StorageSize = 16>
 class FixedFunction;
 
-template <typename Ret, typename... ArgsT, uint8 StorageSize>
+template <typename Ret, typename... ArgsT, uint8_t StorageSize>
 class FixedFunction<Ret(ArgsT...), StorageSize>
 {
 public:
@@ -93,7 +93,7 @@ private:
 	using InvokerFuctionT = Ret(*)(void*, ArgsT&&...);
 
 	InvokerFuctionT m_Invoker;
-	alignas(void*) uint8 m_Storage[StorageSize];
+	alignas(void*) uint8_t m_Storage[StorageSize];
 };
 
 #endif

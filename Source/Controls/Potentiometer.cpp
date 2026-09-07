@@ -1,7 +1,7 @@
 #include "DigitalSignalProcessing/Controls/Potentiometer.h"
 #include "DigitalSignalProcessing/Log.h"
 
-Potentiometer::Potentiometer(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool FilterSwings)
+Potentiometer::Potentiometer(IHAL* HAL, uint8_t Pin, uint16_t UpdateRate, bool FilterSwings)
 	: Control(HAL, Pin, IHAL::PinModes::AnalogInput, UpdateRate),
 	m_FilterSwings(FilterSwings),
 	m_Value(-1)

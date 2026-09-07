@@ -27,7 +27,7 @@ public:
     {
     }
 
-    void SetTable(const TablePoints *Table, uint8 Length)
+    void SetTable(const TablePoints *Table, uint8_t Length)
     {
         ASSERT(Table != nullptr, "Invalid Table");
         ASSERT(Length > 1, "Invalid Length %f", Length);
@@ -44,24 +44,24 @@ public:
     {
         return m_Table;
     }
-    uint8 GetLength(void) const
+    uint8_t GetLength(void) const
     {
         return m_Length;
     }
 
-    void Process(T *Buffer, uint8 Count) override
+    void Process(T *Buffer, uint8_t Count) override
     {
         const float minIn = m_MinInput;
         const float maxIn = m_MaxInput;
         const float rangeInv = m_InputRangeInv;
-        const uint8 maxIdx = m_Length - 1;
+        const uint8_t maxIdx = m_Length - 1;
 
-        for (uint8 i = 0; i < Count; ++i)
+        for (uint8_t i = 0; i < Count; ++i)
         {
             float input = Math::Clamp(Buffer[i], minIn, maxIn);
             
             float pos = (input - minIn) * rangeInv;
-            uint8 index = (uint8)pos;
+            uint8_t index = (uint8_t)pos;
             float frac = pos - index;
 
             if (index >= maxIdx) 
@@ -77,7 +77,7 @@ public:
 
 private:
     const TablePoints *m_Table;
-    uint8 m_Length;
+    uint8_t m_Length;
     float m_MinInput;
     float m_MaxInput;
     float m_InputRangeInv;

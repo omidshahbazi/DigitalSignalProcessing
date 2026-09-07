@@ -1,6 +1,6 @@
 #include "DigitalSignalProcessing/Controls/SingleLED.h"
 
-SingleLED::SingleLED(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool UsePWM)
+SingleLED::SingleLED(IHAL* HAL, uint8_t Pin, uint16_t UpdateRate, bool UsePWM)
 	: Control(HAL, Pin, (UsePWM ? IHAL::PinModes::PWM : IHAL::PinModes::DigitalOutput), UpdateRate),
 	LEDBase(HAL),
 	m_UsePWM(UsePWM)

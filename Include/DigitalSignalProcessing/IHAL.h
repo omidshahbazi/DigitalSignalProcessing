@@ -7,7 +7,7 @@ class IUSB;
 class IHAL
 {
 public:
-	typedef void (*AudioPassthrough)(const float* const* In, float** Out, uint32 Size);
+	typedef void (*AudioPassthrough)(const float* const* In, float** Out, uint32_t Size);
 
 	enum class PinModes
 	{
@@ -18,38 +18,38 @@ public:
 	};
 
 public:
-	virtual void Setup(uint8 FrameLength, uint32 SampleRate, bool Boost = false) = 0;
+	virtual void Setup(uint8_t FrameLength, uint32_t SampleRate, bool Boost = false) = 0;
 	virtual void StartAudio(AudioPassthrough Callback) = 0;
 
-	virtual void* Allocate(uint32 Size, bool OnSDRAM = false) = 0;
+	virtual void* Allocate(uint32_t Size, bool OnSDRAM = false) = 0;
 	virtual void Deallocate(void* Memory) = 0;
 
-	virtual bool IsAnAnalogPin(uint8 Pin) const = 0;
-	virtual bool IsADigitalPin(uint8 Pin) const = 0;
+	virtual bool IsAnAnalogPin(uint8_t Pin) const = 0;
+	virtual bool IsADigitalPin(uint8_t Pin) const = 0;
 
-	virtual bool IsAnInputPin(uint8 Pin) const = 0;
-	virtual bool IsAnOutputPin(uint8 Pin) const = 0;
+	virtual bool IsAnInputPin(uint8_t Pin) const = 0;
+	virtual bool IsAnOutputPin(uint8_t Pin) const = 0;
 
-	virtual bool IsAPWMPin(uint8 Pin) const = 0;
+	virtual bool IsAPWMPin(uint8_t Pin) const = 0;
 
-	virtual bool IsInInputMode(uint8 Pin) const = 0;
-	virtual bool IsInOutputMode(uint8 Pin) const = 0;
+	virtual bool IsInInputMode(uint8_t Pin) const = 0;
+	virtual bool IsInOutputMode(uint8_t Pin) const = 0;
 
-	virtual void SetPinMode(uint8 Pin, PinModes Mode) = 0;
+	virtual void SetPinMode(uint8_t Pin, PinModes Mode) = 0;
 
-	virtual void SetPWMResolution(uint8 Value) = 0;
-	virtual uint8 GetPWMResolution(void) const = 0;
+	virtual void SetPWMResolution(uint8_t Value) = 0;
+	virtual uint8_t GetPWMResolution(void) const = 0;
 
-	virtual float AnalogRead(uint8 Pin) const = 0;
+	virtual float AnalogRead(uint8_t Pin) const = 0;
 
-	virtual bool DigitalRead(uint8 Pin) const = 0;
-	virtual void DigitalWrite(uint8 Pin, bool Value) = 0;
+	virtual bool DigitalRead(uint8_t Pin) const = 0;
+	virtual void DigitalWrite(uint8_t Pin, bool Value) = 0;
 
-	virtual void PWMWrite(uint8 Pin, float Value) = 0;
+	virtual void PWMWrite(uint8_t Pin, float Value) = 0;
 
-	virtual uint32 GetTimeFrequency(void) const = 0;
-	virtual uint32 GetTimeSinceStartupTicks(void) const = 0;
-	virtual uint32 GetTimeSinceStartupMs(void) const = 0;
+	virtual uint32_t GetTimeFrequency(void) const = 0;
+	virtual uint32_t GetTimeSinceStartupTicks(void) const = 0;
+	virtual uint32_t GetTimeSinceStartupMs(void) const = 0;
 	virtual float GetTimeSinceStartup(void) const = 0;
 
 	virtual void Print(cstr Value) = 0;
@@ -59,9 +59,9 @@ public:
 	virtual void Break(void) const = 0;
 	virtual void Reset(bool InfiniteTime = true) const = 0;
 
-	virtual void Delay(uint16 Ms) const = 0;
+	virtual void Delay(uint16_t Ms) const = 0;
 
-	virtual IUSB* GetUSB(uint8 Index = 0) = 0;
+	virtual IUSB* GetUSB(uint8_t Index = 0) = 0;
 
 	virtual void EraseQSPIData(void) = 0;
 };

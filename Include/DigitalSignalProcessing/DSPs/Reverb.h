@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Filters/BufferFilter.h"
 
-template <typename T, uint32 SampleRate, uint16 MaxDelayTime>
+template <typename T, uint32_t SampleRate, uint16_t MaxDelayTime>
 class Reverb : public IDSP<T, SampleRate>
 {
 public:
@@ -56,9 +56,9 @@ public:
 		m_Buffer.Clear();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Mix(Buffer[i], m_Buffer.Record(Buffer[i])));
 	}
 

@@ -8,7 +8,7 @@
 class IUSBCDCInterface : public IUSBInterface
 {
 public:
-	typedef FixedFunction<void(const uint8* Buffer, uint8 Length)> ReceiveCallback;
+	typedef FixedFunction<void(const uint8_t* Buffer, uint8_t Length)> ReceiveCallback;
 
 public:
 	virtual ~IUSBCDCInterface(void) = default;
@@ -17,7 +17,7 @@ public:
 
 	virtual void SetReceiveCallback(ReceiveCallback Callback) = 0;
 
-	virtual void Transmit(const uint8* Buffer, uint16 Length) = 0;
+	virtual void Transmit(const uint8_t* Buffer, uint16_t Length) = 0;
 };
 
 #endif

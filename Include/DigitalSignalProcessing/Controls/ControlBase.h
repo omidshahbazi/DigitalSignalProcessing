@@ -7,11 +7,11 @@
 
 class ControlBase
 {
-	template <uint8 MaxControlCount, uint16 ProcessRate>
+	template <uint8_t MaxControlCount, uint16_t ProcessRate>
 	friend class ControlFactory;
 
 public:
-	ControlBase(IHAL* HAL, uint16 UpdateRate);
+	ControlBase(IHAL* HAL, uint16_t UpdateRate);
 
 	virtual void SetEnabled(bool Value)
 	{
@@ -25,16 +25,16 @@ public:
 protected:
 	virtual void Update(void) = 0;
 
-	void SetPinMode(uint8 Pin, IHAL::PinModes Mode);
+	void SetPinMode(uint8_t Pin, IHAL::PinModes Mode);
 
-	float AnalogRead(uint8 Pin) const;
+	float AnalogRead(uint8_t Pin) const;
 
-	bool DigitalRead(uint8 Pin) const;
+	bool DigitalRead(uint8_t Pin) const;
 
-	void DigitalWrite(uint8 Pin, bool Value);
+	void DigitalWrite(uint8_t Pin, bool Value);
 
 	//[0, 1]
-	void PWMWrite(uint8 Pin, float Value);
+	void PWMWrite(uint8_t Pin, float Value);
 
 protected:
 	IHAL* GetHAL(void) const
@@ -48,8 +48,8 @@ private:
 private:
 	IHAL* m_HAL;
 	bool m_Enabled;
-	uint16 m_UpdateStep;
-	uint32 m_NextUpdateTime;
+	uint16_t m_UpdateStep;
+	uint32_t m_NextUpdateTime;
 };
 
 #endif

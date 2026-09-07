@@ -1,6 +1,6 @@
 #include "DigitalSignalProcessing/Controls/Button.h"
 
-Button::Button(IHAL* HAL, uint8 Pin)
+Button::Button(IHAL* HAL, uint8_t Pin)
 	: Switch(HAL, Pin)
 {}
 

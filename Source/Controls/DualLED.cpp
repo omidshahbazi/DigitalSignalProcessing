@@ -1,6 +1,6 @@
 #include "DigitalSignalProcessing/Controls/DualLED.h"
 
-DualLED::DualLED(IHAL* HAL, uint8 RedPin, uint8 GreenPin, uint16 UpdateRate, bool UsePWM)
+DualLED::DualLED(IHAL* HAL, uint8_t RedPin, uint8_t GreenPin, uint16_t UpdateRate, bool UsePWM)
 	: ControlBase(HAL, UpdateRate),
 	LEDBase(HAL),
 	m_LEDRed(HAL, RedPin, (UsePWM ? IHAL::PinModes::PWM : IHAL::PinModes::DigitalOutput), UpdateRate),

@@ -8,7 +8,7 @@
 class SingleLED : public Control, public LEDBase
 {
 public:
-	SingleLED(IHAL* HAL, uint8 Pin, uint16 UpdateRate, bool UsePWM = false);
+	SingleLED(IHAL* HAL, uint8_t Pin, uint16_t UpdateRate, bool UsePWM = false);
 
 protected:
 	void Update(void) override;

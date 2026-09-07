@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Filters/PeakEQFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Wah : public IDSP<T, SampleRate>
 {
 private:
@@ -59,7 +59,7 @@ public:
 
 		m_Ratio = Math::Lerp(m_Ratio, Value, 0.01);
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
+		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
 		Frequency freq = (Frequency)Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
 		QualityFactor q = (QualityFactor)Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio);
 		dBGain gain = (dBGain)Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio);
@@ -71,12 +71,12 @@ public:
 		return m_Ratio;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		m_PeakEQFilter.Process(Buffer, Count);
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32)m_Type];
-		for (uint8 i = 0; i < Count; ++i)
+		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Buffer[i]) * freqRange.FinalGain;
 	}
 

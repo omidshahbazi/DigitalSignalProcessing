@@ -9,10 +9,10 @@ class IUSBInterface;
 class IUSBDevice
 {
 public:
-	virtual IUSBInterface* GetInterface(uint8 Index) = 0;
+	virtual IUSBInterface* GetInterface(uint8_t Index) = 0;
 
 	template<typename T>
-	T* GetInterface(uint8 Index)
+	T* GetInterface(uint8_t Index)
 	{
 		IUSBInterface* interface = GetInterface(Index);
 		if (interface == nullptr)

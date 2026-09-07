@@ -5,7 +5,7 @@
 #include "FastFourierTransformer.h"
 #include "Math.h"
 
-template <typename T, uint32 SampleRate, uint16 SampleCount>
+template <typename T, uint32_t SampleRate, uint16_t SampleCount>
 class FrequencyDetector
 {
 	static_assert(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
@@ -17,9 +17,9 @@ public:
 	{
 	}
 
-	void Process(const T *const Buffer, uint8 Count)
+	void Process(const T *const Buffer, uint8_t Count)
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Process(Buffer[i]);
 	}
 
@@ -44,7 +44,7 @@ public:
 
 private:
 	T m_Buffer[SampleCount];
-	uint16 m_BufferIndex;
+	uint16_t m_BufferIndex;
 };
 
 #endif

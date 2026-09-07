@@ -4,7 +4,7 @@
 
 #include "IHAL.h"
 
-template <typename T, uint8 ResetTime>
+template <typename T, uint8_t ResetTime>
 class TempoMeter
 {
 public:
@@ -84,7 +84,7 @@ public:
 		return m_Max;
 	}
 
-	uint8 GetBeatCount(void) const
+	uint8_t GetBeatCount(void) const
 	{
 		return m_BeatCount;
 	}
@@ -103,7 +103,7 @@ private:
 	T m_Average;
 	T m_Min;
 	T m_Max;
-	uint8 m_BeatCount;
+	uint8_t m_BeatCount;
 	float m_TempoMeterResetTime;
 };
 #endif

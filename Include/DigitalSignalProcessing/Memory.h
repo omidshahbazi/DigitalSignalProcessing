@@ -15,9 +15,9 @@ public:
 	}
 
 	template <typename T>
-	static T *Allocate(uint32 Count = 1, bool OnSDRAM = false)
+	static T *Allocate(uint32_t Count = 1, bool OnSDRAM = false)
 	{
-		uint32 length = sizeof(T) * Count;
+		uint32_t length = sizeof(T) * Count;
 
 		T *mem = reinterpret_cast<T *>(GetHAL()->Allocate(length, OnSDRAM));
 
@@ -35,13 +35,13 @@ public:
 	}
 
 	template <typename T>
-	static void Set(T *Memory, int32 Value, uint32 Count = 1)
+	static void Set(T *Memory, int32_t Value, uint32_t Count = 1)
 	{
 		memset(reinterpret_cast<void *>(Memory), Value, sizeof(T) * Count);
 	}
 
 	template <typename T>
-	static void Copy(const T *const Source, T *Destination, uint32 Count = 1)
+	static void Copy(const T *const Source, T *Destination, uint32_t Count = 1)
 	{
 		memcpy(Destination, Source, sizeof(T) * Count);
 	}

@@ -33,7 +33,7 @@ void LEDBase::SetBlinkingBrightness(float MinValue, float MaxValue, float Rate)
 		{
 			float value = Math::Moderate(m_HAL->GetTimeSinceStartup() * 2 * m_DefaultRate, 2);
 
-			return ((int32)value == 0 ? m_DefaultMinValue : m_DefaultMaxValue);
+			return ((int32_t)value == 0 ? m_DefaultMinValue : m_DefaultMaxValue);
 		});
 }
 

@@ -12,7 +12,7 @@ public:
 	typedef FixedFunction<void(float)> TurnedOffEventHandler;
 
 public:
-	Switch(IHAL* HAL, uint8 Pin);
+	Switch(IHAL* HAL, uint8_t Pin);
 
 	void SetOnStateChangedListener(StateChangedEventHandler Listener)
 	{

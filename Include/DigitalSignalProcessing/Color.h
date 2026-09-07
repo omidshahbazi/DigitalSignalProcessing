@@ -9,9 +9,9 @@ struct Color
 public:
 	Color(void);
 
-	Color(uint8 R, uint8 G, uint8 B);
+	Color(uint8_t R, uint8_t G, uint8_t B);
 
-	Color(uint8 R, uint8 G, uint8 B, uint8 A);
+	Color(uint8_t R, uint8_t G, uint8_t B, uint8_t A);
 
 	template <typename T>
 	Color operator*(T Value) const
@@ -31,17 +31,17 @@ public:
 		return *this;
 	}
 
-	uint16 R5G6B5(void);
+	uint16_t R5G6B5(void);
 
-	static uint16 BlendR5G6B5(uint16 ColorA, uint16 ColorB, uint8 Alpha);
+	static uint16_t BlendR5G6B5(uint16_t ColorA, uint16_t ColorB, uint8_t Alpha);
 
-	static uint8 CombineValues(uint8 A, uint8 B);
+	static uint8_t CombineValues(uint8_t A, uint8_t B);
 
 public:
-	uint8 R;
-	uint8 G;
-	uint8 B;
-	uint8 A;
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+	uint8_t A;
 };
 
 static const Color ColorBlack = { 0, 0, 0, 255 };

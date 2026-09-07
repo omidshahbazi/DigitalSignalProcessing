@@ -9,7 +9,7 @@
 #include <CMSIS-DSP/Include/arm_math.h>
 #endif
 
-template <typename T, uint32 SampleRate, uint8 FrameLength, uint16 MaxTaps>
+template <typename T, uint32_t SampleRate, uint8_t FrameLength, uint16_t MaxTaps>
 class FiniteImpulseResponseFilter : public Filter<T, SampleRate>
 {
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
@@ -31,7 +31,7 @@ public:
 #endif
 	{
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
-		const uint16 StateCount = MaxTaps + FrameLength - 1;
+		const uint16_t StateCount = MaxTaps + FrameLength - 1;
 		m_State = Memory::Allocate<T>(StateCount, true);
 
 		arm_fir_init_f32(&m_Instance, 0, nullptr, m_State, FrameLength);
@@ -40,7 +40,7 @@ public:
 #endif
 	}
 
-	void SetData(const T *Data, uint16 Length)
+	void SetData(const T *Data, uint16_t Length)
 	{
 		ASSERT(Data != nullptr, "Invalid Data");
 		ASSERT(Length != 0, "Invalid Length %u", Length);
@@ -68,7 +68,7 @@ public:
 		SetData(&SingleTap, 1);
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
 		arm_fir_f32(&m_Instance, Buffer, Buffer, Count);
@@ -76,14 +76,14 @@ public:
 		if (m_Coefficients == nullptr)
 			return;
 
-		for (uint8 n = 0; n < Count; n++)
+		for (uint8_t n = 0; n < Count; n++)
 		{
 			m_DelayLine[m_WriteIndex] = Buffer[n];
 
 			T output = 0;
 
-			uint16 readIndex = m_WriteIndex;
-			for (uint16 i = 0; i < m_TapCount; i++)
+			uint16_t readIndex = m_WriteIndex;
+			for (uint16_t i = 0; i < m_TapCount; i++)
 			{
 				output += m_Coefficients[i] * m_DelayLine[readIndex];
 
@@ -107,10 +107,10 @@ private:
 	T *m_State;
 #else
 	const T *m_Coefficients;
-	uint16 m_TapCount;
+	uint16_t m_TapCount;
 
 	T *m_DelayLine;
-	uint16 m_WriteIndex;
+	uint16_t m_WriteIndex;
 #endif
 };
 

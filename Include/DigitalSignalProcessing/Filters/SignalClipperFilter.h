@@ -5,7 +5,7 @@
 #include "ResistorCapacitorFilter.h"
 #include "ClipperDiodeFilter.h"
 
-template <typename T, uint32 SampleRate, ClipperDiodeFilterTypes DiodeType>
+template <typename T, uint32_t SampleRate, ClipperDiodeFilterTypes DiodeType>
 class SignalClipperFilter : public Filter<T, SampleRate>
 {
 public:
@@ -40,14 +40,14 @@ public:
 		return m_AsymmetryLevel;
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		m_HighPassFilter.Process(Buffer, Count);
 
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] *= m_LinearGain;
 
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] *= Math::GetAsymmetricGain(Buffer[i], m_AsymmetryLevel);
 
 		m_DiodeFilter.Process(Buffer, Count);
@@ -61,10 +61,10 @@ private:
 	ClipperDiodeFilter<T, SampleRate, DiodeType> m_DiodeFilter;
 };
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using SoftSignalClipperFilter = SignalClipperFilter<T, SampleRate, ClipperDiodeFilterTypes::Germanium>;
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using HardSignalClipperFilter = SignalClipperFilter<T, SampleRate, ClipperDiodeFilterTypes::RedLED>;
 
 #endif

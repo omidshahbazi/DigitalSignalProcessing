@@ -5,14 +5,14 @@
 #include "Filter.h"
 #include "../Math.h"
 
-enum class ClipperDiodeFilterTypes : uint8
+enum class ClipperDiodeFilterTypes : uint8_t
 {
 	Silicon = 0,
 	Germanium,
 	RedLED
 };
 
-template<typename T, uint32 SampleRate, ClipperDiodeFilterTypes Type>
+template<typename T, uint32_t SampleRate, ClipperDiodeFilterTypes Type>
 class ClipperDiodeFilter : public Filter<T, SampleRate>
 {
 public:
@@ -50,9 +50,9 @@ public:
 		}
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			T leakedInput = Buffer[i] + (Buffer[i] * m_LeakageFactor);
 
@@ -79,13 +79,13 @@ private:
 	float m_Softness;
 };
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using SiliconClipperDiodeFilter = ClipperDiodeFilter<T, SampleRate, ClipperDiodeFilterTypes::Silicon>;
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using GermaniumClipperDiodeFilter = ClipperDiodeFilter<T, SampleRate, ClipperDiodeFilterTypes::Germanium>;
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using SiliconClipperDiodeFilter = ClipperDiodeFilter<T, SampleRate, ClipperDiodeFilterTypes::Silicon>;
 
 #endif

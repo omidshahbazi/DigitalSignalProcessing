@@ -6,14 +6,14 @@
 #include "LowPassFilter.h"
 #include "../Math.h"
 
-template <typename T, uint32 SampleRate, uint32 FrameLength, uint8 Ratio, bool ZeroStuffing = true>
+template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio, bool ZeroStuffing = true>
 class UpSamplerFilter : public Filter<T, SampleRate>
 {
 public:
-	static constexpr uint16 BufferSize = FrameLength * Ratio;
+	static constexpr uint16_t BufferSize = FrameLength * Ratio;
 
 public:
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		Math::UpSample<T, ZeroStuffing>(Buffer, Count, m_Samples, Ratio);
 	}
@@ -45,7 +45,7 @@ public:
 		return m_Samples;
 	}
 
-	constexpr uint16 GetCount(void) const
+	constexpr uint16_t GetCount(void) const
 	{
 		return BufferSize;
 	}
@@ -54,11 +54,11 @@ private:
 	T m_Samples[BufferSize];
 };
 
-template <typename T, uint32 SampleRate, uint32 FrameLength, uint8 Ratio>
+template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio>
 class UpSamplerFilter<T, SampleRate, FrameLength, Ratio, true> : public Filter<T, SampleRate>
 {
 public:
-	static constexpr uint16 BufferSize = FrameLength * Ratio;
+	static constexpr uint16_t BufferSize = FrameLength * Ratio;
 
 public:
 	UpSamplerFilter(void)
@@ -67,7 +67,7 @@ public:
 		m_DownSampleFilter.SetCutoffFrequency(MAX_FREQUENCY);
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		Math::UpSample<T, true>(Buffer, Count, m_Samples, Ratio);
 
@@ -103,7 +103,7 @@ public:
 		return m_Samples;
 	}
 
-	constexpr uint16 GetCount(void) const
+	constexpr uint16_t GetCount(void) const
 	{
 		return BufferSize;
 	}

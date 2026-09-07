@@ -11,7 +11,7 @@ public:
 	typedef Rotary::RotatedEventHandler RotatedEventHandler;
 
 public:
-	RotaryButton(IHAL* HAL, uint8 APin, uint8 BPin, uint8 ButtonPin);
+	RotaryButton(IHAL* HAL, uint8_t APin, uint8_t BPin, uint8_t ButtonPin);
 
 	void SetOnRotatedListener(RotatedEventHandler Listener)
 	{

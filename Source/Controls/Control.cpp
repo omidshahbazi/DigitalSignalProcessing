@@ -1,6 +1,6 @@
 #include "DigitalSignalProcessing/Controls/Control.h"
 
-Control::Control(IHAL* HAL, uint8 Pin, IHAL::PinModes Mode, uint16 UpdateRate)
+Control::Control(IHAL* HAL, uint8_t Pin, IHAL::PinModes Mode, uint16_t UpdateRate)
 	: ControlBase(HAL, UpdateRate),
 	m_Pin(Pin),
 	m_State(0)
@@ -18,7 +18,7 @@ bool Control::DigitalRead(void) const
 	return ControlBase::DigitalRead(m_Pin);
 }
 
-uint8 Control::DigitalStateRead(void)
+uint8_t Control::DigitalStateRead(void)
 {
 	m_State <<= 1;
 	m_State |= (DigitalRead() ? 1 : 0);

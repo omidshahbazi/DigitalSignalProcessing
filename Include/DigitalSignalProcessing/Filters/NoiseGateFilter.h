@@ -6,7 +6,7 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 {
 public:
@@ -86,9 +86,9 @@ public:
 		return m_Smoothing;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			LinearGain envelope = (LinearGain)EnvelopeFollowerFilter<T, SampleRate>::Process(Buffer[i]);
 

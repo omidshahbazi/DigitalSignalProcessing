@@ -16,14 +16,14 @@ class Control : public ControlBase
 	friend class Rotary;
 
 public:
-	Control(IHAL* HAL, uint8 Pin, IHAL::PinModes Mode, uint16 UpdateRate);
+	Control(IHAL* HAL, uint8_t Pin, IHAL::PinModes Mode, uint16_t UpdateRate);
 
 protected:
 	virtual void Update(void) override
 	{
 	}
 
-	uint8 GetPin(void) const
+	uint8_t GetPin(void) const
 	{
 		return m_Pin;
 	}
@@ -32,15 +32,15 @@ protected:
 
 	bool DigitalRead(void) const;
 
-	uint8 DigitalStateRead(void);
+	uint8_t DigitalStateRead(void);
 
 	void DigitalWrite(bool Value);
 
 	void PWMWrite(float Value);
 
 private:
-	uint8 m_Pin;
-	uint8 m_State;
+	uint8_t m_Pin;
+	uint8_t m_State;
 };
 
 #endif

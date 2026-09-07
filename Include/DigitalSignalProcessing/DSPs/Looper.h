@@ -7,7 +7,7 @@
 #include "../Filters/LowPassFilter.h"
 #include "../Filters/HighPassFilter.h"
 
-template <typename T, uint32 SampleRate, uint16 MaxTime>
+template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class Looper : public IDSP<T, SampleRate>
 {
 public:
@@ -166,14 +166,14 @@ public:
 		return m_Buffer.GetIsLastSample();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		CLONE_BUFFER(filteredBuffer);
 
 		m_HighPassFilter.Process(filteredBuffer, Count);
 		m_LowPassFilter.Process(filteredBuffer, Count);
 
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			T output = 0;
 

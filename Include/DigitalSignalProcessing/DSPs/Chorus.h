@@ -4,7 +4,7 @@
 
 #include "Flanger.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Chorus : public Flanger<T, SampleRate>
 {
 public:

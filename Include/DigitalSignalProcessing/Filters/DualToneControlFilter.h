@@ -6,7 +6,7 @@
 #include "LowShelfFilter.h"
 #include "HighShelfFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class DualToneControlFilter : public Filter<T, SampleRate>
 {
 public:
@@ -52,7 +52,7 @@ public:
 		return m_HighTone;
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		m_LowShelfFilter.Process(Buffer, Count);
 		m_HighShelfFilter.Process(Buffer, Count);

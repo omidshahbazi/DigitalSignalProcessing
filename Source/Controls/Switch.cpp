@@ -1,7 +1,7 @@
 #include "DigitalSignalProcessing/Controls/Switch.h"
 #include "DigitalSignalProcessing/Debug.h"
 
-Switch::Switch(IHAL* HAL, uint8 Pin)
+Switch::Switch(IHAL* HAL, uint8_t Pin)
 	: Control(HAL, Pin, IHAL::PinModes::DigitalInput, 1000),
 	m_TurnedOn(false),
 	m_TurnedOnTime(0),
@@ -14,7 +14,7 @@ Switch::Switch(IHAL* HAL, uint8 Pin)
 
 void Switch::Update(void)
 {
-	bool newValue = (DigitalStateRead() == (uint8)-1);
+	bool newValue = (DigitalStateRead() == (uint8_t)-1);
 
 	if (m_TurnedOn == newValue)
 	{

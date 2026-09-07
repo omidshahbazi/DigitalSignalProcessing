@@ -9,7 +9,7 @@
 class DualLED : public ControlBase, public LEDBase
 {
 public:
-	DualLED(IHAL* HAL, uint8 RedPin, uint8 GreenPin, uint16 UpdateRate, bool UsePWM = false);
+	DualLED(IHAL* HAL, uint8_t RedPin, uint8_t GreenPin, uint16_t UpdateRate, bool UsePWM = false);
 
 	void SetColor(const Color& Value);
 	const Color &GetColor(void) const

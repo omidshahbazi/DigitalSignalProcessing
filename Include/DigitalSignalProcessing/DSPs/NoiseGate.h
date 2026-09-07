@@ -5,7 +5,7 @@
 #include "IDSP.h"
 #include "../Filters/NoiseGateFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class NoiseGate : public IDSP<T, SampleRate>
 {
 public:
@@ -19,11 +19,11 @@ public:
 		return m_NoiseGateFilter.GetThreshold();
 	}
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
 		m_NoiseGateFilter.Process(Buffer[i], Count);
 		
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Math::SoftClip(Buffer[i]);
 	}
 

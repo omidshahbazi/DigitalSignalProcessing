@@ -6,7 +6,7 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class AttackDecaySustainReleaseEnvelopeFilter : public Filter<T, SampleRate>
 {
 public:
@@ -46,11 +46,11 @@ public:
 	void SetAttackTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-		m_SegmentTime[(uint8)Segments::Attack] = Value;
+		m_SegmentTime[(uint8_t)Segments::Attack] = Value;
 	}
 	float GetAttackTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Attack];
+		return m_SegmentTime[(uint8_t)Segments::Attack];
 	}
 
 	//[0, 1s]
@@ -58,11 +58,11 @@ public:
 	void SetDecayTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-		m_SegmentTime[(uint8)Segments::Decay] = Value;
+		m_SegmentTime[(uint8_t)Segments::Decay] = Value;
 	}
 	float GetDecayTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Decay];
+		return m_SegmentTime[(uint8_t)Segments::Decay];
 	}
 
 	//[0, 1s]
@@ -70,11 +70,11 @@ public:
 	void SetSustainTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-		m_SegmentTime[(uint8)Segments::Sustain] = Value;
+		m_SegmentTime[(uint8_t)Segments::Sustain] = Value;
 	}
 	float GetSustainTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Sustain];
+		return m_SegmentTime[(uint8_t)Segments::Sustain];
 	}
 
 	//[0, 1]
@@ -93,11 +93,11 @@ public:
 	void SetReleaseTime(float Value)
 	{
 		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-		m_SegmentTime[(uint8)Segments::Release] = Value;
+		m_SegmentTime[(uint8_t)Segments::Release] = Value;
 	}
 	float GetReleaseTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Release];
+		return m_SegmentTime[(uint8_t)Segments::Release];
 	}
 
 	// [0, 100]
@@ -152,9 +152,9 @@ public:
 
 	Segments GetCurrentSegment(void) const { return m_CurrSegment; }
 
-	void Process(T *Buffer, uint8 Count) override
+	void Process(T *Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Process();
 	}
 
@@ -190,7 +190,7 @@ public:
 			}
 			break;
 		case Segments::Sustain:
-			if (m_SegmentTime[(uint8)Segments::Sustain] > 0)
+			if (m_SegmentTime[(uint8_t)Segments::Sustain] > 0)
 			{
 				if (++m_AutoReleaseCounter >= m_AutoReleaseLimit)
 					next = true;
@@ -209,8 +209,8 @@ public:
 
 		if (next)
 		{
-			uint8 nextS = (uint8)m_CurrSegment + 1;
-			m_CurrSegment = (nextS >= (uint8)Segments::COUNT) ? Segments::Idle : (Segments)nextS;
+			uint8_t nextS = (uint8_t)m_CurrSegment + 1;
+			m_CurrSegment = (nextS >= (uint8_t)Segments::COUNT) ? Segments::Idle : (Segments)nextS;
 			PrepareSegment();
 		}
 
@@ -220,8 +220,8 @@ public:
 private:
 	void PrepareSegment(void)
 	{
-		float time = m_SegmentTime[(uint8)m_CurrSegment];
-		uint32 samples = (uint32)(time * SampleRate);
+		float time = m_SegmentTime[(uint8_t)m_CurrSegment];
+		uint32_t samples = (uint32_t)(time * SampleRate);
 		m_AutoReleaseCounter = 0;
 
 		if (m_CurrSegment == Segments::Idle || (samples == 0 && m_CurrSegment != Segments::Sustain))
@@ -236,7 +236,7 @@ private:
 				else if (m_CurrSegment == Segments::Release)
 					m_RawValue = 0.0f;
 
-				m_CurrSegment = (Segments)((uint8)m_CurrSegment + 1);
+				m_CurrSegment = (Segments)((uint8_t)m_CurrSegment + 1);
 				PrepareSegment();
 			}
 			return;
@@ -268,7 +268,7 @@ private:
 
 private:
 	Segments m_CurrSegment;
-	float m_SegmentTime[(uint8)Segments::COUNT];
+	float m_SegmentTime[(uint8_t)Segments::COUNT];
 	float m_SustainLevel;
 	T m_MinValue;
 	T m_MaxValue;
@@ -276,8 +276,8 @@ private:
 	float m_RawValue;
 	float m_TargetValue;
 	float m_Multiplier;
-	uint32 m_AutoReleaseCounter;
-	uint32 m_AutoReleaseLimit;
+	uint32_t m_AutoReleaseCounter;
+	uint32_t m_AutoReleaseLimit;
 };
 
 #endif

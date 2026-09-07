@@ -5,7 +5,7 @@
 #include "Filter.h"
 #include "../Math.h"
 
-enum class ResistorCapacitorOrders : uint8
+enum class ResistorCapacitorOrders : uint8_t
 {
 	ResistorFirst = 0,
 	CapacitorFirst,
@@ -14,7 +14,7 @@ enum class ResistorCapacitorOrders : uint8
 	HighPassMode = CapacitorFirst
 };
 
-template<typename T, uint32 SampleRate, ResistorCapacitorOrders Order>
+template<typename T, uint32_t SampleRate, ResistorCapacitorOrders Order>
 class ResistorCapacitorFilter : public Filter<T, SampleRate>
 {
 public:
@@ -45,9 +45,9 @@ public:
 		m_Memory = 0;
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 		{
 			m_Memory += m_Alpha * (Buffer[i] - m_Memory);
 
@@ -70,10 +70,10 @@ private:
 	T m_Memory;
 };
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using LowPassResistorCapacitorFilter = ResistorCapacitorFilter<T, SampleRate, ResistorCapacitorOrders::LowPassMode>;
 
-template<typename T, uint32 SampleRate>
+template<typename T, uint32_t SampleRate>
 using HighPassResistorCapacitorFilter = ResistorCapacitorFilter<T, SampleRate, ResistorCapacitorOrders::HighPassMode>;
 
 #endif

@@ -23,7 +23,7 @@ public:
 	struct MIDIInfo
 	{
 		float MIDI;
-		uint8 Octave;
+		uint8_t Octave;
 	};
 
 #ifdef FAST_MATH
@@ -31,7 +31,7 @@ private:
 	class LookupTable
 	{
 	private:
-		static constexpr uint16 Size = 512;
+		static constexpr uint16_t Size = 512;
 		static constexpr float SinScale = (Size - 1) / TWO_PI_VALUE;
 		static constexpr float TanHRange = 3;
 		static constexpr float TanHScale = (Size - 1) / (2 * TanHRange);
@@ -39,7 +39,7 @@ private:
 	public:
 		LookupTable(void)
 		{
-			for (uint16 i = 0; i < Size; i++)
+			for (uint16_t i = 0; i < Size; i++)
 			{
 				const float Ratio = (float)i / (Size - 1);
 
@@ -62,8 +62,8 @@ private:
 				Value += TWO_PI_VALUE;
 
 			float pos = Value * SinScale;
-			uint16 index = (uint16)pos;
-			uint16 next = (index + 1) % Size;
+			uint16_t index = (uint16_t)pos;
+			uint16_t next = (index + 1) % Size;
 			float frac = pos - index;
 
 			return m_SinLUT[index] + (frac * (m_SinLUT[next] - m_SinLUT[index]));
@@ -86,10 +86,10 @@ private:
 				return 1;
 
 			float pos = (Value + TanHRange) * TanHScale;
-			uint16 index = (uint16)pos;
+			uint16_t index = (uint16_t)pos;
 			if (index >= Size)
 				index = Size - 1;
-			uint16 next = (index < Size - 1) ? index + 1 : index;
+			uint16_t next = (index < Size - 1) ? index + 1 : index;
 			float frac = pos - index;
 
 			return m_TanHLUT[index] + (frac * (m_TanHLUT[next] - m_TanHLUT[index]));
@@ -110,7 +110,7 @@ private:
 			n -= 1;
 
 			float pos = (f - 1.0f) * (Size - 1);
-			uint16 index = (uint16)pos;
+			uint16_t index = (uint16_t)pos;
 			float frac = pos - index;
 
 			float result = m_LogLUT[index] + (frac * (m_LogLUT[index + 1] - m_LogLUT[index]));
@@ -159,22 +159,22 @@ public:
 	}
 
 	template <typename T>
-	static int8 Sign(T Value)
+	static int8_t Sign(T Value)
 	{
 		return (0 < Value) - (Value < 0);
 	}
 
 	template <typename T>
-	static int32 Round(T A, float Threshold)
+	static int32_t Round(T A, float Threshold)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		T absA = Absolute(A);
 
-		if (absA - (int32)absA > Threshold)
-			return (int32)A + Sign(A);
+		if (absA - (int32_t)absA > Threshold)
+			return (int32_t)A + Sign(A);
 
-		return (int32)A;
+		return (int32_t)A;
 	}
 
 	template <typename T, typename U>
@@ -293,7 +293,7 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return Value - (int32)Value;
+		return Value - (int32_t)Value;
 	}
 
 	template <typename T>
@@ -379,11 +379,11 @@ public:
 		// union
 		// {
 		// 	float f;
-		// 	uint32 i;
+		// 	uint32_t i;
 		// } vx = {(float)Value};
 		// union
 		// {
-		// 	uint32 i;
+		// 	uint32_t i;
 		// 	float f;
 		// } mx;
 
@@ -451,7 +451,7 @@ public:
 		float clipp = Value < -126.0f ? -126.0f : Value;
 		union
 		{
-			uint32 i;
+			uint32_t i;
 			float f;
 		} v;
 
@@ -463,7 +463,7 @@ public:
 			f++;
 		}
 
-		v.i = (uint32)((i + 127) << 23);
+		v.i = (uint32_t)((i + 127) << 23);
 		v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
 
 		return (T)v.f;
@@ -682,33 +682,33 @@ public:
 		if (Value > 0)
 		{
 			info.MIDI = Clamp(12 * Log2(Value / A4Frequencey) + 69, 0, 128);
-			info.Octave = uint8(info.MIDI / 12) - 1;
+			info.Octave = uint8_t(info.MIDI / 12) - 1;
 		}
 
 		return info;
 	}
 
 	template <typename T, bool ZeroStuffing = true>
-	static void UpSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
+	static void UpSample(const T *Input, uint16_t Count, T *Output, uint8_t Ratio)
 	{
 		if constexpr (ZeroStuffing)
 		{
-			for (uint16 i = 0; i < Count * Ratio; ++i)
+			for (uint16_t i = 0; i < Count * Ratio; ++i)
 				Output[i] = 0;
 
-			for (uint16 i = 0; i < Count; ++i)
+			for (uint16_t i = 0; i < Count; ++i)
 				Output[i * Ratio] = Input[i];
 		}
 		else
 		{
 			const float InvRatio = 1.0 / Ratio;
 
-			for (uint16 i = 0; i < Count - 1; ++i)
+			for (uint16_t i = 0; i < Count - 1; ++i)
 			{
 				T current = Input[i];
 				T next = Input[i + 1];
 
-				for (uint16 j = 0; j < Ratio; ++j)
+				for (uint16_t j = 0; j < Ratio; ++j)
 				{
 					float fraction = j * InvRatio;
 
@@ -721,30 +721,30 @@ public:
 	}
 
 	template <typename T>
-	static void UpSampleMakeup(T *Buffer, uint16 Count, uint8 Ratio)
+	static void UpSampleMakeup(T *Buffer, uint16_t Count, uint8_t Ratio)
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint16_t i = 0; i < Count; ++i)
 			Buffer[i] *= Ratio;
 	}
 
 	template <typename T, bool ZeroStuffing = true>
-	static void DownSample(const T *Input, uint16 Count, T *Output, uint8 Ratio)
+	static void DownSample(const T *Input, uint16_t Count, T *Output, uint8_t Ratio)
 	{
-		uint16 outputIndex = 0;
+		uint16_t outputIndex = 0;
 
 		if constexpr (ZeroStuffing)
 		{
-			for (uint16 i = 0; i < Count; i += Ratio)
+			for (uint16_t i = 0; i < Count; i += Ratio)
 				Output[outputIndex++] = Input[i];
 		}
 		else
 		{
 			const float InvRatio = 1.0f / (float)Ratio;
 
-			for (uint16 i = 0; i < Count; i += Ratio)
+			for (uint16_t i = 0; i < Count; i += Ratio)
 			{
 				float sum = 0;
-				for (uint8 j = i; j < i + Ratio; ++j)
+				for (uint8_t j = i; j < i + Ratio; ++j)
 					sum += (float)Input[j];
 
 				Output[outputIndex++] = (T)(sum * InvRatio);
@@ -753,7 +753,7 @@ public:
 	}
 
 	template <typename T>
-	static T GetMeanValue(T *Buffer, uint16 Count)
+	static T GetMeanValue(T *Buffer, uint16_t Count)
 	{
 		if (Buffer == nullptr)
 			return 0;
@@ -768,8 +768,8 @@ public:
 		return *middle;
 	}
 
-	template <typename T, uint16 SampleCount>
-	static T HannWindow(T Value, uint16 Index)
+	template <typename T, uint16_t SampleCount>
+	static T HannWindow(T Value, uint16_t Index)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -778,10 +778,10 @@ public:
 		return Value * window;
 	}
 
-	template <typename T, uint16 SampleCount>
-	static void HannWindow(T *Buffer, uint16 Count)
+	template <typename T, uint16_t SampleCount>
+	static void HannWindow(T *Buffer, uint16_t Count)
 	{
-		for (uint16 i = 0; i < Count; ++i)
+		for (uint16_t i = 0; i < Count; ++i)
 			Buffer[i] *= HannWindow(Buffer[i], i);
 	}
 };

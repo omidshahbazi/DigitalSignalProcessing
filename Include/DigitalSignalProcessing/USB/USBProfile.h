@@ -6,10 +6,10 @@
 #include "../Gain.h"
 
 // Maximum number of classes that can be registered in a profile.
-static constexpr uint8 MaxClassCount = 4;
+static constexpr uint8_t MaxClassCount = 4;
 
 // Defines standard packet sizes used for USB endpoints.
-enum class PacketSizes : uint8
+enum class PacketSizes : uint8_t
 {
 	PacketSizes8 = 8,   // 8 bytes packet size.
 	PacketSizes16 = 16, // 16 bytes packet size.
@@ -20,7 +20,7 @@ enum class PacketSizes : uint8
 };
 
 // Defines standard packet sizes used for USB endpoints.
-enum class BitDepths : uint8
+enum class BitDepths : uint8_t
 {
 	BitDepths8 = 8,   // 8 bits bit depth.
 	BitDepths16 = 16, // 16 bits bit depth.
@@ -40,16 +40,16 @@ public:
 struct AMCClassConfig
 {
 public:
-	uint32 SupportedSampleRates[SAMPLE_RATE_COUNT]; // Array of supported sample rates (e.g., 44100, 48000).
-	uint8 SupportedSampleRateCount;                 // Total number of supported sample rates.
-	uint8 DefaultSampleRateIndex;                   // Array index for the default sample rate.
+	uint32_t SupportedSampleRates[SAMPLE_RATE_COUNT]; // Array of supported sample rates (e.g., 44100, 48000).
+	uint8_t SupportedSampleRateCount;                 // Total number of supported sample rates.
+	uint8_t DefaultSampleRateIndex;                   // Array index for the default sample rate.
 
 	BitDepths SupportedBitDepths[BIT_DEPTH_COUNT];  // Array of supported bit depths (e.g., 16, 24).
-	uint8 SupportedBitDepthCount;                   // Total number of supported bit depths.
-	uint8 DefaultBitDepthIndex;                     // Array index for the default bit depth.
+	uint8_t SupportedBitDepthCount;                   // Total number of supported bit depths.
+	uint8_t DefaultBitDepthIndex;                     // Array index for the default bit depth.
 
-	uint8 InputChannelCount;                        // Number of input (capture) audio channels.
-	uint8 OutputChannelCount;                       // Number of output (playback) audio channels.
+	uint8_t InputChannelCount;                        // Number of input (capture) audio channels.
+	uint8_t OutputChannelCount;                       // Number of output (playback) audio channels.
 
 	bool EnableHardwareVolumeControl;               // Indicates if hardware volume control is supported/enabled.
 	dBGain MinimumVolume;                           // Minimum volume level (in dB).
@@ -94,20 +94,20 @@ public:
 struct USBDeviceProfile
 {
 public:
-	uint16 VendorID;      // The Vendor ID (VID) of the USB device.
-	uint16 ProductID;     // The Product ID (PID) of the USB device.
-	uint16 Version;       // The device release number (bcdDevice).
+	uint16_t VendorID;      // The Vendor ID (VID) of the USB device.
+	uint16_t ProductID;     // The Product ID (PID) of the USB device.
+	uint16_t Version;       // The device release number (bcdDevice).
 
 	cstr Manufacturer;    // String representing the manufacturer's name.
 	cstr Product;         // String representing the product's name.
 	cstr SerialNumber;    // String representing the device's serial number.
 
-	uint8 MaxPowerCurrent; // Maximum power consumption in mA (must be mapped properly in descriptors).
+	uint8_t MaxPowerCurrent; // Maximum power consumption in mA (must be mapped properly in descriptors).
 
 	bool IsSelfPowered;    // Indicates if the device is self-powered (true) or bus-powered (false).
 
 	USBClassNode ClassNodes[MaxClassCount]; // Array of configured class nodes for this device.
-	uint8 ClassNodeCount;                   // Total count of active class nodes.
+	uint8_t ClassNodeCount;                   // Total count of active class nodes.
 };
 
 // Enumeration of supported USB host classes.
@@ -120,13 +120,13 @@ enum class USBHostClasses
 struct USBAttachedDeviceInfo
 {
 public:
-	uint16 VendorID;       // Vendor ID of the attached device.
-	uint16 ProductID;      // Product ID of the attached device.
-	uint8 DeviceClass;     // Standard class code of the attached device.
-	uint8 DeviceSubClass;  // Standard subclass code of the attached device.
-	uint8 Protocol;        // Standard protocol code of the attached device.
-	uint8 Speed;           // Operating speed of the attached device (e.g., Low, Full, High).
-	uint8 MaxPacketSize0;  // Maximum packet size supported by endpoint 0.
+	uint16_t VendorID;       // Vendor ID of the attached device.
+	uint16_t ProductID;      // Product ID of the attached device.
+	uint8_t DeviceClass;     // Standard class code of the attached device.
+	uint8_t DeviceSubClass;  // Standard subclass code of the attached device.
+	uint8_t Protocol;        // Standard protocol code of the attached device.
+	uint8_t Speed;           // Operating speed of the attached device (e.g., Low, Full, High).
+	uint8_t MaxPacketSize0;  // Maximum packet size supported by endpoint 0.
 
 	char Manufacturer[64]; // Parsed manufacturer string from the attached device.
 	char Product[64];      // Parsed product string from the attached device.
@@ -137,12 +137,12 @@ public:
 struct USBHostProfile
 {
 public:
-	uint16 MaxSuppliedCurrent; // Maximum current the host is capable of supplying to devices (in mA).
+	uint16_t MaxSuppliedCurrent; // Maximum current the host is capable of supplying to devices (in mA).
 
 	bool EnableVBUSPowerControl; // Indicates whether the host actively controls VBUS power.
 
 	USBHostClasses SupportedClasses[MaxClassCount]; // Array of USB classes supported by this host.
-	uint8 SupportedClassCount;                      // Total number of supported host classes.
+	uint8_t SupportedClassCount;                      // Total number of supported host classes.
 };
 
 // Enumeration of overall USB operational modes.

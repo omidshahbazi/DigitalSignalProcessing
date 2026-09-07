@@ -9,7 +9,7 @@
 #include "../Filters/HighPassFilter.h"
 #include "../Filters/LowPassFilter.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class Distortion : public IDSP<T, SampleRate>
 {
 public:
@@ -95,13 +95,13 @@ public:
 		return m_WetRate;
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		CLONE_BUFFER(dryBuffer);
 
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
-			for (uint8 i = 0; i < m_UpSampler.GetCount(); ++i)
+			for (uint8_t i = 0; i < m_UpSampler.GetCount(); ++i)
 				upBuffer[i] = Math::HardClip(upBuffer[i], m_PreGain, 0, m_AsymmetryLevel) * m_InvertedPreGain;
 
 			m_UpSampler.DownSample(Buffer);
@@ -111,10 +111,10 @@ public:
 
 		m_ToneFilter.Process(Buffer, Count);
 
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] *= m_LinearGain;
 
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
 	}
 

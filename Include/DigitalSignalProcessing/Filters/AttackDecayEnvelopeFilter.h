@@ -6,7 +6,7 @@
 #include "../Math.h"
 #include "../Debug.h"
 
-template <typename T, uint32 SampleRate>
+template <typename T, uint32_t SampleRate>
 class AttackDecayEnvelopeFilter : public Filter<T, SampleRate>
 {
 public:
@@ -30,7 +30,7 @@ public:
 		m_TargetValue(0.0f),
 		m_Coeff(0.0f)
 	{
-		m_SegmentTime[(uint8)Segments::Idle] = 0.05;
+		m_SegmentTime[(uint8_t)Segments::Idle] = 0.05;
 
 		SetAttackTime(50 ms);
 		SetDecayTime(50 ms);
@@ -41,13 +41,13 @@ public:
 	{
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_SegmentTime[(uint8)Segments::Attack] = Value;
+		m_SegmentTime[(uint8_t)Segments::Attack] = Value;
 		if (m_CurrSegment == Segments::Attack)
 			PrepareSegment();
 	}
 	float GetAttackTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Attack];
+		return m_SegmentTime[(uint8_t)Segments::Attack];
 	}
 
 	//(0, 1s]
@@ -55,13 +55,13 @@ public:
 	{
 		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
 
-		m_SegmentTime[(uint8)Segments::Decay] = Value;
+		m_SegmentTime[(uint8_t)Segments::Decay] = Value;
 		if (m_CurrSegment == Segments::Decay)
 			PrepareSegment();
 	}
 	float GetDecayTime(void) const
 	{
-		return m_SegmentTime[(uint8)Segments::Decay];
+		return m_SegmentTime[(uint8_t)Segments::Decay];
 	}
 
 	// [0, 100]
@@ -115,9 +115,9 @@ public:
 		return m_CurrSegment;
 	}
 
-	void Process(T* Buffer, uint8 Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
-		for (uint8 i = 0; i < Count; ++i)
+		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Process();
 	}
 
@@ -152,7 +152,7 @@ public:
 
 		if (segmentFinished)
 		{
-			m_CurrSegment = (Segments)Math::Moderate((uint8)m_CurrSegment + 1, (uint8)Segments::COUNT);
+			m_CurrSegment = (Segments)Math::Moderate((uint8_t)m_CurrSegment + 1, (uint8_t)Segments::COUNT);
 			PrepareSegment();
 		}
 
@@ -162,8 +162,8 @@ public:
 private:
 	void PrepareSegment(void)
 	{
-		float timeInSeconds = m_SegmentTime[(uint8)m_CurrSegment];
-		uint32 sampleCount = (uint32)(timeInSeconds * SampleRate);
+		float timeInSeconds = m_SegmentTime[(uint8_t)m_CurrSegment];
+		uint32_t sampleCount = (uint32_t)(timeInSeconds * SampleRate);
 
 		if (m_CurrSegment == Segments::Idle || sampleCount == 0)
 		{
@@ -186,7 +186,7 @@ private:
 
 private:
 	Segments m_CurrSegment;
-	float m_SegmentTime[(uint8)Segments::COUNT];
+	float m_SegmentTime[(uint8_t)Segments::COUNT];
 	float m_MinValue;
 	float m_MaxValue;
 	float m_Curve;
