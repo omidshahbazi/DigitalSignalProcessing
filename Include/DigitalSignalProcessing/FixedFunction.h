@@ -71,6 +71,11 @@ public:
 	{
 		return m_Invoker != nullptr;
 	}
+	template <typename C>
+	static FixedFunction Bind(C* Instance, Ret(C::* Method)(ArgsT...))
+	{
+		return FixedFunction(Instance, Method);
+	}
 
 private:
 	using InvokerFuctionT = Ret(*)(void*, ArgsT&&...);
