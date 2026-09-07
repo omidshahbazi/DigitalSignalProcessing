@@ -197,8 +197,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\FrequencyDetector.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Gain.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\IHAL.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\IUSBAudioInterface.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\IUSBInterface.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Log.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Math.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Memory.h" />

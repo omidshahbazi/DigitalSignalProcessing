@@ -129,12 +129,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\IHAL.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\IUSBAudioInterface.h">
-      <Filter>Include\DigitalSignalProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\IUSBInterface.h">
-      <Filter>Include\DigitalSignalProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Log.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
