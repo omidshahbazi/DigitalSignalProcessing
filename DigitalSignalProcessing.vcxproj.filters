@@ -105,9 +105,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Common.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\ContextCallback.h">
-      <Filter>Include\DigitalSignalProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\DataTypes.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
