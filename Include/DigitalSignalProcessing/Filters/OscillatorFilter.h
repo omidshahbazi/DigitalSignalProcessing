@@ -35,15 +35,15 @@ public:
 		SetFunction([](T Value) { return (T)Math::Sin(Value * Math::TWO_PI_VALUE); });
 	}
 
-	void SetTriangleWaveFunction(void)
-	{
-		SetFunction([](T Value) { return (T)Math::Triangle(Value); });
-	}
+	//void SetTriangleWaveFunction(void)
+	//{
+	//	SetFunction([](T Value) { return (T)Math::Triangle(Value); });
+	//}
 
-	void SetSawtoothWaveFunction(void)
-	{
-		SetFunction([](T Value) { return (T)Math::Sawtooth(Value); });
-	}
+	//void SetSawtoothWaveFunction(void)
+	//{
+	//	SetFunction([](T Value) { return (T)Math::Sawtooth(Value); });
+	//}
 
 	void SetSquareWaveFunction(void)
 	{

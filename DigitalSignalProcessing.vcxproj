@@ -76,10 +76,15 @@
     <ClCompile>
       <CPPLanguageStandard>CPP17</CPPLanguageStandard>
       <AdditionalIncludeDirectories>Include;Libraries;Libraries/CMSIS-DSP/Include</AdditionalIncludeDirectories>
+      <LinkTimeOptimization>true</LinkTimeOptimization>
+      <Optimization>Os</Optimization>
     </ClCompile>
     <Link>
       <ProduceRelocationRecords>true</ProduceRelocationRecords>
     </Link>
+    <Lib>
+      <ArchiverToolName>gcc-ar</ArchiverToolName>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

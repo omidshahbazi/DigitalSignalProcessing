@@ -31,9 +31,9 @@
 
 #else
 
-#ifdef ENABLE_BREAK_FILE_LINE_INFO
-
 #include <cstdlib>
+
+#ifdef ENABLE_BREAK_FILE_LINE_INFO
 
 #define ASSERT(Expression, Message, ...)                                                                \
 	do                                                                                                  \

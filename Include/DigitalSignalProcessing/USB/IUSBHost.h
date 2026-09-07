@@ -4,7 +4,6 @@
 
 class IUSBHost
 {
-public:
 };
 
 #endif
