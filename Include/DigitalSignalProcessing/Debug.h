@@ -18,7 +18,7 @@
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
-		(void)sizeof(Expression);        \
+		(void)(Expression);              \
 		(void)sizeof(Message);           \
 	} while (false)
 
