@@ -119,7 +119,6 @@
     <ClCompile Include="Source\Controls\TripleLED.cpp" />
     <ClCompile Include="Source\Frequency.cpp" />
     <ClCompile Include="Source\Gain.cpp" />
-    <ClCompile Include="Source\StringUtils.cpp" />
     <None Include="stm32.props" />
     <None Include="DigitalSignalProcessing-Debug.vgdbsettings" />
     <None Include="DigitalSignalProcessing-Release.vgdbsettings" />
@@ -207,7 +206,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Memory.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Notes.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBAMCInterface.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBCDCInterface.h" />

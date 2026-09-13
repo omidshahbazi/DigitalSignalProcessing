@@ -55,9 +55,6 @@
     <ClCompile Include="Source\Color.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\StringUtils.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Frequency.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -340,9 +337,6 @@
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Color.h">
-      <Filter>Include\DigitalSignalProcessing</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\StringUtils.h">
       <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\USB\USBProfile.h">

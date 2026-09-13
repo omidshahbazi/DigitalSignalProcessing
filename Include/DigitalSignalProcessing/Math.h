@@ -103,7 +103,7 @@ private:
 			if (Value <= 0)
 				return -std::numeric_limits<T>::infinity();
 
-			int n;
+			int32_t n;
 			float f = std::frexp((float)Value, &n);
 
 			f *= 2.0f;
@@ -455,7 +455,7 @@ public:
 			float f;
 		} v;
 
-		int i = (int)clipp;
+		int32_t i = (int)clipp;
 		float f = clipp - i;
 		if (clipp < 0)
 		{
