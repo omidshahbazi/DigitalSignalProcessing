@@ -18,11 +18,16 @@ public:
 		m_Storage{}
 	{}
 
+	FixedFunction(std::nullptr_t)
+		: m_Invoker(nullptr),
+		m_Storage{}
+	{}
+
 	template <typename F>
 	FixedFunction(F Callable)
 	{
-		static_assert(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage!");
-		static_assert(alignof(F) <= alignof(void*), "Callable alignment mismatch!");
+		static_assert(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage.");
+		static_assert(alignof(F) <= alignof(void*), "Callable alignment mismatch.");
 
 		new (static_cast<void*>(m_Storage)) F(std::move(Callable));
 
@@ -48,7 +53,7 @@ public:
 			}
 		};
 
-		static_assert(sizeof(BoundMethod) <= StorageSize, "Bound method exceeds storage size!");
+		static_assert(sizeof(BoundMethod) <= StorageSize, "Bound method exceeds storage size.");
 
 		BoundMethod bound = { Instance, Method };
 
