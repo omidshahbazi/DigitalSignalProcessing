@@ -94,6 +94,9 @@
     <ClCompile Include="Source\Controls\TripleLED.cpp">
       <Filter>Source\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Common.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\DigitalSignalProcessing\Bitwise.h">
@@ -362,6 +365,9 @@
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBHost.h">
       <Filter>Include\DigitalSignalProcessing\USB</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\IFirmware.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

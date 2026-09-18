@@ -106,6 +106,7 @@
   </ImportGroup>
   <ItemGroup>
     <ClCompile Include="Source\Color.cpp" />
+    <ClCompile Include="Source\Common.cpp" />
     <ClCompile Include="Source\Controls\Button.cpp" />
     <ClCompile Include="Source\Controls\Control.cpp" />
     <ClCompile Include="Source\Controls\ControlBase.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Frequency.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\FrequencyDetector.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Gain.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\IFirmware.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\IHAL.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Log.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Math.h" />

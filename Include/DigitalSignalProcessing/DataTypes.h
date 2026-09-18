@@ -28,7 +28,7 @@
 #define ASSERT_ON_NOT_FLOATING_TYPE(T)
 #endif
 
-#if defined(__GNUC__)
+#ifdef __GNUC__
 #define STRINGIFY_PRAGMA(x) _Pragma(#x)
 #define BEGIN_PACK(n)       STRINGIFY_PRAGMA(pack(push, n))
 #define END_PACK()          STRINGIFY_PRAGMA(pack(pop))
@@ -111,3 +111,9 @@ END_PACK();
 
 #define INT24_MAX        8388607
 #define UINT24_MAX       0xffffff
+
+#ifdef __GNUC__
+static constexpr uint8_t PointerSize = sizeof(uint32_t);
+#else
+static constexpr uint8_t PointerSize = sizeof(uint64_t);
+#endif

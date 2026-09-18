@@ -67,3 +67,5 @@ static_assert(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 	const uint8_t Name##Length = Count * FactorValue;
 
 #define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, UP_SAMPLE_FACTOR)
+
+uint32_t CRC32(const uint8_t* Data, uint32_t Size);

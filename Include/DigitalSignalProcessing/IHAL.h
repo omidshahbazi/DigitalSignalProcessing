@@ -2,7 +2,10 @@
 #ifndef I_HAL_H
 #define I_HAL_H
 
+#include "DataTypes.h"
+
 class IUSB;
+class IFirmware;
 
 class IHAL
 {
@@ -62,8 +65,9 @@ public:
 	virtual void Delay(uint16_t Ms) const = 0;
 
 	virtual IUSB* GetUSB(uint8_t Index = 0) = 0;
+	virtual IFirmware* GetFirmware(void) = 0;
 
-	virtual void EraseQSPIData(void) = 0;
+	virtual void EraseUserData(void) = 0;
 };
 
 #endif
