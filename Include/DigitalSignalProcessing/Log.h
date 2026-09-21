@@ -28,6 +28,12 @@ public:
 	static void SetMask(Types Mask);
 
 	template <typename... ArgsT>
+	static void Write(Types Type, cstr FormattedMessage, ArgsT... Args)
+	{
+		Write(Type, nullptr, FormattedMessage, Args...);
+	}
+
+	template <typename... ArgsT>
 	static void Write(Types Type, cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
 		if (s_Callback == nullptr)
