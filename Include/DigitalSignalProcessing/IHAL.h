@@ -3,6 +3,7 @@
 #define I_HAL_H
 
 #include "DataTypes.h"
+#include "FixedFunction.h"
 
 class IUSB;
 class IFirmware;
@@ -55,11 +56,6 @@ public:
 	virtual uint32_t GetTimeSinceStartupMs(void) const = 0;
 	virtual float GetTimeSinceStartup(void) const = 0;
 
-	virtual void Print(cstr Value) = 0;
-
-	virtual bool IsDebuggerPresent(void) const = 0;
-	virtual void Crash(void) const = 0;
-	virtual void Break(void) const = 0;
 	virtual void Reset(bool InfiniteTime = true) const = 0;
 
 	virtual void Delay(uint16_t Ms) const = 0;

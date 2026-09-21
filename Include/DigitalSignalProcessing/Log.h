@@ -3,7 +3,7 @@
 #define LOG_H
 
 #include "Bitwise.h"
-#include "IHAL.h"
+#include "FixedFunction.h"
 #include <stdio.h>
 
 class Log
@@ -21,24 +21,19 @@ public:
 		All = Debug | Info | Warning | Error | Critical
 	};
 
-public:
-	static void Initialize(IHAL *HAL)
-	{
-		GetHAL() = HAL;
-	}
+	typedef FixedFunction<void(Types Type, cstr Message)> Callback;
 
-	static void SetMask(Types Mask)
-	{
-		GetMask() = Mask;
-	}
+public:
+	static void Initialize(Callback Callback);
+	static void SetMask(Types Mask);
 
 	template <typename... ArgsT>
 	static void Write(Types Type, cstr Tag, cstr FormattedMessage, ArgsT... Args)
 	{
-		if (GetHAL() == nullptr)
+		if (s_Callback == nullptr)
 			return;
 
-		if (!Bitwise::IsEnabled(GetMask(), Type))
+		if (!Bitwise::IsEnabled(s_Mask, Type))
 			return;
 
 		if (FormattedMessage == nullptr)
@@ -49,34 +44,14 @@ public:
 
 		int16_t index = 0;
 
-		buff[index++] = '[';
-
-		if (Bitwise::IsEnabled(Type, Types::Debug))
-			buff[index++] = 'D';
-
-		if (Bitwise::IsEnabled(Type, Types::Info))
-			buff[index++] = 'I';
-
-		if (Bitwise::IsEnabled(Type, Types::Warning))
-			buff[index++] = 'W';
-
-		if (Bitwise::IsEnabled(Type, Types::Error))
-			buff[index++] = 'E';
-
-		if (Bitwise::IsEnabled(Type, Types::Critical))
-			buff[index++] = 'C';
-
-		buff[index++] = ']';
-
 		if (Tag != nullptr)
 			index += snprintf(buff + index, SIZE - index, "[%s] ", Tag);
 
 		index += snprintf(buff + index, SIZE - index, FormattedMessage, Args...);
 
-		buff[index++] = '\n';
 		buff[index++] = '\0';
 
-		GetHAL()->Print(buff);
+		s_Callback(Type, buff);
 	}
 
 	template <typename... ArgsT>
@@ -139,28 +114,9 @@ public:
 		Write(Types::Critical, Tag, FormattedMessage, Args...);
 	}
 
-	template <typename... ArgsT>
-	static void Break(cstr Tag, cstr FormattedMessage, ArgsT... Args)
-	{
-		WriteCritical(Tag, FormattedMessage, Args...);
-
-		GetHAL()->Crash();
-	}
-
 private:
-	static IHAL *&GetHAL(void)
-	{
-		static IHAL *hal;
-
-		return hal;
-	}
-
-	static Types &GetMask(void)
-	{
-		static Types mask = Types::None;
-
-		return mask;
-	}
+	static Callback s_Callback;
+	static Types s_Mask;
 };
 
 #endif

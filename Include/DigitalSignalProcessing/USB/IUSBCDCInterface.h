@@ -28,6 +28,8 @@ public:
 
 	virtual void SetReceiveCallback(ReceiveCallback Callback) = 0;
 
+	// Once this function is called, the GetTransmitState() would return Busy and
+	// the Buffer must stay valid up to when the it returns Idle.
 	virtual void Transmit(const uint8_t* Buffer, uint16_t Length) = 0;
 };
 

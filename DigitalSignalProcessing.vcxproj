@@ -90,15 +90,15 @@
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RELEASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>RELEASE</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -118,14 +118,18 @@
     <ClCompile Include="Source\Controls\SingleLED.cpp" />
     <ClCompile Include="Source\Controls\Switch.cpp" />
     <ClCompile Include="Source\Controls\TripleLED.cpp" />
+    <ClCompile Include="Source\Debug.cpp" />
     <ClCompile Include="Source\Frequency.cpp" />
     <ClCompile Include="Source\Gain.cpp" />
+    <ClCompile Include="Source\Log.cpp" />
+    <ClCompile Include="Source\Memory.cpp" />
     <None Include="stm32.props" />
     <None Include="DigitalSignalProcessing-Debug.vgdbsettings" />
     <None Include="DigitalSignalProcessing-Release.vgdbsettings" />
     <None Include="stm32.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\DigitalSignalProcessing\Allocator.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Bitwise.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Color.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Common.h" />

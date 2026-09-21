@@ -21,9 +21,22 @@ constexpr T operator|(T Left, U Right)
 }
 
 template <typename T, typename U>
-constexpr T &operator|=(T &Left, U Right)
+constexpr T& operator|=(T& Left, U Right)
 {
 	Left = (T)((int32_t)Left | (int32_t)Right);
+	return Left;
+}
+
+template <typename T, typename U>
+constexpr T operator&(T Left, U Right)
+{
+	return (T)((int32_t)Left | (int32_t)Right);
+}
+
+template <typename T, typename U>
+constexpr T& operator&=(T& Left, U Right)
+{
+	Left = (T)((int32_t)Left & (int32_t)Right);
 	return Left;
 }
 

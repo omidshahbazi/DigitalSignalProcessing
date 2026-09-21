@@ -3,17 +3,86 @@
 #define DEBUG_H
 
 #include "Log.h"
+#include "FixedFunction.h"
+
+class Debug
+{
+public:
+	typedef FixedFunction<void(void), 8> CrashHandler;
+
+public:
+	static void SetCrashHandler(CrashHandler Handler);
+
+	static bool IsDebuggerPresent(void);
+
+	static void Crash(void);
+
+	static void Break(void);
+
+private:
+	static CrashHandler s_Handler;
+};
 
 #ifndef DEBUG_STRINGIZE
 #define DEBUG_STRINGIZE_EXPANDED(Value) #Value
 #define DEBUG_STRINGIZE(Value) DEBUG_STRINGIZE_EXPANDED(Value)
 #endif
 
-#ifndef DEBUG
-#define DISABLE_ASSERTS
+#ifdef DEBUG
+#define ENABLE_ASSERTS
 #endif
 
-#ifdef DISABLE_ASSERTS
+#ifdef ENABLE_ASSERTS
+
+#include <cstdlib>
+
+#ifdef ENABLE_BREAK_FILE_LINE_INFO
+
+#define ASSERT(Expression, Message, ...)                                                                \
+	do                                                                                                  \
+	{                                                                                                   \
+		if (Expression)                                                                                 \
+			break;                                                                                      \
+		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__);  \
+		Debug::Crash();	\
+		std::abort();																					\
+                                                                                                        \
+	} while (false)
+
+#define BREAK(Message, ...)																\
+	do                                                                                  \
+	{                                                                                   \
+		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__);	\
+		Debug::Crash();	\
+		std::abort();																	\
+                                                                                        \
+	} while (false)
+
+#else
+
+#define ASSERT(Expression, Message, ...)                 \
+	do                                                   \
+	{                                                    \
+		if (Expression)                                  \
+			break;                                       \
+		Log::WriteCritical(#Expression, Message, ##__VA_ARGS__); \
+		Debug::Crash();	\
+		std::abort();									 \
+                                                         \
+	} while (false)
+
+#define BREAK(Message, ...)								\
+	do                                                  \
+	{                                                   \
+		Log::WriteCritical("Break", Message, ##__VA_ARGS__);	\
+		Debug::Crash();	\
+		std::abort();									\
+                                                        \
+	} while (false)
+
+#endif
+
+#else
 
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
@@ -29,51 +98,6 @@
                                         \
 	} while (false)
 
-#else
-
-#include <cstdlib>
-
-#ifdef ENABLE_BREAK_FILE_LINE_INFO
-
-#define ASSERT(Expression, Message, ...)                                                                \
-	do                                                                                                  \
-	{                                                                                                   \
-		if (Expression)                                                                                 \
-			break;                                                                                      \
-		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__);  \
-		std::abort();																					\
-                                                                                                        \
-	} while (false)
-
-#define BREAK(Message, ...)																\
-	do                                                                                  \
-	{                                                                                   \
-		Log::Break(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__);	\
-		std::abort();																	\
-                                                                                        \
-	} while (false)
-
-#else
-
-#define ASSERT(Expression, Message, ...)                 \
-	do                                                   \
-	{                                                    \
-		if (Expression)                                  \
-			break;                                       \
-		Log::Break(#Expression, Message, ##__VA_ARGS__); \
-		std::abort();									 \
-                                                         \
-	} while (false)
-
-#define BREAK(Message, ...)								\
-	do                                                  \
-	{                                                   \
-		Log::Break("Break", Message, ##__VA_ARGS__);	\
-		std::abort();									\
-                                                        \
-	} while (false)
-
-#endif
 #endif
 
 #define NOT_IMPLEMENTED() BREAK("Not Implemented.")

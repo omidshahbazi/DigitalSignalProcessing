@@ -2,24 +2,22 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include "Common.h"
+#include "DataTypes.h"
 #include "Debug.h"
+#include "IHAL.h"
 #include <memory.h>
 
 class Memory
 {
 public:
-	static void Initialize(IHAL *HAL)
-	{
-		GetHAL() = HAL;
-	}
+	static void Initialize(IHAL* HAL);
 
 	template <typename T>
-	static T *Allocate(uint32_t Count = 1, bool OnSDRAM = false)
+	static T* Allocate(uint32_t Count = 1, bool OnSDRAM = false)
 	{
 		uint32_t length = sizeof(T) * Count;
 
-		T *mem = reinterpret_cast<T *>(GetHAL()->Allocate(length, OnSDRAM));
+		T* mem = reinterpret_cast<T*>(s_HAL->Allocate(length, OnSDRAM));
 
 		ASSERT(mem != nullptr, "Couldn't allocate memory: %i of %iB", Count, sizeof(T));
 
@@ -29,30 +27,25 @@ public:
 	}
 
 	template <typename T>
-	static void Deallocate(T *Memory)
+	static void Deallocate(T* Memory)
 	{
-		GetHAL()->Deallocate(Memory);
+		s_HAL->Deallocate(Memory);
 	}
 
 	template <typename T>
-	static void Set(T *Memory, int32_t Value, uint32_t Count = 1)
+	static void Set(T* Memory, int32_t Value, uint32_t Count = 1)
 	{
-		memset(reinterpret_cast<void *>(Memory), Value, sizeof(T) * Count);
+		memset(reinterpret_cast<void*>(Memory), Value, sizeof(T) * Count);
 	}
 
 	template <typename T>
-	static void Copy(const T *const Source, T *Destination, uint32_t Count = 1)
+	static void Copy(const T* const Source, T* Destination, uint32_t Count = 1)
 	{
 		memcpy(Destination, Source, sizeof(T) * Count);
 	}
 
 private:
-	static IHAL *&GetHAL(void)
-	{
-		static IHAL *hal;
-
-		return hal;
-	}
+	static IHAL* s_HAL;
 };
 
 #endif
