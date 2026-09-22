@@ -55,7 +55,7 @@ public:
 
 		index += snprintf(buff + index, SIZE - index, FormattedMessage, Args...);
 
-		buff[index++] = '\0';
+		buff[index] = '\0';
 
 		s_Callback(Type, buff);
 	}
