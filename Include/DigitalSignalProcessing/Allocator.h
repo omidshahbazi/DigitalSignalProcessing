@@ -9,6 +9,9 @@ template<typename T, uint8_t Alignment = 16, bool IsResettable = true>
 class Allocator
 {
 public:
+	static constexpr uint8_t Alignment_v = Alignment;
+
+public:
 	Allocator(void* Buffer = nullptr, uint32_t Size = 0)
 		: m_Buffer(reinterpret_cast<uint8_t*>(Buffer)),
 		m_Capacity(Size),
@@ -18,20 +21,20 @@ public:
 		ASSERT(Buffer == nullptr || Size > 0, "Size cannot be zero");
 	}
 
-	T* Allocate(uint32_t Count)
+	T* Allocate(uint32_t Count = 1)
 	{
 		return Allocate<T>(Count);
 	}
 
-	template<typename ElementType, uint32_t ElementSize = sizeof(ElementType)>
+	template<typename ElementType>
 	ElementType* Allocate(uint32_t Count = 1)
 	{
-		const uint32_t totalSize = Count * ElementSize;
+		const uint32_t totalSize = Count * sizeof(ElementType);
 
 		ASSERT(m_Buffer != nullptr, "Allocator is not initialized");
 
 		uintptr_t ptr = reinterpret_cast<uintptr_t>(m_Buffer) + m_LastFreeIndex;
-		uintptr_t alignedPtr = (ptr + (Alignment - 1)) & ~(Alignment - 1);
+		uintptr_t alignedPtr = reinterpret_cast<uintptr_t>(Memory::Align(reinterpret_cast<void*>(ptr), Alignment));
 		uint8_t padding = alignedPtr - ptr;
 
 		ASSERT(m_LastFreeIndex + totalSize + padding <= m_Capacity, "Running out of memory Capacity: %ub, Allocated: %ub Requested: %ub", m_Capacity, m_LastFreeIndex, totalSize);

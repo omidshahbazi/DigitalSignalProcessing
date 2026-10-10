@@ -3,9 +3,9 @@
 #define TOM_H
 
 #include "DrumsPart.h"
-#include "../Filters/AttackDecayEnvelopeFilter.h"
-#include "../Filters/WhiteNoiseFilter.h"
-#include "../Filters/OscillatorFilter.h"
+#include "DigitalSignalProcessing/Filters/AttackDecayEnvelopeFilter.h"
+#include "DigitalSignalProcessing/Filters/WhiteNoiseFilter.h"
+#include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Tom : public DrumsPart<T, SampleRate>

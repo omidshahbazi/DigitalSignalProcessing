@@ -3,8 +3,8 @@
 #define BUFFER_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
-#include "../Memory.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Memory.h"
 
 template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class BufferFilter : public Filter<T, SampleRate>
@@ -101,7 +101,7 @@ public:
 		return m_Reverse;
 	}
 
-	bool GetIsLastSample(void) const
+	bool IsLastSample(void) const
 	{
 		return m_IsLastSample;
 	}

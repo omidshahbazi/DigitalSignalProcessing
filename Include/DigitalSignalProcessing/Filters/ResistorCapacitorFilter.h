@@ -3,7 +3,7 @@
 #define RESISTOR_CAPACITOR_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 
 enum class ResistorCapacitorOrders : uint8_t
 {

@@ -4,7 +4,7 @@
 
 #include "Control.h"
 #include "LEDBase.h"
-#include "../Color.h"
+#include "DigitalSignalProcessing/Color.h"
 
 class DualLED : public ControlBase, public LEDBase
 {

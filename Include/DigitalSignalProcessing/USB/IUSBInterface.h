@@ -2,7 +2,7 @@
 #ifndef I_USB_INTERFACE_H
 #define I_USB_INTERFACE_H
 
-#include "../DataTypes.h"
+#include "DigitalSignalProcessing/DataTypes.h"
 
 class IUSBInterface
 {

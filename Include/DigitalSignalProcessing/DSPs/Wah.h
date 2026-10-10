@@ -3,7 +3,7 @@
 #define WAH_H
 
 #include "IDSP.h"
-#include "../Filters/PeakEQFilter.h"
+#include "DigitalSignalProcessing/Filters/PeakEQFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Wah : public IDSP<T, SampleRate>

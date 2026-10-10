@@ -38,46 +38,42 @@ private:
 
 #ifdef ENABLE_BREAK_FILE_LINE_INFO
 
-#define ASSERT(Expression, Message, ...)                                                                \
-	do                                                                                                  \
-	{                                                                                                   \
-		if (Expression)                                                                                 \
-			break;                                                                                      \
+#define ASSERT(Expression, Message, ...)																		\
+	do																											\
+	{																											\
+		if (Expression)																							\
+			break;																								\
 		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__) ", " #Expression, Message, ##__VA_ARGS__);  \
-		Debug::Crash();	\
-		std::abort();																					\
-                                                                                                        \
+		Debug::Crash();																							\
+		std::abort();																							\
 	} while (false)
 
-#define BREAK(Message, ...)																\
-	do                                                                                  \
-	{                                                                                   \
-		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__);	\
-		Debug::Crash();	\
-		std::abort();																	\
-                                                                                        \
+#define BREAK(Message, ...)																	  \
+	do																						  \
+	{																						  \
+		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__); \
+		Debug::Crash();																		  \
+		std::abort();																		  \
 	} while (false)
 
 #else
 
-#define ASSERT(Expression, Message, ...)                 \
-	do                                                   \
-	{                                                    \
-		if (Expression)                                  \
-			break;                                       \
+#define ASSERT(Expression, Message, ...)						 \
+	do															 \
+	{															 \
+		if (Expression)											 \
+			break;												 \
 		Log::WriteCritical(#Expression, Message, ##__VA_ARGS__); \
-		Debug::Crash();	\
-		std::abort();									 \
-                                                         \
+		Debug::Crash();											 \
+		std::abort();											 \
 	} while (false)
 
-#define BREAK(Message, ...)								\
-	do                                                  \
-	{                                                   \
+#define BREAK(Message, ...)										\
+	do															\
+	{															\
 		Log::WriteCritical("Break", Message, ##__VA_ARGS__);	\
-		Debug::Crash();	\
-		std::abort();									\
-                                                        \
+		Debug::Crash();											\
+		std::abort();											\
 	} while (false)
 
 #endif
@@ -87,7 +83,7 @@ private:
 #define ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
-		(void)(Expression);              \
+		(void)sizeof(Expression);        \
 		(void)sizeof(Message);           \
 	} while (false)
 
@@ -95,7 +91,7 @@ private:
 	do                                  \
 	{                                   \
 		(void)sizeof(Message);			\
-                                        \
+		std::abort();					\
 	} while (false)
 
 #endif

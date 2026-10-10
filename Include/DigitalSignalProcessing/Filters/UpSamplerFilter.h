@@ -4,7 +4,7 @@
 
 #include "Filter.h"
 #include "LowPassFilter.h"
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 
 template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio, bool ZeroStuffing = true>
 class UpSamplerFilter : public Filter<T, SampleRate>

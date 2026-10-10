@@ -2,8 +2,8 @@
 #ifndef USB_DEVICE_PROFILE_H
 #define USB_DEVICE_PROFILE_H
 
-#include "../Common.h"
-#include "../Gain.h"
+#include "DigitalSignalProcessing/Common.h"
+#include "DigitalSignalProcessing/Gain.h"
 
 // Maximum number of classes that can be registered in a profile.
 static constexpr uint8_t MaxClassCount = 4;

@@ -3,7 +3,7 @@
 #define CONTROL_FACTORY_H
 
 #include "ControlBase.h"
-#include "../Memory.h"
+#include "DigitalSignalProcessing/Memory.h"
 #include "SingleLED.h"
 #include "DualLED.h"
 #include "TripleLED.h"

@@ -64,7 +64,7 @@ public:
 		ResetTimer();
 	}
 
-	bool GetIsStarted(void) const
+	bool IsStarted(void) const
 	{
 		return m_IsStarted;
 	}

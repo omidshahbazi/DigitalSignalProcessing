@@ -3,8 +3,8 @@
 #define ATTACK_DECAY_ENVELOPE_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
-#include "../Debug.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
 
 template <typename T, uint32_t SampleRate>
 class AttackDecayEnvelopeFilter : public Filter<T, SampleRate>

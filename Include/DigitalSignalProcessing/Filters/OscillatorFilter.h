@@ -3,9 +3,9 @@
 #define OSCILATOR_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
-#include "../Debug.h"
-#include "../FixedFunction.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/FixedFunction.h"
 
 template <typename T, uint32_t SampleRate>
 class OscillatorFilter : public Filter<T, SampleRate>

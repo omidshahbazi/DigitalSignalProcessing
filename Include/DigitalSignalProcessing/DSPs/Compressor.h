@@ -3,9 +3,9 @@
 #define COMPRESSOR_H
 
 #include "IDSP.h"
-#include "../Debug.h"
-#include "../Math.h"
-#include "../Filters/EnvelopeFollowerFilter.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Filters/EnvelopeFollowerFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Compressor : public IDSP<T, SampleRate>

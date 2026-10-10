@@ -2,8 +2,8 @@
 #ifndef CONTROL_BASE_H
 #define CONTROL_BASE_H
 
-#include "../Common.h"
-#include "../IHAL.h"
+#include "DigitalSignalProcessing/Common.h"
+#include "DigitalSignalProcessing/IHAL.h"
 
 class ControlBase
 {

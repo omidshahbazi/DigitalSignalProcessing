@@ -3,10 +3,10 @@
 #define PHASER_H
 
 #include "IDSP.h"
-#include "../Math.h"
-#include "../Debug.h"
-#include "../Filters/OscillatorFilter.h"
-#include "../Filters/BufferFilter.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
+#include "DigitalSignalProcessing/Filters/BufferFilter.h"
 
 template <typename T, uint32_t SampleRate, uint8_t StageCount = 2>
 class Phaser : public IDSP<T, SampleRate>

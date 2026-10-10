@@ -3,7 +3,7 @@
 #define FINITE_IMPULSE_RESPONSE_FILTER_H
 
 #include "Filter.h"
-#include "../Memory.h"
+#include "DigitalSignalProcessing/Memory.h"
 
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
 #include <CMSIS-DSP/Include/arm_math.h>

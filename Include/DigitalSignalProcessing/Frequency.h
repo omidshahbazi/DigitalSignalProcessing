@@ -11,11 +11,10 @@ struct SlopeFactor;
 struct Frequency
 {
 public:
-	Frequency(void) = default;
-	explicit Frequency(float Value)
+	constexpr Frequency(void) = default;
+	constexpr explicit Frequency(float Value)
 		: m_Value(Value)
-	{
-	}
+	{}
 
 	operator float(void) const
 	{
@@ -26,8 +25,8 @@ private:
 	float m_Value = 0;
 };
 
-static const Frequency LOWEST_FREQUENCY(5);
-static const Frequency HIGHEST_FREQUENCY(20 KHz);
+static constexpr Frequency MIN_FREQUENCY(5);
+static constexpr Frequency MAX_FREQUENCY(20 KHz);
 
 // So we won't run into out of range QualityFactor values [0.01, 10]
 void FixBandFrequency(Frequency& Low, Frequency& High);
@@ -35,11 +34,10 @@ void FixBandFrequency(Frequency& Low, Frequency& High);
 struct LinearOctave
 {
 public:
-	LinearOctave(void) = default;
-	explicit LinearOctave(float Value)
+	constexpr LinearOctave(void) = default;
+	constexpr explicit LinearOctave(float Value)
 		: m_Value(Value)
-	{
-	}
+	{}
 	LinearOctave(LogarithmicOctave Value);
 	LinearOctave(Frequency Low, Frequency High);
 
@@ -55,11 +53,10 @@ private:
 struct LogarithmicOctave
 {
 public:
-	LogarithmicOctave(void) = default;
-	explicit LogarithmicOctave(float Value)
+	constexpr LogarithmicOctave(void) = default;
+	constexpr explicit LogarithmicOctave(float Value)
 		: m_Value(Value)
-	{
-	}
+	{}
 	LogarithmicOctave(LinearOctave Value);
 	LogarithmicOctave(Frequency Low, Frequency High);
 
@@ -86,12 +83,11 @@ Frequency operator/(Frequency Frequency, LogarithmicOctave Octave);
 struct FrequencyBand
 {
 public:
-	FrequencyBand(void) = default;
-	FrequencyBand(Frequency Center, LogarithmicOctave Bandwidth)
+	constexpr FrequencyBand(void) = default;
+	constexpr FrequencyBand(Frequency Center, LogarithmicOctave Bandwidth)
 		: m_Center(Center),
-		  m_Bandwidth(Bandwidth)
-	{
-	}
+		m_Bandwidth(Bandwidth)
+	{}
 	FrequencyBand(Frequency Center, QualityFactor Quality);
 	FrequencyBand(Frequency Low, Frequency High);
 
@@ -130,11 +126,10 @@ private:
 struct QualityFactor
 {
 public:
-	QualityFactor(void) = default;
-	explicit QualityFactor(float Value)
+	constexpr QualityFactor(void) = default;
+	constexpr explicit QualityFactor(float Value)
 		: m_Value(Value)
-	{
-	}
+	{}
 
 	QualityFactor(FrequencyBand Band);
 
@@ -150,11 +145,10 @@ private:
 struct SlopeFactor
 {
 public:
-	SlopeFactor(void) = default;
-	explicit SlopeFactor(float Value)
+	constexpr SlopeFactor(void) = default;
+	constexpr explicit SlopeFactor(float Value)
 		: m_Value(Value)
-	{
-	}
+	{}
 
 	operator float(void) const
 	{
@@ -164,8 +158,5 @@ public:
 private:
 	float m_Value = 1;
 };
-
-static const Frequency MIN_FREQUENCY = LOWEST_FREQUENCY;
-static const Frequency MAX_FREQUENCY = HIGHEST_FREQUENCY;
 
 #endif

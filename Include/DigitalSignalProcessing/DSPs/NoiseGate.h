@@ -3,7 +3,7 @@
 #define NOISE_GATE_H
 
 #include "IDSP.h"
-#include "../Filters/NoiseGateFilter.h"
+#include "DigitalSignalProcessing/Filters/NoiseGateFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class NoiseGate : public IDSP<T, SampleRate>

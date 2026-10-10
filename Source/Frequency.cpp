@@ -9,9 +9,9 @@ void FixBandFrequency(Frequency& Low, Frequency& High)
 
 	High = (Frequency)Math::Clamp(High, Low * LowerBoundRatio, Low * UpperBoundRatio);
 
-	if (High > HIGHEST_FREQUENCY)
+	if (High > MAX_FREQUENCY)
 	{
-		High = HIGHEST_FREQUENCY;
+		High = MAX_FREQUENCY;
 
 		Low = (Frequency)(High / LowerBoundRatio);
 	}
@@ -89,12 +89,12 @@ FrequencyBand::operator QualityFactor(void) const
 
 Frequency FrequencyBand::GetLow(void) const
 {
-	return (Frequency)Math::Max(LOWEST_FREQUENCY, m_Center / LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
+	return (Frequency)Math::Max(MIN_FREQUENCY, m_Center / LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
 }
 
 Frequency FrequencyBand::GetHigh(void) const
 {
-	return (Frequency)Math::Min(HIGHEST_FREQUENCY, m_Center * LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
+	return (Frequency)Math::Min(MAX_FREQUENCY, m_Center * LinearOctave(LogarithmicOctave(m_Bandwidth * 0.5)));
 }
 
 QualityFactor::QualityFactor(FrequencyBand Band)

@@ -2,7 +2,7 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include "../Common.h"
+#include "DigitalSignalProcessing/Common.h"
 
 template <typename T, uint32_t SampleRate>
 class Filter

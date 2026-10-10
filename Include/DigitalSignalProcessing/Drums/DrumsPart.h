@@ -2,7 +2,7 @@
 #ifndef DRUMS_PART_H
 #define DRUMS_PART_H
 
-#include "../Common.h"
+#include "DigitalSignalProcessing/Common.h"
 
 template <typename T, uint32_t SampleRate>
 class DrumsPart

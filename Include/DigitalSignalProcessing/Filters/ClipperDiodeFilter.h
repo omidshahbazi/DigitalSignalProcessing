@@ -3,7 +3,7 @@
 #define CLIPPER_DIODE_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 
 enum class ClipperDiodeFilterTypes : uint8_t
 {

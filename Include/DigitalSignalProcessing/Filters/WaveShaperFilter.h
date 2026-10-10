@@ -3,8 +3,8 @@
 #define WAVE_SHAPER_FILTER_H
 
 #include "Filter.h"
-#include "../Math.h"
-#include "../Debug.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
 
 template <typename T>
 class WaveShaperFilter : public Filter<T, MIN_SAMPLE_RATE>

@@ -3,9 +3,9 @@
 #define FLANGER_H
 
 #include "IDSP.h"
-#include "../Math.h"
-#include "../Filters/OscillatorFilter.h"
-#include "../Filters/BufferFilter.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
+#include "DigitalSignalProcessing/Filters/BufferFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Flanger : public IDSP<T, SampleRate>

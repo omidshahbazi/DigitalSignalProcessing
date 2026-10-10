@@ -1,26 +1,5 @@
 #include "DigitalSignalProcessing/Color.h"
 
-Color::Color(void)
-	: R(0),
-	G(0),
-	B(0),
-	A(255)
-{}
-
-Color::Color(uint8_t R, uint8_t G, uint8_t B)
-	: R(R),
-	G(G),
-	B(B),
-	A(255)
-{}
-
-Color::Color(uint8_t R, uint8_t G, uint8_t B, uint8_t A)
-	: R(R),
-	G(G),
-	B(B),
-	A(A)
-{}
-
 uint16_t Color::R5G6B5(void)
 {
 	uint16_t b = (B >> 3) & 0x1f;

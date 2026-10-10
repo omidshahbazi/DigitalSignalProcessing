@@ -3,8 +3,8 @@
 #define NOISE_GATE_FILTER_H
 
 #include "EnvelopeFollowerFilter.h"
-#include "../Math.h"
-#include "../Debug.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
 
 template <typename T, uint32_t SampleRate>
 class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>

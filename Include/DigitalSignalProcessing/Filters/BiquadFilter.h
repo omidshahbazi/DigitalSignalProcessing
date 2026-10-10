@@ -3,10 +3,10 @@
 #define BIQUAD_FILTER_H
 
 #include "Filter.h"
-#include "../Frequency.h"
-#include "../Gain.h"
-#include "../Math.h"
-#include "../Debug.h"
+#include "DigitalSignalProcessing/Frequency.h"
+#include "DigitalSignalProcessing/Gain.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
 
 #ifdef ARM_SIMD_BIQUAD
 #include <CMSIS-DSP/Include/arm_math.h>
@@ -16,24 +16,24 @@ static constexpr uint8_t ARM_SIMD_BIQUAD_STATE_COUNT = 4;
 #undef HIGH_RESOLUTION_BIQUAD
 #endif
 
-static const QualityFactor QUALITY_FACTOR_MINIMUM(0.01); // Has to be in sync with the result of FixBandFrequency()
-static const QualityFactor QUALITY_FACTOR_CRITICAL_DAMPING(0.5);
-static const QualityFactor QUALITY_FACTOR_MAXIMALLY_FLAT(0.707);
-static const QualityFactor QUALITY_FACTOR_RESONANCE(1.5);
-static const QualityFactor QUALITY_FACTOR_PEAK(2);
-static const QualityFactor QUALITY_FACTOR_HIGH_SELECTIVE(5);
-static const QualityFactor QUALITY_FACTOR_MAXIMUM(10); // Has to be in sync with the result of FixBandFrequency()
+static constexpr QualityFactor QUALITY_FACTOR_MINIMUM(0.01); // Has to be in sync with the result of FixBandFrequency()
+static constexpr QualityFactor QUALITY_FACTOR_CRITICAL_DAMPING(0.5);
+static constexpr QualityFactor QUALITY_FACTOR_MAXIMALLY_FLAT(0.707);
+static constexpr QualityFactor QUALITY_FACTOR_RESONANCE(1.5);
+static constexpr QualityFactor QUALITY_FACTOR_PEAK(2);
+static constexpr QualityFactor QUALITY_FACTOR_HIGH_SELECTIVE(5);
+static constexpr QualityFactor QUALITY_FACTOR_MAXIMUM(10); // Has to be in sync with the result of FixBandFrequency()
 
-static const SlopeFactor SLOPE_FACTOR_MINIMUM(0.01);
-static const SlopeFactor SLOPE_FACTOR_GENTLE(0.5);
-static const SlopeFactor SLOPE_FACTOR_MAXIMALLY_FLAT(1);
-static const SlopeFactor SLOPE_FACTOR_STEEP(1.5);
-static const SlopeFactor SLOPE_FACTOR_RESONANT(2);
-static const SlopeFactor SLOPE_FACTOR_MAXIMUM(2.3);
+static constexpr SlopeFactor SLOPE_FACTOR_MINIMUM(0.01);
+static constexpr SlopeFactor SLOPE_FACTOR_GENTLE(0.5);
+static constexpr SlopeFactor SLOPE_FACTOR_MAXIMALLY_FLAT(1);
+static constexpr SlopeFactor SLOPE_FACTOR_STEEP(1.5);
+static constexpr SlopeFactor SLOPE_FACTOR_RESONANT(2);
+static constexpr SlopeFactor SLOPE_FACTOR_MAXIMUM(2.3);
 
-static const LogarithmicOctave OCTAVE_MINIMUM(0.1442);
-static const LogarithmicOctave OCTAVE_NORMAL(1.41);
-static const LogarithmicOctave OCTAVE_MAXIMUM(10);
+static constexpr LogarithmicOctave OCTAVE_MINIMUM(0.1442);
+static constexpr LogarithmicOctave OCTAVE_NORMAL(1.41);
+static constexpr LogarithmicOctave OCTAVE_MAXIMUM(10);
 
 enum class BiquadFilterDesigns : uint8_t
 {

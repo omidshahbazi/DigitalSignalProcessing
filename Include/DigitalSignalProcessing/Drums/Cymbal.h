@@ -3,9 +3,9 @@
 #define CYMBAL_H
 
 #include "DrumsPart.h"
-#include "../Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
-#include "../Filters/MetalNoiseFilter.h"
-#include "../Filters/BandPassFilter.h"
+#include "DigitalSignalProcessing/Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
+#include "DigitalSignalProcessing/Filters/MetalNoiseFilter.h"
+#include "DigitalSignalProcessing/Filters/BandPassFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Cymbal : public DrumsPart<T, SampleRate>

@@ -3,9 +3,9 @@
 #define LOOPER_H
 
 #include "IDSP.h"
-#include "../Filters/BufferFilter.h"
-#include "../Filters/LowPassFilter.h"
-#include "../Filters/HighPassFilter.h"
+#include "DigitalSignalProcessing/Filters/BufferFilter.h"
+#include "DigitalSignalProcessing/Filters/LowPassFilter.h"
+#include "DigitalSignalProcessing/Filters/HighPassFilter.h"
 
 template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class Looper : public IDSP<T, SampleRate>
@@ -26,7 +26,7 @@ public:
 
 		m_Buffer.Reset();
 	}
-	bool GetIsPlaying(void) const
+	bool IsPlaying(void) const
 	{
 		return m_IsPlaying;
 	}
@@ -56,7 +56,7 @@ public:
 			}
 		}
 	}
-	bool GetIsRecording(void) const
+	bool IsRecording(void) const
 	{
 		return m_IsRecording;
 	}
@@ -161,9 +161,9 @@ public:
 		return m_LowPassFilter.GetHighCutFrequency();
 	}
 
-	bool GetIsLastSample(void) const
+	bool IsLastSample(void) const
 	{
-		return m_Buffer.GetIsLastSample();
+		return m_Buffer.IsLastSample();
 	}
 
 	void Process(T *Buffer, uint8_t Count) override
@@ -198,8 +198,8 @@ protected:
 private:
 	BufferFilter<T, SampleRate, MaxTime> m_UndoBuffer;
 	BufferFilter<T, SampleRate, MaxTime> m_Buffer;
-	LowPassFilter<SampleType, SampleRate> m_LowPassFilter;
-	HighPassFilter<SampleType, SampleRate> m_HighPassFilter;
+	LowPassFilter<T, SampleRate> m_LowPassFilter;
+	HighPassFilter<T, SampleRate> m_HighPassFilter;
 	float m_WetRate;
 	bool m_IsPlaying;
 	bool m_IsRecording;

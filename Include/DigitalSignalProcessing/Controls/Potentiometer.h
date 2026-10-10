@@ -3,7 +3,7 @@
 #define POTENTIOMETER_H
 
 #include "Control.h"
-#include "../Filters/BiquadFilter.h"
+#include "DigitalSignalProcessing/Filters/BiquadFilter.h"
 
 class Potentiometer : public Control
 {

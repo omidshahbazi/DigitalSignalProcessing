@@ -3,9 +3,9 @@
 #define KICK_H
 
 #include "DrumsPart.h"
-#include "../Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
-#include "../Filters/OscillatorFilter.h"
-#include "../Filters/WhiteNoiseFilter.h"
+#include "DigitalSignalProcessing/Filters/AttackDecaySustainReleaseEnvelopeFilter.h"
+#include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
+#include "DigitalSignalProcessing/Filters/WhiteNoiseFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Kick : public DrumsPart<T, SampleRate>

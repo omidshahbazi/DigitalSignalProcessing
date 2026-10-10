@@ -2,7 +2,7 @@
 #ifndef TRIPLE_TONE_CONTROL_FILTER_H
 #define TRIPLE_TONE_CONTROL_FILTER_H
 
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 #include "LowShelfFilter.h"
 #include "PeakEQFilter.h"
 #include "HighShelfFilter.h"

@@ -3,12 +3,12 @@
 #define BIG_MUFF_H
 
 #include "IDSP.h"
-#include "../Math.h"
-#include "../Debug.h"
-#include "../Filters/UpSamplerFilter.h"
-#include "../Filters/HighPassFilter.h"
-#include "../Filters/LowPassFilter.h"
-#include "../Filters/ToneStackFilter.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
+#include "DigitalSignalProcessing/Filters/HighPassFilter.h"
+#include "DigitalSignalProcessing/Filters/LowPassFilter.h"
+#include "DigitalSignalProcessing/Filters/ToneStackFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class BigMuff : public IDSP<T, SampleRate>

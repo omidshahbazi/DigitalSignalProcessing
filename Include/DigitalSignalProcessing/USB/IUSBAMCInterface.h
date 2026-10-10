@@ -3,8 +3,8 @@
 #define I_USB_AMC_INTERFACE_H
 
 #include "IUSBInterface.h"
-#include "../Gain.h"
-#include <DigitalSignalProcessing/FixedFunction.h>
+#include "DigitalSignalProcessing/Gain.h"
+#include "DigitalSignalProcessing/FixedFunction.h"
 
 class IUSBAMCInterface : public IUSBInterface
 {
@@ -42,8 +42,8 @@ public:
 	virtual dBGain GetCurrentOutVolume(void) const = 0;
 	virtual dBGain GetCurrentInVolume(void) const = 0;
 
-	virtual bool GetIsOutMuted(void) const = 0;
-	virtual bool GetIsInMuted(void) const = 0;
+	virtual bool IsOutMuted(void) const = 0;
+	virtual bool IsInMuted(void) const = 0;
 };
 
 #endif

@@ -6,10 +6,12 @@
 #include <cstdint>
 #endif
 
-#ifdef DEBUG
 #ifdef ENABLE_TYPE_CHECK
 #include <type_traits>
+#endif
 
+#ifdef DEBUG
+#ifdef ENABLE_TYPE_CHECK
 #define ARE_TYPES_THE_SAME(A, B) std::is_same<A, B>()
 #else
 #define ARE_TYPES_THE_SAME(A, B) true
@@ -36,6 +38,21 @@
 #define BEGIN_PACK(n) __pragma(pack(push, n))
 #define END_PACK()    __pragma(pack(pop))
 #endif
+
+template <typename T>
+struct is_trivially_copyable
+{
+#if defined(__GNUC__) || defined(_MSC_VER)
+	static constexpr bool value = __is_trivially_copyable(T);
+#elif defined(ENABLE_TYPE_CHECK)
+	static constexpr bool value = std::is_trivially_copyable<T>::value;
+#else
+	#error "Trivially copyable type check is not supported on this platform"
+#endif
+};
+
+template <typename T>
+inline constexpr bool is_trivially_copyable_v = is_trivially_copyable<T>::value;
 
 typedef char* str;
 typedef const char* cstr;

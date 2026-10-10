@@ -3,9 +3,9 @@
 #define TREMOLO_H
 
 #include "IDSP.h"
-#include "../Math.h"
-#include "../Debug.h"
-#include "../Filters/OscillatorFilter.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class Tremolo : public IDSP<T, SampleRate>

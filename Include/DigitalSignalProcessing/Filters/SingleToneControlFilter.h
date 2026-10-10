@@ -2,7 +2,7 @@
 #ifndef SINGLE_TONE_CONTROL_FILTER_H
 #define SINGLE_TONE_CONTROL_FILTER_H
 
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 #include "LowShelfFilter.h"
 #include "HighShelfFilter.h"
 

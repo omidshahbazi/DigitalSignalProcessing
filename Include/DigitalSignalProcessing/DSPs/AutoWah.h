@@ -3,7 +3,7 @@
 #define AUTO_WAH_H
 
 #include "Wah.h"
-#include "../Filters/EnvelopeFollowerFilter.h"
+#include "DigitalSignalProcessing/Filters/EnvelopeFollowerFilter.h"
 
 template <typename T, uint32_t SampleRate>
 class AutoWah : private Wah<T, SampleRate>

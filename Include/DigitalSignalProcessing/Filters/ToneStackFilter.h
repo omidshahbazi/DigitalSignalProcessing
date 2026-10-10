@@ -2,7 +2,7 @@
 #ifndef TONE_STACK_FILTER_H
 #define TONE_STACK_FILTER_H
 
-#include "../Math.h"
+#include "DigitalSignalProcessing/Math.h"
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
 

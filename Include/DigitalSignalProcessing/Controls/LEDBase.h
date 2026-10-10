@@ -2,10 +2,10 @@
 #ifndef LED_BASE_H
 #define LED_BASE_H
 
-#include "../Debug.h"
-#include "../Math.h"
-#include "../IHAL.h"
-#include "../FixedFunction.h"
+#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/IHAL.h"
+#include "DigitalSignalProcessing/FixedFunction.h"
 
 class LEDBase
 {

@@ -2,7 +2,7 @@
 #ifndef I_DSP_H
 #define I_DSP_H
 
-#include "../Common.h"
+#include "DigitalSignalProcessing/Common.h"
 
 template <typename T, uint32_t SampleRate>
 class IDSP

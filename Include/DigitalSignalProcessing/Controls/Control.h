@@ -3,7 +3,7 @@
 #define CONTROL_H
 
 #include "ControlBase.h"
-#include "../FixedFunction.h"
+#include "DigitalSignalProcessing/FixedFunction.h"
 
 class DualLED;
 class TripleLED;

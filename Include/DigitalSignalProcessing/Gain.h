@@ -38,8 +38,8 @@ private:
 struct dBGain
 {
 public:
-	dBGain(void) = default;
-	explicit dBGain(float Value)
+	constexpr dBGain(void) = default;
+	constexpr explicit dBGain(float Value)
 		: m_Value(Value)
 	{
 	}
@@ -65,9 +65,9 @@ private:
 };
 
 // https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
-static const dBGain MIN_GAIN(-90);
-static const dBGain SILENCE_GAIN(-40);
-static const dBGain NORMAL_GAIN(0);
-static const dBGain MAX_GAIN(6);
+static constexpr dBGain MIN_GAIN(-90);
+static constexpr dBGain SILENCE_GAIN(-40);
+static constexpr dBGain NORMAL_GAIN(0);
+static constexpr dBGain MAX_GAIN(6);
 
 #endif

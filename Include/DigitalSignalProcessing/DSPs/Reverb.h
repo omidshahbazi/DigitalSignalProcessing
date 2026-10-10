@@ -3,7 +3,7 @@
 #define REVERB_H
 
 #include "IDSP.h"
-#include "../Filters/BufferFilter.h"
+#include "DigitalSignalProcessing/Filters/BufferFilter.h"
 
 template <typename T, uint32_t SampleRate, uint16_t MaxDelayTime>
 class Reverb : public IDSP<T, SampleRate>

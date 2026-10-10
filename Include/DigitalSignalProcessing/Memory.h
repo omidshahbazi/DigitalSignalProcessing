@@ -44,6 +44,51 @@ public:
 		memcpy(Destination, Source, sizeof(T) * Count);
 	}
 
+	template<typename T>
+	static void Swap(T& First, T& Second)
+	{
+		T temp = Second;
+		Second = First;
+		First = temp;
+	}
+
+	template<typename T, uint8_t Alignment = alignof(T)>
+	static T* Align(const T* Pointer)
+	{
+		return Align<T>(Pointer, Alignment);
+	}
+
+	template<typename T>
+	static T* Align(const T* Pointer, uint8_t Alignment)
+	{
+		return reinterpret_cast<T*>(Align(reinterpret_cast<const void*>(Pointer), Alignment));
+	}
+
+	template<uint8_t Alignment>
+	static void* Align(const void* Pointer)
+	{
+		return Align(Pointer, Alignment);
+	}
+
+	static void* Align(const void* Pointer, uint8_t Alignment)
+	{
+		uintptr_t alignedPtr = (reinterpret_cast<uintptr_t>(Pointer) + (Alignment - 1)) & ~static_cast<uintptr_t>(Alignment - 1);
+
+		return reinterpret_cast<void*>(alignedPtr);
+	}
+
+	template<uint8_t Alignment, typename T>
+	static constexpr bool IsAligned(const T* Pointer)
+	{
+		return IsAligned(Pointer, Alignment);
+	}
+
+	template<typename T>
+	static constexpr bool IsAligned(const T* Pointer, uint8_t Alignment)
+	{
+		return ((reinterpret_cast<uintptr_t>(Pointer) & (Alignment - 1)) == 0);
+	}
+
 private:
 	static IHAL* s_HAL;
 };
