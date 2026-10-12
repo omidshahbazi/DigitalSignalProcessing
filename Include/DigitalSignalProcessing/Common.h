@@ -68,4 +68,18 @@ static_assert(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 
 #define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, UP_SAMPLE_FACTOR)
 
+#define TO_INTERLEAVING_BUFFER(BufferL, BufferR, Count, InterleavedBuffer) \
+	for (uint16_t i = 0; i < Count; ++i) \
+	{ \
+		InterleavedBuffer[i * 2] = BufferL[i]; \
+		InterleavedBuffer[(i * 2) + 1] = BufferR[i]; \
+	}
+
+#define TO_INTERWEAVING_BUFFERS(InterweavedBuffer, Count, BufferL, BufferR) \
+	for (uint16_t i = 0; i < Count / 2; ++i) \
+	{ \
+		BufferL[i] = InterweavedBuffer[i * 2]; \
+		BufferR[i] = InterweavedBuffer[(i * 2) + 1]; \
+	}
+
 uint32_t CRC32(const uint8_t* Data, uint32_t Size);
