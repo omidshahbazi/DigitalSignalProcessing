@@ -63,7 +63,8 @@ public:
 	virtual IUSB* GetUSB(uint8_t Index = 0) = 0;
 	virtual IFirmware* GetFirmware(void) = 0;
 
-	virtual void EraseUserData(void) = 0;
+	virtual bool ErasePersistentData(uint32_t StartOffset, uint32_t Length) = 0;
+	virtual bool WritePersistentData(uint32_t StartOffset, const uint8_t* Buffer, uint32_t Length) = 0;
 };
 
 #endif
