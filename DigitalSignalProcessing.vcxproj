@@ -177,7 +177,7 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BiquadFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BufferFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BypassFilter.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ClipperDiodeFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\DiodeClipperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\DelayFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\DualToneControlFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\EnvelopeFollowerFilter.h" />
@@ -193,10 +193,11 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\PeakEQFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\PeakResonatorFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\ResistorCapacitorFilter.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\Filters\SignalClipperFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\SimpleClipperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\SingleToneControlFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\TiltEQFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\ToneStackFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\TransistorClipperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\TripleToneControlFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\UpSamplerFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\WaveShaperFilter.h" />

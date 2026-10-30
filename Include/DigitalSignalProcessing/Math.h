@@ -130,7 +130,7 @@ private:
 		float m_LogLUT[Size];
 	};
 
-	static const LookupTable &GetLUT(void)
+	static const LookupTable& GetLUT(void)
 	{
 		static LookupTable lut;
 		return lut;
@@ -178,13 +178,13 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto Min(T A, U B) -> decltype(A * B)
+	static auto Min(T A, U B) -> decltype(A* B)
 	{
 		return (A < B ? A : B);
 	}
 
 	template <typename T, typename U>
-	static auto Max(T A, U B) -> decltype(A * B)
+	static auto Max(T A, U B) -> decltype(A* B)
 	{
 		return (A > B ? A : B);
 	}
@@ -196,7 +196,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Clamp(T Value, U Min, V Max) -> decltype(Value * Min * Max)
+	static auto Clamp(T Value, U Min, V Max) -> decltype(Value* Min* Max)
 	{
 		if (Value < Min)
 			return Min;
@@ -226,7 +226,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Wrap(T Value, U Min, V Max) -> decltype(Value * Min * Max)
+	static auto Wrap(T Value, U Min, V Max) -> decltype(Value* Min* Max)
 	{
 		ASSERT_ON_NOT_FLOATING_TYPE(T);
 		ASSERT_ON_NOT_FLOATING_TYPE(U);
@@ -241,13 +241,13 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	static auto Map(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
 	{
 		return (Value - OldMin) / (float)(OldMax - OldMin) * (float)(NewMax - NewMin) + NewMin;
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLinearToLogarithmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	static auto MapLinearToLogarithmic(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
 	{
 		float newMinLog = Log2(NewMin);
 		float newMaxLog = Log2(NewMax);
@@ -256,7 +256,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V, typename W>
-	static auto MapLogarithmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin * NewMax)
+	static auto MapLogarithmicToLinear(T Value, T OldMin, U OldMax, V NewMin, W NewMax) -> decltype(NewMin* NewMax)
 	{
 		float oldMinLog = Log2(OldMin);
 		float oldMaxLog = Log2(OldMax);
@@ -265,7 +265,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto Lerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
+	static auto Lerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
 	{
 		ASSERT_ON_FLOATING_TYPE(V);
 
@@ -275,7 +275,7 @@ public:
 	}
 
 	template <typename T, typename U, typename V>
-	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min * Max * Time)
+	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
 	{
 		ASSERT_ON_FLOATING_TYPE(V);
 
@@ -283,7 +283,7 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto FrequencyDiff(T Min, U Max) -> decltype(Min * Max)
+	static auto FrequencyDiff(T Min, U Max) -> decltype(Min* Max)
 	{
 		return Log2(Max / Min);
 	}
@@ -435,7 +435,7 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto Power(T Value, U N) -> decltype(Value * N)
+	static auto Power(T Value, U N) -> decltype(Value* N)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -689,7 +689,7 @@ public:
 	}
 
 	template <typename T, bool ZeroStuffing = true>
-	static void UpSample(const T *Input, uint16_t Count, T *Output, uint8_t Ratio)
+	static void UpSample(const T* Input, uint16_t Count, T* Output, uint8_t Ratio)
 	{
 		if constexpr (ZeroStuffing)
 		{
@@ -721,14 +721,14 @@ public:
 	}
 
 	template <typename T>
-	static void UpSampleMakeup(T *Buffer, uint16_t Count, uint8_t Ratio)
+	static void UpSampleMakeup(T* Buffer, uint16_t Count, uint8_t Ratio)
 	{
 		for (uint16_t i = 0; i < Count; ++i)
 			Buffer[i] *= Ratio;
 	}
 
 	template <typename T, bool ZeroStuffing = true>
-	static void DownSample(const T *Input, uint16_t Count, T *Output, uint8_t Ratio)
+	static void DownSample(const T* Input, uint16_t Count, T* Output, uint8_t Ratio)
 	{
 		uint16_t outputIndex = 0;
 
@@ -753,7 +753,7 @@ public:
 	}
 
 	template <typename T>
-	static T GetMeanValue(T *Buffer, uint16_t Count)
+	static T GetMeanValue(T* Buffer, uint16_t Count)
 	{
 		if (Buffer == nullptr)
 			return 0;
@@ -761,7 +761,7 @@ public:
 		if (Count == 0)
 			return 0;
 
-		T *middle = Buffer + (Count / 2);
+		T* middle = Buffer + (Count / 2);
 
 		std::nth_element(Buffer, middle, Buffer + Count);
 
@@ -779,7 +779,7 @@ public:
 	}
 
 	template <typename T, uint16_t SampleCount>
-	static void HannWindow(T *Buffer, uint16_t Count)
+	static void HannWindow(T* Buffer, uint16_t Count)
 	{
 		for (uint16_t i = 0; i < Count; ++i)
 			Buffer[i] *= HannWindow(Buffer[i], i);
