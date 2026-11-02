@@ -234,9 +234,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Looper.h">
       <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\NoiseGate.h">
-      <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
-    </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Overdrive.h">
       <Filter>Include\DigitalSignalProcessing\DSPs</Filter>
     </ClInclude>
@@ -327,9 +324,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\TiltEQFilter.h">
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ToneStackFilter.h">
-      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
-    </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\TripleToneControlFilter.h">
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
@@ -382,6 +376,15 @@
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\TransistorClipperFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ToneStackFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ClipperFilter.h">
+      <Filter>Include\DigitalSignalProcessing\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\GainStageFilter.h">
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
   </ItemGroup>

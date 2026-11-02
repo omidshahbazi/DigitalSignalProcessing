@@ -4,6 +4,8 @@
 
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/GainStageFilter.h"
+#include "DigitalSignalProcessing/Filters/DiodeClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
 #include "DigitalSignalProcessing/Filters/ResistorCapacitorFilter.h"
 #include "DigitalSignalProcessing/Filters/EnvelopeFollowerFilter.h"
@@ -23,8 +25,10 @@ public:
 		SetPowerSag(0.5);
 		SetWetRate(1);
 
+		m_PreFilter.SetCutoffFrequency(Frequency(720));
 		m_EnvelopeFollowerFilter.SetAttackTime(5 ms);
 		m_EnvelopeFollowerFilter.SetReleaseTime(100 ms);
+		m_GainStage.GetClipper().SetAsymmetry(0.3);
 	}
 
 	//[0, 1]
@@ -34,10 +38,7 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = (LinearGain)Math::Lerp(1, 30, m_Drive);
-		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
-		m_Clipper.SetParameter(m_Drive);
-		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(300.0, 500.0, m_Drive));
+		m_GainStage.SetInputGain((LinearGain)Math::Lerp(1, 50, m_Drive));
 	}
 	float GetDrive(void) const
 	{
@@ -103,17 +104,11 @@ public:
 		m_PreFilter.Process(Buffer, Count);
 
 		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], 0.7);
-
-		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] *= m_PreGain + (m_EnvelopeFollowerFilter.Process(Buffer[i]) * m_PowerSag);
+			Buffer[i] *= 1 + m_EnvelopeFollowerFilter.Process(Buffer[i]) * m_PowerSag;
 
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
-			m_Clipper.Process(upBuffer, m_UpSampler.GetCount());
-
-			for (uint8_t i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = upBuffer[i] * m_InvertedPreGain;
+			m_GainStage.Process(upBuffer, m_UpSampler.GetCount());
 
 			m_UpSampler.DownSample(Buffer);
 		}
@@ -130,19 +125,19 @@ public:
 private:
 	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	HighPassResistorCapacitorFilter<T, SampleRate> m_PreFilter;
-	Clipper m_Clipper;
+	GainStageFilter<T, SampleRate* UP_SAMPLE_FACTOR, Clipper> m_GainStage;
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR> m_UpSampler;
 	LowPassResistorCapacitorFilter<T, SampleRate> m_ToneFilter;
 
 	float m_Drive;
-	float m_Asymmetry;
-	LinearGain m_PreGain;
-	LinearGain m_InvertedPreGain;
 	float m_Tone;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
 	float m_PowerSag;
 	float m_WetRate;
 };
+
+template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
+using DefaultOverdrive = Overdrive<T, SampleRate, SiliconDiodeClipperFilter<T, ClipperSampleRate>>;
 
 #endif

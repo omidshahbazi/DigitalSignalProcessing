@@ -5,22 +5,20 @@
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
 #include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/GainStageFilter.h"
+#include "DigitalSignalProcessing/Filters/SimpleClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
-#include "DigitalSignalProcessing/Filters/HighPassFilter.h"
 #include "DigitalSignalProcessing/Filters/LowPassFilter.h"
 
-template <typename T, uint32_t SampleRate>
+template <typename T, uint32_t SampleRate, typename Clipper>
 class Distortion : public IDSP<T, SampleRate>
 {
 public:
 	Distortion(void)
 		: m_Drive(0),
-		m_AsymmetryLevel(0),
 		m_Tone(0),
 		m_WetRate(0)
 	{
-		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
-
 		SetDrive(0.5);
 		SetAsymmetryLevel(0.9);
 		SetTone(0.5);
@@ -35,24 +33,22 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = (LinearGain)Math::Lerp(10, 300, m_Drive);
-		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
+		m_GainStage.SetInputGain((LinearGain)Math::Lerp(5, 100, m_Drive));
+		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_GainStage.GetInputGain()));
 	}
 	float GetDrive(void) const
 	{
 		return m_Drive;
 	}
 
-	//[-1, 1]
+	//[0, 1]
 	void SetAsymmetryLevel(float Value)
 	{
-		ASSERT(-1 <= Value && Value <= 1, "Invalid Value %f", Value);
-
-		m_AsymmetryLevel = Value;
+		m_GainStage.GetClipper().SetAsymmetry(Value);
 	}
 	float GetAsymmetryLevel(void) const
 	{
-		return m_AsymmetryLevel;
+		return m_GainStage.GetClipper().GetAsymmetry();
 	}
 
 	//[0, 1]
@@ -101,13 +97,13 @@ public:
 
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
-			for (uint8_t i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i], m_PreGain, 0, m_AsymmetryLevel) * m_InvertedPreGain;
+			m_GainStage.Process(upBuffer, m_UpSampler.GetCount());
 
 			m_UpSampler.DownSample(Buffer);
 		}
 
-		m_DCBlockerFilter.Process(Buffer, Count);
+		//for (uint8_t i = 0; i < Count; ++i)
+		//	Buffer[i] *= m_InvertedPreGain;
 
 		m_ToneFilter.Process(Buffer, Count);
 
@@ -120,17 +116,18 @@ public:
 
 private:
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
-	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
+	GainStageFilter<T, SampleRate* UP_SAMPLE_FACTOR, Clipper> m_GainStage;
 	LowPassFilter<T, SampleRate> m_ToneFilter;
 
 	float m_Drive;
-	LinearGain m_PreGain;
 	LinearGain m_InvertedPreGain;
-	float m_AsymmetryLevel;
 	float m_Tone;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
 	float m_WetRate;
 };
+
+template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
+using DefaultDistortion = Distortion<T, SampleRate, PolynomialSimpleClipperFilter<T, ClipperSampleRate>>;
 
 #endif

@@ -185,7 +185,7 @@ public:
 			if (!m_IsPlaying)
 				output = 0;
 
-			Buffer[i] = Math::SoftClip(Mix(Buffer[i], output));
+			Buffer[i] = Mix(Buffer[i], output);
 		}
 	}
 

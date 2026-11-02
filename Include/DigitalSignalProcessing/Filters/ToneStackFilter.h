@@ -16,6 +16,9 @@ public:
 		SetTone(0.5);
 		SetLowPassFrequency((Frequency)(200));
 		SetHighPassFrequency((Frequency)(1 KHz));
+
+		m_LowPassFilter.SetQualityFactor(QualityFactor(0.8));
+		m_HighPassFilter.SetQualityFactor(QualityFactor(0.8));
 	}
 
 	//[MIN_FREQUENCY, MAX_FREQUENCY]

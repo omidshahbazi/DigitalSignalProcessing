@@ -14,7 +14,7 @@ class Phaser : public IDSP<T, SampleRate>
 public:
 	Phaser(void)
 		: m_Depth(0),
-		  m_WetRate(0)
+		m_WetRate(0)
 	{
 		for (uint8_t i = 0; i < StageCount; ++i)
 		{
@@ -70,7 +70,7 @@ public:
 			m_Buffers[j].Clear();
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 		{
@@ -85,7 +85,7 @@ public:
 				output = Math::LinearCrossFadeMix(output, m_Buffers[j].GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex)), 0.5);
 			}
 
-			Buffer[i] = Math::SoftClip(Mix(Buffer[i], output));
+			Buffer[i] = Mix(Buffer[i], output);
 		}
 	}
 

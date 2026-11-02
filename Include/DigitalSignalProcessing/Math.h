@@ -8,7 +8,8 @@
 #include "DataTypes.h"
 #include "Notes.h"
 
-class Math
+template<bool FastMath>
+class MathImplementation
 {
 public:
 	static constexpr double PI_VALUE = 3.14159265;
@@ -26,7 +27,6 @@ public:
 		uint8_t Octave;
 	};
 
-#ifdef FAST_MATH
 private:
 	class LookupTable
 	{
@@ -35,21 +35,29 @@ private:
 		static constexpr float SinScale = (Size - 1) / TWO_PI_VALUE;
 		static constexpr float TanHRange = 3;
 		static constexpr float TanHScale = (Size - 1) / (2 * TanHRange);
+		static constexpr float ATanRange = 8;
+		static constexpr float ATanScale = (Size - 1) / (2 * ATanRange);
 
 	public:
 		LookupTable(void)
 		{
+			static_assert(FastMath, "FastMath is not enabled");
+
 			for (uint16_t i = 0; i < Size; i++)
 			{
 				const float Ratio = (float)i / (Size - 1);
 
 				m_SinLUT[i] = std::sin(TWO_PI_VALUE * Ratio);
 				m_TanHLUT[i] = std::tanh(-TanHRange + (2 * TanHRange) * Ratio);
+				m_ATanLUT[i] = std::atan(-ATanRange + (2 * ATanRange) * Ratio);
 				m_LogLUT[i] = std::log(1 + Ratio);
 			}
 
 			m_TanHLUT[0] = -1;
 			m_TanHLUT[Size - 1] = 1;
+
+			m_ATanLUT[0] = -HALF_PI_VALUE;
+			m_ATanLUT[Size - 1] = HALF_PI_VALUE;
 		}
 
 		template <typename T>
@@ -96,6 +104,26 @@ private:
 		}
 
 		template <typename T>
+		inline T ATan(T Value) const
+		{
+			ASSERT_ON_FLOATING_TYPE(T);
+
+			if (Value <= -ATanRange)
+				return -HALF_PI_VALUE;
+			if (Value >= ATanRange)
+				return HALF_PI_VALUE;
+
+			float pos = (Value + ATanRange) * ATanScale;
+			uint16_t index = (uint16_t)pos;
+			if (index >= Size)
+				index = Size - 1;
+			uint16_t next = (index < Size - 1) ? index + 1 : index;
+			float frac = pos - index;
+
+			return m_ATanLUT[index] + (frac * (m_ATanLUT[next] - m_ATanLUT[index]));
+		}
+
+		template <typename T>
 		inline T Log(T Value) const
 		{
 			ASSERT_ON_FLOATING_TYPE(T);
@@ -118,15 +146,10 @@ private:
 			return (T)(result + (n * LOG_NATURAL_2));
 		}
 
-		template <typename T>
-		inline T ASinh(T Value) const
-		{
-			return Log(Value + Math::SquareRoot(Value * Value + 1));
-		}
-
 	private:
 		float m_SinLUT[Size];
 		float m_TanHLUT[Size];
+		float m_ATanLUT[Size];
 		float m_LogLUT[Size];
 	};
 
@@ -135,7 +158,6 @@ private:
 		static LookupTable lut;
 		return lut;
 	}
-#endif
 
 public:
 	template <typename T>
@@ -307,11 +329,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)GetLUT().Sin(Value);
-#else
-		return (T)sin(Value);
-#endif
+		if constexpr (FastMath)
+			return (T)GetLUT().Sin(Value);
+		else
+			return (T)sin(Value);
 	}
 
 	template <typename T>
@@ -327,11 +348,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)GetLUT().Cos(Value);
-#else
-		return (T)cos(Value);
-#endif
+		if constexpr (FastMath)
+			return (T)GetLUT().Cos(Value);
+		else
+			return (T)cos(Value);
 	}
 
 	template <typename T>
@@ -339,11 +359,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)GetLUT().TanH(Value);
-#else
-		return (T)tanh(Value);
-#endif
+		if constexpr (FastMath)
+			return (T)GetLUT().TanH(Value);
+		else
+			return (T)tanh(Value);
 	}
 
 	template <typename T>
@@ -351,11 +370,21 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)GetLUT().ASinh(Value);
-#else
-		return (T)std::asinh(Value);
-#endif
+		if constexpr (FastMath)
+			return Log(Value + SquareRoot(Value * Value + 1));
+		else
+			return (T)std::asinh(Value);
+	}
+
+	template <typename T>
+	static T ATan(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		if constexpr (FastMath)
+			return (T)GetLUT().ATan(Value);
+		else
+			return (T)std::atan(Value);
 	}
 
 	template <typename T>
@@ -363,11 +392,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)GetLUT().Log(Value);
-#else
-		return std::log(Value);
-#endif
+		if constexpr (FastMath)
+			return (T)GetLUT().Log(Value);
+		else
+			return std::log(Value);
 	}
 
 	template <typename T>
@@ -375,31 +403,32 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		// union
-		// {
-		// 	float f;
-		// 	uint32_t i;
-		// } vx = {(float)Value};
-		// union
-		// {
-		// 	uint32_t i;
-		// 	float f;
-		// } mx;
+		if constexpr (FastMath)
+		{
+			// union
+			// {
+			// 	float f;
+			// 	uint32_t i;
+			// } vx = {(float)Value};
+			// union
+			// {
+			// 	uint32_t i;
+			// 	float f;
+			// } mx;
 
-		// float exp = (float)((vx.i >> 23) & 0xFF) - 127;
+			// float exp = (float)((vx.i >> 23) & 0xFF) - 127;
 
-		// mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
+			// mx.i = (vx.i & 0x007FFFFF) | 0x3f800000;
 
-		// float y = mx.f;
-		// float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
+			// float y = mx.f;
+			// float log_m = -0.34484843f * y * y + 2.02466578f * y - 1.67487566f;
 
-		// return (T)(exp + log_m);
+			// return (T)(exp + log_m);
 
-		return Log(Value) * (T)1.4426950408889634;
-#else
-		return (T)log2f(Value);
-#endif
+			return Log(Value) * (T)1.4426950408889634;
+		}
+		else
+			return (T)log2f(Value);
 	}
 
 	template <typename T>
@@ -407,11 +436,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return Log2(Value) * 0.3010299956639812;
-#else
-		return (T)log10f(Value);
-#endif
+		if constexpr (FastMath)
+			return Log2(Value) * 0.3010299956639812;
+		else
+			return (T)log10f(Value);
 	}
 
 	template <typename T>
@@ -419,11 +447,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		return (T)Power2(Value * 1.4426950408);
-#else
-		return AccurateExponential(Value);
-#endif
+		if constexpr (FastMath)
+			return (T)Power2(Value * 1.4426950408);
+		else
+			return AccurateExponential(Value);
 	}
 
 	template <typename T>
@@ -447,29 +474,30 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-#ifdef FAST_MATH
-		float clipp = Value < -126.0f ? -126.0f : Value;
-		union
+		if constexpr (FastMath)
 		{
-			uint32_t i;
-			float f;
-		} v;
+			float clipp = Value < -126.0f ? -126.0f : Value;
+			union
+			{
+				uint32_t i;
+				float f;
+			} v;
 
-		int32_t i = (int)clipp;
-		float f = clipp - i;
-		if (clipp < 0)
-		{
-			i--;
-			f++;
+			int32_t i = (int)clipp;
+			float f = clipp - i;
+			if (clipp < 0)
+			{
+				i--;
+				f++;
+			}
+
+			v.i = (uint32_t)((i + 127) << 23);
+			v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
+
+			return (T)v.f;
 		}
-
-		v.i = (uint32_t)((i + 127) << 23);
-		v.f *= (1.0f + 0.69314718f * f + 0.24022650f * f * f);
-
-		return (T)v.f;
-#else
-		return (T)Power(2.0, Value);
-#endif
+		else
+			return (T)Power(2.0, Value);
 	}
 
 	template <typename T>
@@ -484,130 +512,6 @@ public:
 		ASSERT_ON_FLOATING_TYPE(T);
 
 		return (T)(std::sqrt(Value));
-	}
-
-	// Amount [-1, 1]
-	template <typename T>
-	static float GetSignedAsymmetryScale(T Value, float Amount)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		const float PositiveScale = 1 + Amount;
-		const float NegativeScale = 1 - Amount;
-
-		return (Value > 0 ? PositiveScale : NegativeScale);
-	}
-
-	// Gain [1, ...]
-	// Asymmetry [-1, 1]
-	template <typename T, bool EvenHarmonics = false>
-	static T SoftClip(T Value, float Gain = 1, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		if constexpr (EvenHarmonics)
-		{
-			float input = (float)Value * Gain;
-
-			return (T)TanH(input + (Asymmetry * input * input)) / TanH(Gain);
-		}
-		else
-		{
-			const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
-
-			return TanH(Value * Gain * SideFactor) / TanH(Gain);
-		}
-	}
-
-	// Gain [1, ...]
-	// Factor [0, 1)
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T CrunchClip(T Value, float Gain = 1, float Factor = 0, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		const float SideFactor = Clamp(Factor * GetSignedAsymmetryScale(Value, Asymmetry), 0, 0.99);
-
-		return Value * Gain / ((1 - SideFactor) + Absolute(Value * Gain));
-	}
-
-	// Gain [1, ...]
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T GentleClip(T Value, float Gain = 1, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
-
-		return Value * Gain / (1 + Absolute(Value * Gain * SideFactor));
-	}
-
-	// Gain [1, ...]
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T HarshClip(T Value, float Gain = 1, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
-
-		return (Value > 0 ? 1 : -1) * (1 - Exponential(-Absolute(Value * Gain * SideFactor)));
-	}
-
-	// Gain [1, ...]
-	// Factor: [0, 1)
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T HardClip(T Value, float Gain = 1, float Factor = 0, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		const float BottomThreshold = -(1 - Factor) * GetSignedAsymmetryScale(1.0, Asymmetry);
-		const float TopThreshold = (1 - Factor) * GetSignedAsymmetryScale(-1.0, Asymmetry);
-
-		return Clamp(Value * Gain, BottomThreshold, TopThreshold);
-	}
-
-	// Gain [1, ...]
-	// Factor: [0, 1)
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T SoftHardClip(T Value, float Gain = 1, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		Value *= Gain;
-
-		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
-		Value *= SideFactor;
-
-		if (Value > 1)
-			return 2 / 3.0;
-
-		if (Value < -1)
-			return -2 / 3.0;
-
-		return Value - (0.33333333333) * Power(Value, 3);
-	}
-
-	// Gain [1, ...]
-	// Asymmetry [-1, 1]
-	template <typename T>
-	static T GermaniumDiodeClip(T Value, float Gain = 1, float Asymmetry = 0)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		Value *= Gain;
-
-		const float SideFactor = GetSignedAsymmetryScale(Value, Asymmetry);
-		Value *= SideFactor;
-
-		if (Absolute(Value) < 1.25)
-			return Value - (0.15 * Value * Value * Value);
-
-		return (Value > 0) ? 1 : -1;
 	}
 
 	template <typename T>
@@ -673,7 +577,7 @@ public:
 	// The integer MIDI note (440 -> 69 (A4))
 	// The deviation in cents +/-0.5
 	template <typename T>
-	static MIDIInfo FrequencyToMIDI(T Value, T A4Frequencey = NOTE_A4)
+	static MIDIInfo FrequencyToMIDI(T Value, T A4Frequency = NOTE_A4)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
@@ -681,7 +585,7 @@ public:
 
 		if (Value > 0)
 		{
-			info.MIDI = Clamp(12 * Log2(Value / A4Frequencey) + 69, 0, 128);
+			info.MIDI = Clamp(12 * Log2(Value / A4Frequency) + 69, 0, 128);
 			info.Octave = uint8_t(info.MIDI / 12) - 1;
 		}
 
@@ -785,5 +689,14 @@ public:
 			Buffer[i] *= HannWindow(Buffer[i], i);
 	}
 };
+
+typedef MathImplementation<false> SlowMath;
+typedef MathImplementation<true> FastMath;
+
+#ifdef SLOW_MATH
+typedef SlowMath Math;
+#else
+typedef FastMath Math;
+#endif
 
 #endif

@@ -5,12 +5,12 @@
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
 #include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/TransistorClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
 #include "DigitalSignalProcessing/Filters/HighPassFilter.h"
-#include "DigitalSignalProcessing/Filters/LowPassFilter.h"
 #include "DigitalSignalProcessing/Filters/ToneStackFilter.h"
 
-template <typename T, uint32_t SampleRate>
+template <typename T, uint32_t SampleRate, typename Clipper>
 class BigMuff : public IDSP<T, SampleRate>
 {
 public:
@@ -20,9 +20,8 @@ public:
 		m_WetRate(0)
 	{
 		m_PreFilter.SetCutoffFrequency(Frequency(200));
-		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
-		m_ToneStackFilter.SetLowPassFrequency(Frequency(200));
-		m_ToneStackFilter.SetHighPassFrequency(Frequency(1.4 KHz));
+		m_ToneStackFilter.SetLowPassFrequency(Frequency(300));
+		m_ToneStackFilter.SetHighPassFrequency(Frequency(1.5 KHz));
 
 		SetDrive(0.5);
 		SetTone(0.5);
@@ -89,18 +88,20 @@ public:
 
 		m_PreFilter.Process(Buffer, Count);
 
+		for (uint8_t i = 0; i < Count; ++i)
+			Buffer[i] *= m_PreGain;
+
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
-			for (uint8_t i = 0; i < m_UpSampler.GetCount(); ++i)
-			{
-				upBuffer[i] = Math::SoftClip(upBuffer[i], m_PreGain, 0.1);
-				upBuffer[i] = Math::SoftClip(upBuffer[i], m_PreGain, 0.05) * m_InvertedPreGain;
-			}
+			m_Clipper1.Process(upBuffer, m_UpSampler.GetCount());
+			m_Clipper2.Process(upBuffer, m_UpSampler.GetCount());
 
 			m_UpSampler.DownSample(Buffer);
 		}
 
-		m_DCBlockerFilter.Process(Buffer, Count);
+		for (uint8_t i = 0; i < Count; ++i)
+			Buffer[i] *= m_InvertedPreGain;
+
 		m_ToneStackFilter.Process(Buffer, Count);
 
 		for (uint8_t i = 0; i < Count; ++i)
@@ -110,7 +111,8 @@ public:
 private:
 	HighPassFilter<T, SampleRate> m_PreFilter;
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
-	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
+	Clipper m_Clipper1;
+	Clipper m_Clipper2;
 	ToneStackFilter<T, SampleRate> m_ToneStackFilter;
 
 	float m_Drive;
@@ -121,5 +123,8 @@ private:
 	LinearGain m_LinearGain;
 	float m_WetRate;
 };
+
+template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
+using DefaultBigMuff = BigMuff<T, SampleRate, TransistorClipperFilter<T, ClipperSampleRate>>;
 
 #endif

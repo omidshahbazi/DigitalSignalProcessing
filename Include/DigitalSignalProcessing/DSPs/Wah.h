@@ -77,7 +77,7 @@ public:
 
 		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
 		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] = Math::SoftClip(Buffer[i]) * freqRange.FinalGain;
+			Buffer[i] *= freqRange.FinalGain;
 	}
 
 private:

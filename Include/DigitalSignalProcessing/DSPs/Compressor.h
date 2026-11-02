@@ -93,7 +93,6 @@ public:
 			LinearGain totalGain = gainReduction + m_MakeupGain;
 
 			Buffer[i] *= totalGain;
-			// Buffer[i] = Math::SoftClip(Buffer[i] * totalGain);
 		}
 	}
 

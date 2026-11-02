@@ -71,7 +71,7 @@ public:
 
 			T delayedSample = m_Buffer.GetLerpedSample(modulationIndex, Math::Fraction(modulationIndex));
 
-			Buffer[i] = Math::SoftClip(Mix(Buffer[i], delayedSample));
+			Buffer[i] = Mix(Buffer[i], delayedSample);
 		}
 	}
 

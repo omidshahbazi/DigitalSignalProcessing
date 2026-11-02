@@ -162,7 +162,6 @@
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Fuzz.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\IDSP.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Looper.h" />
-    <ClInclude Include="Include\DigitalSignalProcessing\DSPs\NoiseGate.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Overdrive.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Phaser.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Reverb.h" />
@@ -177,12 +176,14 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BiquadFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BufferFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\BypassFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\ClipperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\DiodeClipperFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\DelayFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\DualToneControlFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\EnvelopeFollowerFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\Filter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\FiniteImpulseResponseFilter.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Filters\GainStageFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\HighPassFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\HighShelfFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\LowPassFilter.h" />

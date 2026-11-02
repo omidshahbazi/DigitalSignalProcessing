@@ -59,7 +59,7 @@ public:
 	void Process(T *Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] = Math::SoftClip(Mix(Buffer[i], m_Buffer.Record(Buffer[i])));
+			Buffer[i] = Mix(Buffer[i], m_Buffer.Record(Buffer[i]));
 	}
 
 protected:

@@ -5,22 +5,21 @@
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
 #include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/Filters/GainStageFilter.h"
+#include "DigitalSignalProcessing/Filters/TransistorClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
 #include "DigitalSignalProcessing/Filters/HighPassFilter.h"
 #include "DigitalSignalProcessing/Filters/LowPassFilter.h"
 
-template <typename T, uint32_t SampleRate>
+template <typename T, uint32_t SampleRate, typename Clipper>
 class Fuzz : public IDSP<T, SampleRate>
 {
 public:
 	Fuzz(void)
 		: m_Drive(0),
-		  m_AsymmetryLevel(0),
 		  m_Tone(0),
 		  m_WetRate(0)
 	{
-		m_DCBlockerFilter.SetCutoffFrequency(Frequency(5));
-
 		SetDrive(0.5);
 		SetAsymmetryLevel(0);
 		SetTone(0.5);
@@ -35,8 +34,8 @@ public:
 
 		m_Drive = Value;
 
-		m_PreGain = (LinearGain)Math::Lerp(10, 500, m_Drive);
-		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
+		m_GainStage.SetInputGain((LinearGain)Math::Lerp(10, 200, m_Drive));
+		//m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
 		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 400.0, m_Drive));
 	}
 	float GetDrive(void) const
@@ -44,16 +43,14 @@ public:
 		return m_Drive;
 	}
 
-	//[-1, 1]
+	//[0, 1]
 	void SetAsymmetryLevel(float Value)
 	{
-		ASSERT(-1 <= Value && Value <= 1, "Invalid Value %f", Value);
-
-		m_AsymmetryLevel = Value;
+		m_GainStage.GetClipper().SetAsymmetry(Value);
 	}
 	float GetAsymmetryLevel(void) const
 	{
-		return m_AsymmetryLevel;
+		return m_GainStage.GetClipper().GetAsymmetry();
 	}
 
 	//[0, 1]
@@ -102,15 +99,19 @@ public:
 
 		m_PreFilter.Process(Buffer, Count);
 
+		//for (uint8_t i = 0; i < Count; ++i)
+		//	Buffer[i] *= m_PreGain;
+
 		T *upBuffer = m_UpSampler.Process(Buffer);
 		{
-			for (uint8_t i = 0; i < m_UpSampler.GetCount(); ++i)
-				upBuffer[i] = Math::HardClip(upBuffer[i], m_PreGain, 0.7, m_AsymmetryLevel) * m_InvertedPreGain;
+			m_GainStage.Process(upBuffer, m_UpSampler.GetCount());
 
 			m_UpSampler.DownSample(Buffer);
 		}
 
-		m_DCBlockerFilter.Process(Buffer, Count);
+		//for (uint8_t i = 0; i < Count; ++i)
+		//	Buffer[i] *= m_InvertedPreGain;
+
 		m_ToneFilter.Process(Buffer, Count);
 
 		for (uint8_t i = 0; i < Count; ++i)
@@ -123,17 +124,18 @@ public:
 private:
 	HighPassFilter<T, SampleRate> m_PreFilter;
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
-	HighPassFilter<T, SampleRate> m_DCBlockerFilter;
+	GainStageFilter<T, SampleRate * UP_SAMPLE_FACTOR, Clipper> m_GainStage;
 	LowPassFilter<T, SampleRate> m_ToneFilter;
 
 	float m_Drive;
-	LinearGain m_PreGain;
-	LinearGain m_InvertedPreGain;
-	float m_AsymmetryLevel;
+	//LinearGain m_InvertedPreGain;
 	float m_Tone;
 	dBGain m_Gain;
 	LinearGain m_LinearGain;
 	float m_WetRate;
 };
+
+template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
+using DefaultFuzz = Fuzz<T, SampleRate, TransistorClipperFilter<T, ClipperSampleRate>>;
 
 #endif
