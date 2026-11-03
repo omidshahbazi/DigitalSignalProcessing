@@ -18,6 +18,11 @@ private:
 	typedef ClipperFilter<T, SampleRate> Base;
 
 public:
+	DiodeClipperFilter(void)
+	{
+		SetAsymmetry(0);
+	}
+
 	//[0, 1]
 	void SetAsymmetry(float Value) override
 	{
@@ -25,28 +30,26 @@ public:
 
 		float threshold = 0;
 		if constexpr (Type == DiodeClipperFilterTypes::Silicon)
-			threshold = 0.65;
+			threshold = 0.65f;
 		else if constexpr (Type == DiodeClipperFilterTypes::Germanium)
-			threshold = 0.35;
+			threshold = 0.35f;
 		else if constexpr (Type == DiodeClipperFilterTypes::LED)
-			threshold = 1.5;
+			threshold = 1.5f;
 
 		Base::SetPositiveThreshold(threshold);
-		Base::SetNegativeThreshold(-(threshold - (Base::GetAsymmetry() * (threshold * 0.5))));
-	}
-
-	void Process(T* Buffer, uint8_t Count) override
-	{
-		for (uint8_t i = 0; i < Count; ++i)
-		{
-			if (Buffer[i] >= 0)
-				Buffer[i] = Math::TanH(Buffer[i] / Base::GetPositiveThreshold()) * Base::GetPositiveThreshold();
-			else
-				Buffer[i] = Math::TanH(Buffer[i] / -Base::GetNegativeThreshold()) * -Base::GetNegativeThreshold();
-		}
+		Base::SetNegativeThreshold(-(threshold - (Base::GetAsymmetry() * (threshold * 0.5f))));
 	}
 
 	FILTER_FORWARD_DECLARATION()
+
+protected:
+	T Shape(T Value) override
+	{
+		if (Value >= 0)
+			return Math::TanH(Value / Base::GetPositiveThreshold()) * Base::GetPositiveThreshold();
+
+		return Math::TanH(Value / -Base::GetNegativeThreshold()) * -Base::GetNegativeThreshold();
+	}
 };
 
 template<typename T, uint32_t SampleRate>

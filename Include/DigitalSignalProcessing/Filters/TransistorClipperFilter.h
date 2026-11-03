@@ -10,46 +10,54 @@ class TransistorClipperFilter : public ClipperFilter<T, SampleRate>
 private:
 	typedef ClipperFilter<T, SampleRate> Base;
 
+private:
+	static constexpr float PositiveCeiling = 0.7f;
+
 public:
 	TransistorClipperFilter(void)
-		: m_SquareCoeff(0),
-		m_CubeCoeff(0)
+		: m_PositiveInput(0),
+		m_NegativeInput(0),
+		m_NegativeOutput(0)
 	{
-		SetInputGain(NORMAL_GAIN);
+		SetAsymmetry(0.3f);
 	}
 
-	void SetInputGain(LinearGain Value) override
+	//[0, 1]
+	void SetAsymmetry(float Value) override
 	{
-		float ratio = Math::Map((float)Value, 1.0f, 35.0f, 0.0f, 1.0f);
+		Base::SetAsymmetry(Value);
 
-		m_SquareCoeff = Math::Lerp(0.1f, 0.5f, ratio);
-		m_CubeCoeff = Math::Lerp(0.05f, 0.3f, ratio);
-	}
+		const float positiveLimit = PositiveCeiling;
+		const float negativeLimit = PositiveCeiling * (1.0f - Base::GetAsymmetry() * 0.5f);
 
-	void Process(T* Buffer, uint8_t Count) override
-	{
-		for (uint8_t i = 0; i < Count; ++i)
-		{
-			T x = Buffer[i];
+		Base::SetPositiveThreshold(positiveLimit);
+		Base::SetNegativeThreshold(-negativeLimit);
 
-			T absX = Math::Absolute(x);
+		//cutoff side: tanh(x / limit) * limit
+		m_PositiveInput = 1.0f / positiveLimit;
 
-			float asymmetricFactor = (x >= 0) ? 1 : (1 - (Base::GetAsymmetry() * 0.5));
+		//saturation side: atan normalized so the slope at zero is 1 and the ceiling is negativeLimit
+		m_NegativeInput = Math::HALF_PI_VALUE / negativeLimit;
+		m_NegativeOutput = negativeLimit / Math::HALF_PI_VALUE;
 
-			T squared = x * absX * asymmetricFactor;
-			T cubed = x * x * x;
-
-			T processed = x - (m_SquareCoeff * squared * asymmetricFactor) - (m_CubeCoeff * cubed);
-
-			Buffer[i] = Math::TanH(processed);
-		}
+		Base::UpdateBias();
 	}
 
 	FILTER_FORWARD_DECLARATION()
 
+protected:
+	T Shape(T Value) override
+	{
+		if (Value >= 0)
+			return Math::TanH(Value * m_PositiveInput) * Base::GetPositiveThreshold();
+
+		return Math::ATan(Value * m_NegativeInput) * m_NegativeOutput;
+	}
+
 private:
-	float m_SquareCoeff;
-	float m_CubeCoeff;
+	float m_PositiveInput;
+	float m_NegativeInput;
+	float m_NegativeOutput;
 };
 
 #endif

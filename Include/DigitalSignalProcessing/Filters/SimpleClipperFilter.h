@@ -19,57 +19,48 @@ private:
 	typedef ClipperFilter<T, SampleRate> Base;
 
 public:
-	void Process(T* Buffer, uint8_t Count) override
+	SimpleClipperFilter(void)
 	{
+		Base::SetAsymmetry(0);
+		Base::SetPositiveThreshold(1);
+		Base::SetNegativeThreshold(-1);
+	}
+
+	FILTER_FORWARD_DECLARATION()
+
+protected:
+	T Shape(T Value) override
+	{
+		const float NegativeScale = 1.0f - 0.5f * Base::GetAsymmetry();
+
 		if constexpr (Type == SimpleClipperFilterTypes::Rational)
 		{
 			const float PositiveThresh = Base::GetPositiveThreshold() - (0.2f * Base::GetAsymmetry());
 			const float NegativeThresh = Base::GetNegativeThreshold() + (0.3f * Base::GetAsymmetry());
 
-			for (uint8_t i = 0; i < Count; ++i)
+			if (Value > PositiveThresh)
 			{
-				T x = Buffer[i];
-
-				if (x > PositiveThresh)
-				{
-					T excess = x - PositiveThresh;
-					Buffer[i] = PositiveThresh + (excess / (1 + excess * 1.5));
-				}
-				else if (x < NegativeThresh)
-				{
-					T excess = x - NegativeThresh;
-					Buffer[i] = NegativeThresh + (excess / (1 - excess * 1.5));
-				}
-				else
-					Buffer[i] = x;
+				const T excess = Value - PositiveThresh;
+				return PositiveThresh + (excess / (1.0f + excess * 1.5f));
 			}
+			if (Value < NegativeThresh)
+			{
+				const T excess = Value - NegativeThresh;
+				return NegativeThresh + (excess / (1.0f - excess * 1.5f));
+			}
+			return Value;
 		}
 		else if constexpr (Type == SimpleClipperFilterTypes::Polynomial)
-		{
-			const float NegativeScale = 1.0f - 0.5f * Base::GetAsymmetry();
-
-			for (uint8_t i = 0; i < Count; ++i)
-				Buffer[i] = (Buffer[i] >= 0) ? Math::TanH(Buffer[i]) : NegativeScale * Math::TanH(Buffer[i] / NegativeScale);
-		}
+			return (Value >= 0) ? Math::TanH(Value) : NegativeScale * Math::TanH(Value / NegativeScale);
 		else if constexpr (Type == SimpleClipperFilterTypes::Hyperbolic)
+			return (Value >= 0) ? Math::ATan(Value * Math::HALF_PI_VALUE) / Math::HALF_PI_VALUE : NegativeScale * Math::ATan(Value * Math::HALF_PI_VALUE / NegativeScale) / Math::HALF_PI_VALUE;
+		else
 		{
-			const float NegativeScale = 1.0f - 0.5f * Base::GetAsymmetry();
+			const float NegativeLimit = Base::GetNegativeThreshold() * NegativeScale;
 
-			for (uint8_t i = 0; i < Count; ++i)
-				Buffer[i] = (Buffer[i] >= 0) ? Math::ATan(Buffer[i] * Math::HALF_PI_VALUE) / Math::HALF_PI_VALUE : NegativeScale * Math::ATan(Buffer[i] * Math::HALF_PI_VALUE / NegativeScale) / Math::HALF_PI_VALUE;
-		}
-		else if constexpr (Type == SimpleClipperFilterTypes::Hard)
-		{
-			const float NegativeScale = 1.0f - 0.5f * Base::GetAsymmetry();
-			const float PositiveThresh = Base::GetPositiveThreshold();
-			const float NegativeThresh = Base::GetNegativeThreshold() * NegativeScale;
-
-			for (uint8_t i = 0; i < Count; ++i)
-				Buffer[i] = Math::Clamp(Buffer[i], NegativeThresh, PositiveThresh);
+			return Math::Clamp(Value, NegativeLimit, Base::GetPositiveThreshold());
 		}
 	}
-
-	FILTER_FORWARD_DECLARATION()
 };
 
 template<typename T, uint32_t SampleRate>

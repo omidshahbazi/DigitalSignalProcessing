@@ -9,6 +9,7 @@
 #include "DigitalSignalProcessing/Filters/SimpleClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
 #include "DigitalSignalProcessing/Filters/LowPassFilter.h"
+#include "DigitalSignalProcessing/Filters/ResistorCapacitorFilter.h"
 
 template <typename T, uint32_t SampleRate, typename Clipper>
 class Distortion : public IDSP<T, SampleRate>
@@ -24,6 +25,8 @@ public:
 		SetTone(0.5);
 		SetGain(NORMAL_GAIN);
 		SetWetRate(1);
+
+		//m_DCBlocker.SetCutoffFrequency(Frequency(15));
 	}
 
 	//[0, 1]
@@ -33,7 +36,8 @@ public:
 
 		m_Drive = Value;
 
-		m_GainStage.SetInputGain((LinearGain)Math::Lerp(5, 100, m_Drive));
+		m_GainStage.SetInputGain((LinearGain)Math::Lerp(5.0, 100.0, m_Drive));
+		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(120.0, 400.0, m_Drive));
 		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_GainStage.GetInputGain()));
 	}
 	float GetDrive(void) const
@@ -58,7 +62,7 @@ public:
 
 		m_Tone = Value;
 
-		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(800, 3 KHz, m_Tone));
+		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(2 KHz, 8 KHz, m_Tone));
 	}
 	float GetTone(void) const
 	{
@@ -95,6 +99,8 @@ public:
 	{
 		CLONE_BUFFER(dryBuffer);
 
+		m_PreFilter.Process(Buffer, Count);
+
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
 			m_GainStage.Process(upBuffer, m_UpSampler.GetCount());
@@ -102,19 +108,23 @@ public:
 			m_UpSampler.DownSample(Buffer);
 		}
 
-		//for (uint8_t i = 0; i < Count; ++i)
-		//	Buffer[i] *= m_InvertedPreGain;
+		//m_DCBlocker.Process(Buffer, Count);
 
 		m_ToneFilter.Process(Buffer, Count);
 
-		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] *= m_LinearGain;
+		//for (uint8_t i = 0; i < Count; ++i)
+		//	Buffer[i] *= m_InvertedPreGain;
 
 		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Math::LinearCrossFadeMix(dryBuffer[i], Buffer[i], m_WetRate);
+
+		for (uint8_t i = 0; i < Count; ++i)
+			Buffer[i] *= m_LinearGain;
 	}
 
 private:
+	HighPassResistorCapacitorFilter<T, SampleRate> m_PreFilter;
+	//HighPassResistorCapacitorFilter<T, SampleRate> m_DCBlocker;
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
 	GainStageFilter<T, SampleRate* UP_SAMPLE_FACTOR, Clipper> m_GainStage;
 	LowPassFilter<T, SampleRate> m_ToneFilter;
