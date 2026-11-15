@@ -24,7 +24,9 @@ public:
 	typedef FixedFunction<void(Types Type, cstr Message)> Callback;
 
 public:
-	static void Initialize(Callback Callback);
+	static bool Initialize(Callback Callback);
+	static bool Deinitialize(void);
+
 	static void SetMask(Types Mask);
 
 	template <typename... ArgsT>

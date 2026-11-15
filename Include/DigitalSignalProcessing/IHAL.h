@@ -11,7 +11,7 @@ class IFirmware;
 class IHAL
 {
 public:
-	typedef void (*AudioPassthrough)(const float* const* In, float** Out, uint32_t Size);
+	typedef FixedFunction<void(const float* const* In, float** Out, uint8_t Size)> AudioPassthrough;
 
 	enum class PinModes
 	{
@@ -22,7 +22,8 @@ public:
 	};
 
 public:
-	virtual void Setup(uint8_t FrameLength, uint32_t SampleRate, bool Boost = false) = 0;
+	virtual bool TearDown(void) = 0;
+
 	virtual void StartAudio(AudioPassthrough Callback) = 0;
 
 	virtual void* Allocate(uint32_t Size, bool OnSDRAM = false) = 0;

@@ -15,28 +15,36 @@ template <uint8_t MaxControlCount, uint16_t ProcessRate>
 class ControlFactory
 {
 public:
-	ControlFactory(IHAL *HAL)
+	ControlFactory(IHAL* HAL)
 		: m_HAL(HAL),
-		  m_UsedGPIOs{},
-		  m_Controls{},
-		  m_ControlCount(0)
+		m_UsedGPIOs{},
+		m_Controls{},
+		m_ControlCount(0)
+	{}
+
+	void Reset(void)
 	{
+		Memory::Set(m_UsedGPIOs, 0, MaxControlCount);
+
+		for (uint8_t i = 0; i < m_ControlCount; ++i)
+			Destroy(m_Controls[i]);
+		m_ControlCount = 0;
 	}
 
-	SingleLED *CreateSingleLED(uint8_t Pin)
+	SingleLED* CreateSingleLED(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<SingleLED>(m_HAL, Pin, ProcessRate);
 	}
-	DualLED *CreateDualLED(uint8_t RedPin, uint8_t GreenPin)
+	DualLED* CreateDualLED(uint8_t RedPin, uint8_t GreenPin)
 	{
 		MarkGPIOAsUsed(RedPin);
 		MarkGPIOAsUsed(GreenPin);
 
 		return Create<DualLED>(m_HAL, RedPin, GreenPin, ProcessRate);
 	}
-	TripleLED *CreateTripleLED(uint8_t RedPin, uint8_t GreenPin, uint8_t BluePin)
+	TripleLED* CreateTripleLED(uint8_t RedPin, uint8_t GreenPin, uint8_t BluePin)
 	{
 		MarkGPIOAsUsed(RedPin);
 		MarkGPIOAsUsed(GreenPin);
@@ -45,28 +53,28 @@ public:
 		return Create<TripleLED>(m_HAL, RedPin, GreenPin, BluePin, ProcessRate);
 	}
 
-	Button *CreateButton(uint8_t Pin)
+	Button* CreateButton(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Button>(m_HAL, Pin);
 	}
 
-	Switch *CreateSwitch(uint8_t Pin)
+	Switch* CreateSwitch(uint8_t Pin)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Switch>(m_HAL, Pin);
 	}
 
-	Potentiometer *CreatePotentiometer(uint8_t Pin, bool FilterSwings = false)
+	Potentiometer* CreatePotentiometer(uint8_t Pin, bool FilterSwings = false)
 	{
 		MarkGPIOAsUsed(Pin);
 
 		return Create<Potentiometer>(m_HAL, Pin, ProcessRate, FilterSwings);
 	}
 
-	Rotary *CreateRotary(uint8_t LeftPin, uint8_t RightPin)
+	Rotary* CreateRotary(uint8_t LeftPin, uint8_t RightPin)
 	{
 		MarkGPIOAsUsed(LeftPin);
 		MarkGPIOAsUsed(RightPin);
@@ -74,7 +82,7 @@ public:
 		return Create<Rotary>(m_HAL, LeftPin, RightPin);
 	}
 
-	RotaryButton *CreateRotaryButton(uint8_t APin, uint8_t BPin, uint8_t ButtonPin)
+	RotaryButton* CreateRotaryButton(uint8_t APin, uint8_t BPin, uint8_t ButtonPin)
 	{
 		MarkGPIOAsUsed(APin);
 		MarkGPIOAsUsed(BPin);
@@ -89,11 +97,21 @@ public:
 			m_Controls[i]->Process();
 	}
 
+	template <typename T, typename... ArgsT>
+	void Destroy(T* Control)
+	{
+		Control->~T();
+
+		Memory::Deallocate(Control);
+	}
+
 private:
 	template <typename T, typename... ArgsT>
-	T *Create(ArgsT... Args)
+	T* Create(ArgsT... Args)
 	{
-		T *control = Memory::Allocate<T>();
+		ASSERT(m_ControlCount < MaxControlCount, "Reached to the cap of controllers %u", m_ControlCount);
+
+		T* control = Memory::Allocate<T>();
 		new (control) T(Args...);
 
 		m_Controls[m_ControlCount++] = control;
@@ -109,9 +127,9 @@ private:
 	}
 
 private:
-	IHAL *m_HAL;
+	IHAL* m_HAL;
 	bool m_UsedGPIOs[MaxControlCount];
-	ControlBase *m_Controls[MaxControlCount];
+	ControlBase* m_Controls[MaxControlCount];
 	uint8_t m_ControlCount;
 };
 

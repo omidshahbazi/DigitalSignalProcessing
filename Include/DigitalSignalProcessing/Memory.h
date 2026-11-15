@@ -10,7 +10,8 @@
 class Memory
 {
 public:
-	static void Initialize(IHAL* HAL);
+	static bool Initialize(IHAL* HAL);
+	static bool Deinitialize(void);
 
 	template <typename T>
 	static T* Allocate(uint32_t Count = 1, bool OnSDRAM = false)

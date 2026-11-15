@@ -38,7 +38,7 @@ private:
 
 #ifdef ENABLE_BREAK_FILE_LINE_INFO
 
-#define ASSERT(Expression, Message, ...)																		\
+#define DSP_ASSERT(Expression, Message, ...)																		\
 	do																											\
 	{																											\
 		if (Expression)																							\
@@ -48,7 +48,7 @@ private:
 		std::abort();																							\
 	} while (false)
 
-#define BREAK(Message, ...)																	  \
+#define DSP_BREAK(Message, ...)																	  \
 	do																						  \
 	{																						  \
 		Log::WriteCritical(__FILE__ ":Ln" DEBUG_STRINGIZE(__LINE__), Message, ##__VA_ARGS__); \
@@ -58,7 +58,7 @@ private:
 
 #else
 
-#define ASSERT(Expression, Message, ...)						 \
+#define DSP_ASSERT(Expression, Message, ...)						 \
 	do															 \
 	{															 \
 		if (Expression)											 \
@@ -68,7 +68,7 @@ private:
 		std::abort();											 \
 	} while (false)
 
-#define BREAK(Message, ...)										\
+#define DSP_BREAK(Message, ...)										\
 	do															\
 	{															\
 		Log::WriteCritical("Break", Message, ##__VA_ARGS__);	\
@@ -80,14 +80,14 @@ private:
 
 #else
 
-#define ASSERT(Expression, Message, ...) \
+#define DSP_ASSERT(Expression, Message, ...) \
 	do                                   \
 	{                                    \
 		(void)sizeof(Expression);        \
 		(void)sizeof(Message);           \
 	} while (false)
 
-#define BREAK(Message, ...)				\
+#define DSP_BREAK(Message, ...)				\
 	do                                  \
 	{                                   \
 		(void)sizeof(Message);			\
@@ -95,6 +95,9 @@ private:
 	} while (false)
 
 #endif
+
+#define ASSERT DSP_ASSERT
+#define BREAK DSP_BREAK
 
 #define NOT_IMPLEMENTED() BREAK("Not Implemented.")
 
