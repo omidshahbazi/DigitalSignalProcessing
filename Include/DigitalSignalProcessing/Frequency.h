@@ -2,6 +2,9 @@
 #ifndef FREQUENCY_H
 #define FREQUENCY_H
 
+#include "DataTypes.h"
+#include "Debug.h"
+
 struct LogarithmicOctave;
 struct QualityFactor;
 struct SlopeFactor;
@@ -25,8 +28,11 @@ private:
 	float m_Value = 0;
 };
 
-static constexpr Frequency MIN_FREQUENCY(5);
-static constexpr Frequency MAX_FREQUENCY(20 KHz);
+static constexpr int8_t MIN_FREQUENCY_VALUE = 5;
+static constexpr Frequency MIN_FREQUENCY(MIN_FREQUENCY_VALUE);
+
+static constexpr int16_t MAX_FREQUENCY_VALUE = 20 KHz;
+static constexpr Frequency MAX_FREQUENCY(MAX_FREQUENCY_VALUE);
 
 // So we won't run into out of range QualityFactor values [0.01, 10]
 void FixBandFrequency(Frequency& Low, Frequency& High);

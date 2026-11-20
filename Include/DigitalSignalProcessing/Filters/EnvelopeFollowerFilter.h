@@ -24,7 +24,7 @@ public:
 	//[100ns, 500ms]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(100 ns <= Value && Value <= 500 ms, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 100 ns, 500 ms);
 
 		m_AttackTime = Value;
 
@@ -38,7 +38,7 @@ public:
 	//[5ms, 5s]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0.005 <= Value && Value <= 5, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 5 ms, 5);
 
 		m_ReleaseTime = Value;
 

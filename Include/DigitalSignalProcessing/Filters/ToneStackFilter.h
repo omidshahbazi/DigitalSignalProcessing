@@ -21,11 +21,8 @@ public:
 		m_HighPassFilter.SetQualityFactor(QualityFactor(0.8));
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetLowPassFrequency(Frequency Value)
+	void SetLowPassFrequency(Frequency_hearable Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_LowPassFilter.SetCutoffFrequency(Value);
 	}
 
@@ -34,11 +31,8 @@ public:
 		return m_LowPassFilter.GetCutoffFrequency();
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetHighPassFrequency(Frequency Value)
+	void SetHighPassFrequency(Frequency_hearable Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_HighPassFilter.SetCutoffFrequency(Value);
 	}
 
@@ -47,11 +41,8 @@ public:
 		return m_HighPassFilter.GetCutoffFrequency();
 	}
 
-	//[0, 1]
-	void SetTone(float Value)
+	void SetTone(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Tone = Value;
 	}
 	float GetTone(void) const

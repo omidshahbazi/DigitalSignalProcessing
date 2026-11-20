@@ -24,15 +24,15 @@ public:
 public:
 	AttackDecaySustainReleaseEnvelopeFilter(void)
 		: m_CurrSegment(Segments::Idle),
-		  m_SegmentTime{},
-		  m_SustainLevel(0),
-		  m_MinValue(0),
-		  m_MaxValue(1),
-		  m_Curve(0),
-		  m_RawValue(0.0f),
-		  m_TargetValue(0.0f),
-		  m_Multiplier(0.0f),
-		  m_AutoReleaseCounter(0)
+		m_SegmentTime{},
+		m_SustainLevel(0),
+		m_MinValue(0),
+		m_MaxValue(1),
+		m_Curve(0),
+		m_RawValue(0.0f),
+		m_TargetValue(0.0f),
+		m_Multiplier(0.0f),
+		m_AutoReleaseCounter(0)
 	{
 		SetAttackTime(50 ms);
 		SetDecayTime(50 ms);
@@ -45,7 +45,8 @@ public:
 	// 0: Bypass
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 0, 1);
+
 		m_SegmentTime[(uint8_t)Segments::Attack] = Value;
 	}
 	float GetAttackTime(void) const
@@ -57,7 +58,8 @@ public:
 	// 0: Bypass
 	void SetDecayTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 0, 1);
+
 		m_SegmentTime[(uint8_t)Segments::Decay] = Value;
 	}
 	float GetDecayTime(void) const
@@ -69,7 +71,8 @@ public:
 	// Positive: Auto Release Mode
 	void SetSustainTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 0, 1);
+
 		m_SegmentTime[(uint8_t)Segments::Sustain] = Value;
 	}
 	float GetSustainTime(void) const
@@ -77,10 +80,8 @@ public:
 		return m_SegmentTime[(uint8_t)Segments::Sustain];
 	}
 
-	//[0, 1]
-	void SetSustainLevel(float Value)
+	void SetSustainLevel(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
 		m_SustainLevel = Value;
 	}
 	float GetSustainLevel(void) const
@@ -92,7 +93,8 @@ public:
 	// 0: Bypass
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 0, 1);
+
 		m_SegmentTime[(uint8_t)Segments::Release] = Value;
 	}
 	float GetReleaseTime(void) const
@@ -103,9 +105,8 @@ public:
 	// [0, 100]
 	// 0: Full Linear Curve
 	// Positive: Log Curve
-	void SetCurve(float Value)
+	void SetCurve(pfloat Value)
 	{
-		ASSERT(0 <= Value, "Invalid Value %f", Value);
 		m_Curve = Value;
 	}
 	float GetCurve(void) const
@@ -150,9 +151,12 @@ public:
 		PrepareSegment();
 	}
 
-	Segments GetCurrentSegment(void) const { return m_CurrSegment; }
+	Segments GetCurrentSegment(void) const
+	{
+		return m_CurrSegment;
+	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Process();
@@ -253,13 +257,13 @@ private:
 		if (m_Curve <= 0.001f) // Linear Pre-calculation
 		{
 			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.0f : (m_CurrSegment == Segments::Decay) ? m_SustainLevel
-																											: 0.0f;
+				: 0.0f;
 			m_Multiplier = (m_TargetValue - m_RawValue) / samples;
 		}
 		else // Exponential Pre-calculation using Math::Exponential
 		{
 			m_TargetValue = (m_CurrSegment == Segments::Attack) ? 1.1f : (m_CurrSegment == Segments::Decay) ? m_SustainLevel - 0.1f
-																											: -0.1f;
+				: -0.1f;
 
 			float exponent = -m_Curve / (float)samples;
 			m_Multiplier = Math::Exponential(exponent);

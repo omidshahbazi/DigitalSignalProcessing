@@ -134,3 +134,21 @@ static constexpr uint8_t PointerSize = sizeof(uint32_t);
 #else
 static constexpr uint8_t PointerSize = sizeof(uint64_t);
 #endif
+
+#define SIGNED_INTEGER_TYPES() \
+	HANDLE_TYPE(int8_t) \
+	HANDLE_TYPE(int16_t) \
+	HANDLE_TYPE(int24_t) \
+	HANDLE_TYPE(int32_t) \
+	HANDLE_TYPE(int64_t)
+
+#define UNSIGNED_INTEGER_TYPES() \
+	HANDLE_TYPE(uint8_t) \
+	HANDLE_TYPE(uint16_t) \
+	HANDLE_TYPE(uint24_t) \
+	HANDLE_TYPE(uint32_t) \
+	HANDLE_TYPE(uint64_t)
+
+#define FLOATING_POINT_TYPES() \
+	HANDLE_TYPE(float) \
+	HANDLE_TYPE(double)

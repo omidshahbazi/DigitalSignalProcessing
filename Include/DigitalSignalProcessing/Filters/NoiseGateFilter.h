@@ -12,7 +12,7 @@ class NoiseGateFilter : private EnvelopeFollowerFilter<T, SampleRate>
 public:
 	NoiseGateFilter(void)
 		: m_IsGateOpen(false),
-		  m_CurrentGain(0)
+		m_CurrentGain(0)
 	{
 		SetThreshold(dBGain(-65));
 		SetHysteresis(dBGain(6));
@@ -24,7 +24,7 @@ public:
 	//[100ns, 100ms]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(100 ns <= Value && Value <= 100 ms, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 100 ns, 100 ms);
 
 		EnvelopeFollowerFilter<T, SampleRate>::SetAttackTime(Value);
 	}
@@ -36,7 +36,7 @@ public:
 	//[10ms, 2s]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(10 ms <= Value && Value <= 2, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 10 ms, 2);
 
 		EnvelopeFollowerFilter<T, SampleRate>::SetReleaseTime(Value);
 	}
@@ -45,11 +45,8 @@ public:
 		return EnvelopeFollowerFilter<T, SampleRate>::GetReleaseTime();
 	}
 
-	//[-90dB, 0dB]
-	void SetThreshold(dBGain Value)
+	void SetThreshold(cc_dBGain<MIN_GAIN_VALUE, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(-90 <= Value && Value <= 0, "Invalid Value %f", Value);
-
 		m_Threshold = Value;
 		m_LinearOpenThreshold = m_Threshold;
 
@@ -60,11 +57,8 @@ public:
 		return m_Threshold;
 	}
 
-	//[0dB, 12dB]
-	void SetHysteresis(dBGain Value)
+	void SetHysteresis(cc_dBGain<NORMAL_GAIN_VALUE, 12> Value)
 	{
-		ASSERT(0 <= Value && Value <= 12, "Invalid Value %f", Value);
-
 		m_Hysteresis = Value;
 
 		UpdateCloseThreshold();
@@ -74,11 +68,8 @@ public:
 		return m_Hysteresis;
 	}
 
-	//(0, 1]
-	void SetSmoothing(float Value)
+	void SetSmoothing(oc_ratio_t Value)
 	{
-		ASSERT(0 < Value && Value < 1, "Invalid Value %f", Value);
-
 		m_Smoothing = Value;
 	}
 	float GetSmoothing(void) const
@@ -86,7 +77,7 @@ public:
 		return m_Smoothing;
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 		{

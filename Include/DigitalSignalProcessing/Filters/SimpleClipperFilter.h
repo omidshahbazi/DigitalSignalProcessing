@@ -22,8 +22,8 @@ public:
 	SimpleClipperFilter(void)
 	{
 		Base::SetAsymmetry(0);
-		Base::SetPositiveThreshold(1);
 		Base::SetNegativeThreshold(-1);
+		Base::SetPositiveThreshold(1);
 	}
 
 	FILTER_FORWARD_DECLARATION()
@@ -54,12 +54,14 @@ protected:
 			return (Value >= 0) ? Math::TanH(Value) : NegativeScale * Math::TanH(Value / NegativeScale);
 		else if constexpr (Type == SimpleClipperFilterTypes::Hyperbolic)
 			return (Value >= 0) ? Math::ATan(Value * Math::HALF_PI_VALUE) / Math::HALF_PI_VALUE : NegativeScale * Math::ATan(Value * Math::HALF_PI_VALUE / NegativeScale) / Math::HALF_PI_VALUE;
-		else
+		else if constexpr (Type == SimpleClipperFilterTypes::Hard)
 		{
 			const float NegativeLimit = Base::GetNegativeThreshold() * NegativeScale;
 
 			return Math::Clamp(Value, NegativeLimit, Base::GetPositiveThreshold());
 		}
+		else
+			NOT_IMPLEMENTED();
 	}
 };
 

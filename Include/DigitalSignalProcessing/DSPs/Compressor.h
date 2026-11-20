@@ -15,7 +15,7 @@ public:
 	{
 		SetAttackTime(10 ms);
 		SetReleaseTime(100 ms);
-		SetRatio(4);
+		SetRatio(1);
 		SetThreshold(dBGain(-18));
 		SetMakeupGain(NORMAL_GAIN);
 	}
@@ -23,7 +23,7 @@ public:
 	//[100ns, 500ms]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(100 ns <= Value && Value <= 500 ms, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 100 ns, 500 ms);
 
 		m_EnvelopeFollowerFilter.SetAttackTime(Value);
 	}
@@ -35,7 +35,7 @@ public:
 	//[10ms, 2s]
 	void SetReleaseTime(float Value)
 	{
-		ASSERT(10 ms <= Value && Value <= 2, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, 10 ms, 2);
 
 		m_EnvelopeFollowerFilter.SetReleaseTime(Value);
 	}
@@ -44,23 +44,19 @@ public:
 		return m_EnvelopeFollowerFilter.GetReleaseTime();
 	}
 
-	//[1, 10]
-	void SetRatio(float Value)
+	void SetRatio(cc_ratio_t Value)
 	{
-		ASSERT(1 <= Value && Value <= 10, "Invalid Value %f", Value);
-
 		m_Ratio = Value;
+
+		m_RatioValue = Math::Lerp(1, 10, m_Ratio);
 	}
 	float GetRatio(void) const
 	{
 		return m_Ratio;
 	}
 
-	//[-80dB, NORMAL_GAIN]
-	void SetThreshold(dBGain Value)
+	void SetThreshold(cc_dBGain<MIN_GAIN_VALUE, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(-80 <= Value && Value <= NORMAL_GAIN, "Invalid Value %f", Value);
-
 		m_Threshold = Value;
 	}
 	dBGain GetThreshold(void) const
@@ -68,11 +64,8 @@ public:
 		return m_Threshold;
 	}
 
-	//[NORMAL_GAIN, 24dB]
-	void SetMakeupGain(dBGain Value)
+	void SetMakeupGain(cc_dBGain<NORMAL_GAIN_VALUE, 24> Value)
 	{
-		ASSERT(NORMAL_GAIN <= Value && Value <= 24, "Invalid Value %f", Value);
-
 		m_MakeupGain = Value;
 	}
 	dBGain GetMakeupGain(void) const
@@ -80,7 +73,7 @@ public:
 		return m_MakeupGain;
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 		{
@@ -88,7 +81,7 @@ public:
 
 			dBGain gainReduction;
 			if (envelop > m_Threshold)
-				gainReduction = dBGain(((1 / m_Ratio) - 1) * (envelop - m_Threshold));
+				gainReduction = dBGain(((1 / m_RatioValue) - 1) * (envelop - m_Threshold));
 
 			LinearGain totalGain = gainReduction + m_MakeupGain;
 
@@ -99,6 +92,7 @@ public:
 private:
 	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	float m_Ratio;
+	float m_RatioValue;
 	dBGain m_Threshold;
 	dBGain m_MakeupGain;
 };

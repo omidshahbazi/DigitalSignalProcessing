@@ -6,53 +6,8 @@
 #include "LowPassFilter.h"
 #include "DigitalSignalProcessing/Math.h"
 
-template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio, bool ZeroStuffing = true>
-class UpSamplerFilter : public Filter<T, SampleRate>
-{
-public:
-	static constexpr uint16_t BufferSize = FrameLength * Ratio;
-
-public:
-	void Process(T* Buffer, uint8_t Count) override
-	{
-		Math::UpSample<T, ZeroStuffing>(Buffer, Count, m_Samples, Ratio);
-	}
-
-	T* Process(T* Buffer)
-	{
-		Process(Buffer, FrameLength);
-
-		return m_Samples;
-	}
-
-	void Makeup(void)
-	{
-		Math::UpSampleMakeup(m_Samples, BufferSize);
-	}
-
-	void DownSample(T* Buffer)
-	{
-		Math::DownSample<T, ZeroStuffing>(m_Samples, BufferSize, Buffer, Ratio);
-	}
-
-	T* GetBuffer(void)
-	{
-		return m_Samples;
-	}
-
-	const T* GetBuffer(void) const
-	{
-		return m_Samples;
-	}
-
-	constexpr uint16_t GetCount(void) const
-	{
-		return BufferSize;
-	}
-
-private:
-	T m_Samples[BufferSize];
-};
+template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio, bool ZeroStuffing>
+class UpSamplerFilter;
 
 template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio>
 class UpSamplerFilter<T, SampleRate, FrameLength, Ratio, true> : public Filter<T, SampleRate>
@@ -72,6 +27,8 @@ public:
 		Math::UpSample<T, true>(Buffer, Count, m_Samples, Ratio);
 
 		m_UpSampleFilter.Process(m_Samples, BufferSize);
+
+		Math::UpSampleMakeup(m_Samples, BufferSize, Ratio);
 	}
 
 	T* Process(T* Buffer)
@@ -79,11 +36,6 @@ public:
 		Process(Buffer, FrameLength);
 
 		return m_Samples;
-	}
-
-	void Makeup(void)
-	{
-		Math::UpSampleMakeup(m_Samples, BufferSize);
 	}
 
 	void DownSample(T* Buffer)
@@ -112,5 +64,48 @@ private:
 	T m_Samples[BufferSize];
 	LowPassFilter<T, SampleRate* Ratio, 2, BiquadFilterDesigns::Butterworth> m_UpSampleFilter;
 	LowPassFilter<T, SampleRate* Ratio, 2, BiquadFilterDesigns::Butterworth> m_DownSampleFilter;
+};
+
+template <typename T, uint32_t SampleRate, uint32_t FrameLength, uint8_t Ratio>
+class UpSamplerFilter<T, SampleRate, FrameLength, Ratio, false> : public Filter<T, SampleRate>
+{
+public:
+	static constexpr uint16_t BufferSize = FrameLength * Ratio;
+
+public:
+	void Process(T* Buffer, uint8_t Count) override
+	{
+		Math::UpSample<T, false>(Buffer, Count, m_Samples, Ratio);
+	}
+
+	T* Process(T* Buffer)
+	{
+		Process(Buffer, FrameLength);
+
+		return m_Samples;
+	}
+
+	void DownSample(T* Buffer)
+	{
+		Math::DownSample<T, false>(m_Samples, BufferSize, Buffer, Ratio);
+	}
+
+	T* GetBuffer(void)
+	{
+		return m_Samples;
+	}
+
+	const T* GetBuffer(void) const
+	{
+		return m_Samples;
+	}
+
+	constexpr uint16_t GetCount(void) const
+	{
+		return BufferSize;
+	}
+
+private:
+	T m_Samples[BufferSize];
 };
 #endif

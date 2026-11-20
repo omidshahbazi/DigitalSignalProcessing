@@ -3,7 +3,7 @@
 #define WHITE_NOISE_FILTER_H
 
 #include "Filter.h"
-#include "DigitalSignalProcessing/Debug.h"
+#include "DigitalSignalProcessing/ExtendedDataTypes.h"
 
 template <typename T, uint32_t SampleRate>
 class WhiteNoiseFilter : public Filter<T, SampleRate>
@@ -19,10 +19,8 @@ public:
 	}
 
 	//[-Infinity, (0), +Infinity]
-	void SetSeed(int32_t Value)
+	void SetSeed(nzfloat Value)
 	{
-		ASSERT(Value != 0, "Value must be non-zero");
-
 		m_Seed = Value;
 	}
 	int32_t GetSeed(void) const

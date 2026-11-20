@@ -109,7 +109,7 @@ private:
 	template <typename T, typename... ArgsT>
 	T* Create(ArgsT... Args)
 	{
-		ASSERT(m_ControlCount < MaxControlCount, "Reached to the cap of controllers %u", m_ControlCount);
+		ASSERT_VALUE_LESS(m_ControlCount, MaxControlCount);
 
 		T* control = Memory::Allocate<T>();
 		new (control) T(Args...);

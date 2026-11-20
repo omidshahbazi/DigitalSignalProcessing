@@ -167,6 +167,7 @@
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Reverb.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Tremolo.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\DSPs\Wah.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\ExtendedDataTypes.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\FastFourierTransformer.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\AllPassFilter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\AttackDecayEnvelopeFilter.h" />
@@ -213,6 +214,8 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Math.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Memory.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\Notes.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\NotNull.h" />
+    <ClInclude Include="Include\DigitalSignalProcessing\Constrained.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\SignalLevelMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\TempoMeter.h" />
     <ClInclude Include="Include\DigitalSignalProcessing\USB\IUSBAMCInterface.h" />

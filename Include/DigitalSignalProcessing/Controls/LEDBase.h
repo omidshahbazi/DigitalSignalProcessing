@@ -17,8 +17,6 @@ public:
 
 	void SetBrightnessFunction(BrightnessFunction Function)
 	{
-		ASSERT(Function != nullptr, "Invalid Function");
-
 		m_Function = Function;
 	}
 	float GetBrightness(void) const
@@ -26,19 +24,19 @@ public:
 		return Math::Clamp01(m_Function());
 	}
 
-	void SetConstantBrightness(float Value);
+	void SetConstantBrightness(cc_ratio_t Value);
 
-	void SetBlinkingBrightness(float Value, float Rate)
+	void SetBlinkingBrightness(cc_ratio_t Value, pfloat Rate)
 	{
 		SetBlinkingBrightness(0, Value, Rate);
 	}
-	void SetBlinkingBrightness(float MinValue, float MaxValue, float Rate);
+	void SetBlinkingBrightness(cc_ratio_t MinValue, cc_ratio_t MaxValue, pfloat Rate);
 
-	void SetFadingBrightness(float Value, float Rate)
+	void SetFadingBrightness(cc_ratio_t Value, pfloat Rate)
 	{
 		SetFadingBrightness(0, Value, Rate);
 	}
-	void SetFadingBrightness(float MinValue, float MaxValue, float Rate);
+	void SetFadingBrightness(cc_ratio_t MinValue, cc_ratio_t MaxValue, pfloat Rate);
 
 	void Toggle(void)
 	{

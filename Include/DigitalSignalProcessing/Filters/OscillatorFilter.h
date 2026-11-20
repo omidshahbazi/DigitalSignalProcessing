@@ -4,7 +4,6 @@
 
 #include "Filter.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/FixedFunction.h"
 
 template <typename T, uint32_t SampleRate>
@@ -25,8 +24,6 @@ public:
 
 	void SetFunction(OscillatorFunction Function)
 	{
-		ASSERT(Function != nullptr, "Invalid Function");
-
 		m_Function = Function;
 	}
 
@@ -55,11 +52,8 @@ public:
 		SetFunction([](T Value) { return (Value * 2) - 1; });
 	}
 
-	//(0, MAX_FREQUENCY]
-	void SetFrequency(Frequency Value)
+	void SetFrequency(oc_Frequency<0, MAX_FREQUENCY_VALUE> Value)
 	{
-		ASSERT(0 < Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_Frequency = Value;
 
 		m_DeltaPhase = m_Frequency / SampleRate;
@@ -69,11 +63,8 @@ public:
 		return m_Frequency;
 	}
 
-	//[0, 1)
-	void SetPhaseOffset(float Value)
+	void SetPhaseOffset(oo_ratio_t Value)
 	{
-		ASSERT(0 < Value && Value < 1, "Invalid Value %f", Value);
-
 		m_PhaseOffset = Value;
 	}
 	float GetPhaseOffset(void) const

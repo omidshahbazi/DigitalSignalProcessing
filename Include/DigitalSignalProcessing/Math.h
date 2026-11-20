@@ -139,6 +139,9 @@ private:
 
 			float pos = (f - 1.0f) * (Size - 1);
 			uint16_t index = (uint16_t)pos;
+			if (index > Size - 2)
+				index = Size - 2;
+
 			float frac = pos - index;
 
 			float result = m_LogLUT[index] + (frac * (m_LogLUT[index + 1] - m_LogLUT[index]));
@@ -286,22 +289,24 @@ public:
 		return Map((float)Log2(Value), oldMinLog, oldMaxLog, (float)NewMin, (float)NewMax);
 	}
 
-	template <typename T, typename U, typename V>
-	static auto Lerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
+	template <typename T, typename U>
+	static auto Lerp(T Min, U Max, float Time) -> decltype(Min* Max)
 	{
-		ASSERT_ON_FLOATING_TYPE(V);
-
 		Time = Clamp01(Time);
 
 		return (Min * (1 - Time)) + (Max * Time);
 	}
 
-	template <typename T, typename U, typename V>
-	static auto FrequencyLerp(T Min, U Max, V Time) -> decltype(Min* Max* Time)
+	template <typename T, typename U>
+	static auto ExponentialLerp(T Min, U Max, float Time) -> decltype(Min* Max)
 	{
-		ASSERT_ON_FLOATING_TYPE(V);
-
 		return Min * Power(Max / Min, Time);
+	}
+
+	template <typename T, typename U>
+	static auto FrequencyLerp(T Min, U Max, float Time) -> decltype(Min* Max* Time)
+	{
+		return ExponentialLerp(Min, Max, Time);
 	}
 
 	template <typename T, typename U>
@@ -332,7 +337,22 @@ public:
 		if constexpr (FastMath)
 			return (T)GetLUT().Sin(Value);
 		else
-			return (T)sin(Value);
+			return (T)std::sin(Value);
+	}
+
+	template <typename T>
+	static T ASinH(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		if constexpr (FastMath)
+		{
+			const T magnitude = Absolute(Value);
+
+			return Sign(Value) * Log(magnitude + SquareRoot(magnitude * magnitude + 1));
+		}
+		else
+			return (T)std::asinh(Value);
 	}
 
 	template <typename T>
@@ -340,7 +360,10 @@ public:
 	{
 		ASSERT_ON_FLOATING_TYPE(T);
 
-		return (Exponential(Value) - Exponential(-Value)) / 2;
+		if constexpr (FastMath)
+			return (Exponential(Value) - Exponential(-Value)) / 2;
+		else
+			return (T)std::sinh(Value);
 	}
 
 	template <typename T>
@@ -351,7 +374,7 @@ public:
 		if constexpr (FastMath)
 			return (T)GetLUT().Cos(Value);
 		else
-			return (T)cos(Value);
+			return (T)std::cos(Value);
 	}
 
 	template <typename T>
@@ -362,18 +385,7 @@ public:
 		if constexpr (FastMath)
 			return (T)GetLUT().TanH(Value);
 		else
-			return (T)tanh(Value);
-	}
-
-	template <typename T>
-	static T ASinh(T Value)
-	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
-		if constexpr (FastMath)
-			return Log(Value + SquareRoot(Value * Value + 1));
-		else
-			return (T)std::asinh(Value);
+			return (T)std::tanh(Value);
 	}
 
 	template <typename T>
@@ -428,7 +440,7 @@ public:
 			return Log(Value) * (T)1.4426950408889634;
 		}
 		else
-			return (T)log2f(Value);
+			return (T)std::log2f(Value);
 	}
 
 	template <typename T>
@@ -439,7 +451,7 @@ public:
 		if constexpr (FastMath)
 			return Log2(Value) * 0.3010299956639812;
 		else
-			return (T)log10f(Value);
+			return (T)std::log10f(Value);
 	}
 
 	template <typename T>
@@ -576,11 +588,8 @@ public:
 
 	// The integer MIDI note (440 -> 69 (A4))
 	// The deviation in cents +/-0.5
-	template <typename T>
-	static MIDIInfo FrequencyToMIDI(T Value, T A4Frequency = NOTE_A4)
+	static MIDIInfo FrequencyToMIDI(float Value, float A4Frequency = NOTE_A4)
 	{
-		ASSERT_ON_FLOATING_TYPE(T);
-
 		MIDIInfo info = {};
 
 		if (Value > 0)

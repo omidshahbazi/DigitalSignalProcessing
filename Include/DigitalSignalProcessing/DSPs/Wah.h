@@ -12,19 +12,19 @@ private:
 	struct FrequencyRange
 	{
 	public:
-		float FrequencyMin;
-		float FrequencyMax;
-		float QualityFactorMin;
-		float QualityFactorMax;
-		float GainMin;
-		float GainMax;
-		float FinalGain;
+		Frequency FrequencyMin;
+		Frequency FrequencyMax;
+		QualityFactor QualityFactorMin;
+		QualityFactor QualityFactorMax;
+		dBGain GainMin;
+		dBGain GainMax;
+		dBGain FinalGain;
 	};
 
 	const FrequencyRange FREQUENCY_RANGES[3] = {
-		{400, 2.1 KHz, 2, 4.5, 12, 16, 0.6},  // Classic
-		{300, 1.2 KHz, 2, 4.5, 10, 14, 0.5},  // Deep
-		{500, 3.0 KHz, 2, 4.5, 14, 20, 0.4}}; // Sharp
+		{Frequency(400), Frequency(2.1 KHz), QualityFactor(2), QualityFactor(4.5), dBGain(12), dBGain(16), dBGain(0.6)},  // Classic
+		{Frequency(300), Frequency(1.2 KHz), QualityFactor(2), QualityFactor(4.5), dBGain(10), dBGain(14), dBGain(0.5)},  // Deep
+		{Frequency(500), Frequency(3.0 KHz), QualityFactor(2), QualityFactor(4.5), dBGain(14), dBGain(20), dBGain(0.4)} }; // Sharp
 
 public:
 	enum class Types
@@ -36,7 +36,7 @@ public:
 
 public:
 	Wah(void)
-		: m_Ratio(0)
+		: m_Ratio(1)
 	{
 		SetType(Types::Classic);
 	}
@@ -45,39 +45,42 @@ public:
 	{
 		m_Type = Value;
 
-		SetRatio(m_Ratio);
+		UpdateParameters();
 	}
 	Types GetType(void) const
 	{
 		return m_Type;
 	}
 
-	//[0, 1]
-	void SetRatio(float Value)
+	void SetRatio(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
+		m_Ratio = Value;
 
-		m_Ratio = Math::Lerp(m_Ratio, Value, 0.01);
-
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
-		Frequency freq = (Frequency)Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
-		QualityFactor q = (QualityFactor)Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio);
-		dBGain gain = (dBGain)Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio);
-
-		m_PeakEQFilter.SetParameters(FrequencyBand(freq, q), gain);
+		UpdateParameters();
 	}
 	float GetRatio(void) const
 	{
 		return m_Ratio;
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		m_PeakEQFilter.Process(Buffer, Count);
 
-		const FrequencyRange &freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
+		const FrequencyRange& freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
 		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] *= freqRange.FinalGain;
+	}
+
+private:
+	void UpdateParameters(void)
+	{
+		const FrequencyRange& freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
+		Frequency freq = (Frequency)Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
+		QualityFactor q = (QualityFactor)Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio);
+		dBGain gain = (dBGain)Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio);
+
+		m_PeakEQFilter.SetParameters(FrequencyBand(freq, q), gain);
 	}
 
 private:

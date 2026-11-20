@@ -27,11 +27,8 @@ public:
 		return m_Buffer.GetTime();
 	}
 
-	//[-40dB, 0dB]
-	void SetFeedback(dBGain Value)
+	void SetFeedback(cc_dBGain<SILENCE_GAIN_VALUE, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(-40 <= Value && Value <= 0, "Invalid Value %f", Value);
-
 		m_Buffer.SetFeedback(Value);
 	}
 	dBGain GetFeedback(void) const
@@ -39,11 +36,8 @@ public:
 		return m_Buffer.GetFeedback();
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const
@@ -56,7 +50,7 @@ public:
 		m_Buffer.Clear();
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Mix(Buffer[i], m_Buffer.Record(Buffer[i]));

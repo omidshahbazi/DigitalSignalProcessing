@@ -12,18 +12,21 @@ class BufferFilter : public Filter<T, SampleRate>
 	static_assert(0 < MaxTime, "Invalid MaxTime");
 
 public:
+	typedef cc_float<0, MaxTime> TimeRange;
+
+public:
 	BufferFilter(void)
 		: m_Time(0),
-		  m_CurrentTime(0),
-		  m_Feedback(0),
-		  m_OutputMixRate(0),
-		  m_Reverse(false),
-		  m_Buffer(nullptr),
-		  m_TotalBufferLength(MaxTime * SampleRate),
-		  m_BufferLength(0),
-		  m_WriteBufferIndex(0),
-		  m_ReadBufferIndex(0),
-		  m_IsLastSample(false)
+		m_CurrentTime(0),
+		m_Feedback(0),
+		m_OutputMixRate(0),
+		m_Reverse(false),
+		m_Buffer(nullptr),
+		m_TotalBufferLength(MaxTime* SampleRate),
+		m_BufferLength(0),
+		m_WriteBufferIndex(0),
+		m_ReadBufferIndex(0),
+		m_IsLastSample(false)
 	{
 		m_Buffer = Memory::Allocate<T>(m_TotalBufferLength, true);
 
@@ -37,16 +40,13 @@ public:
 		Memory::Deallocate(m_Buffer);
 	}
 
-	//[0, MaxTime]
-	void SetTime(float Value)
+	void SetTime(TimeRange Value)
 	{
-		ASSERT(0 <= Value && Value <= MaxTime, "Invalid Value %f", Value);
-
 		m_Time = Value;
 
 		m_BufferLength = Math::Max(m_Time * SampleRate, 1);
 
-		ASSERT(m_BufferLength <= m_TotalBufferLength, "Exceeding total buffer length %i", m_BufferLength);
+		ASSERT_VALUE_LESS_EQUAL(m_BufferLength, m_TotalBufferLength);
 	}
 	float GetTime(void) const
 	{
@@ -54,11 +54,11 @@ public:
 	}
 
 	//[0, Time]
-	void SetCurrentTime(float Value)
+	void SetCurrentTime(TimeRange Value)
 	{
 		m_WriteBufferIndex = Value * SampleRate;
 
-		ASSERT(m_WriteBufferIndex < m_BufferLength, "Exceeding buffer length %i", m_WriteBufferIndex);
+		ASSERT_VALUE_LESS(m_WriteBufferIndex, m_BufferLength);
 
 		m_ReadBufferIndex = m_WriteBufferIndex;
 	}
@@ -67,11 +67,8 @@ public:
 		return m_CurrentTime;
 	}
 
-	//[MIN_GAIN, 20dB]
-	void SetFeedback(dBGain Value)
+	void SetFeedback(cc_dBGain<SILENCE_GAIN_VALUE, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(MIN_GAIN <= Value && Value <= 20, "Invalid Value %f", Value);
-
 		m_Feedback = Value;
 		m_FeedbackCoef = m_Feedback;
 	}
@@ -80,11 +77,8 @@ public:
 		return m_Feedback;
 	}
 
-	//[0, 1]
-	void SetOutputMixRate(float Value)
+	void SetOutputMixRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_OutputMixRate = Value;
 	}
 	float GetOutputMixRate(void) const
@@ -127,7 +121,7 @@ public:
 		m_ReadBufferIndex = Math::Wrap(m_ReadBufferIndex + (m_Reverse ? -1 : 1), 0, m_BufferLength - 1);
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 			Buffer[i] = Process(Buffer[i]);
@@ -166,7 +160,7 @@ public:
 		Reset();
 	}
 
-	void CopyTo(BufferFilter &Other, bool FullBuffer = false) const
+	void CopyTo(BufferFilter& Other, bool FullBuffer = false) const
 	{
 		Memory::Copy(m_Buffer, Other.m_Buffer, FullBuffer ? m_TotalBufferLength : m_BufferLength);
 	}
@@ -186,7 +180,7 @@ private:
 
 	LinearGain m_FeedbackCoef;
 
-	T *m_Buffer;
+	T* m_Buffer;
 	uint32_t m_TotalBufferLength;
 	uint32_t m_BufferLength;
 	uint32_t m_WriteBufferIndex;

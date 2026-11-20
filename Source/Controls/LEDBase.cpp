@@ -10,21 +10,15 @@ LEDBase::LEDBase(IHAL* HAL)
 	SetConstantBrightness(0);
 }
 
-void LEDBase::SetConstantBrightness(float Value)
+void LEDBase::SetConstantBrightness(cc_ratio_t Value)
 {
-	ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 	m_DefaultValue = Value;
 
 	SetBrightnessFunction([Value](void) { return Value; });
 }
 
-void LEDBase::SetBlinkingBrightness(float MinValue, float MaxValue, float Rate)
+void LEDBase::SetBlinkingBrightness(cc_ratio_t MinValue, cc_ratio_t MaxValue, pfloat Rate)
 {
-	ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue %f", MinValue);
-	ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue %f", MaxValue);
-	ASSERT(0 < Rate, "Invalid Rate %f", Rate);
-
 	m_DefaultMinValue = MinValue;
 	m_DefaultMaxValue = MaxValue;
 	m_DefaultRate = Rate;
@@ -37,12 +31,8 @@ void LEDBase::SetBlinkingBrightness(float MinValue, float MaxValue, float Rate)
 		});
 }
 
-void LEDBase::SetFadingBrightness(float MinValue, float MaxValue, float Rate)
+void LEDBase::SetFadingBrightness(cc_ratio_t MinValue, cc_ratio_t MaxValue, pfloat Rate)
 {
-	ASSERT(0 <= MinValue && MinValue <= 1, "Invalid MinValue %f", MinValue);
-	ASSERT(0 <= MaxValue && MaxValue <= 1, "Invalid MaxValue %f", MaxValue);
-	ASSERT(0 < Rate, "Invalid Rate %f", Rate);
-
 	m_DefaultMinValue = MinValue;
 	m_DefaultMaxValue = MaxValue;
 	m_DefaultRate = Rate;

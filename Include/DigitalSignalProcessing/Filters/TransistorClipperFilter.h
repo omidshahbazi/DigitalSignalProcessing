@@ -22,8 +22,7 @@ public:
 		SetAsymmetry(0.3f);
 	}
 
-	//[0, 1]
-	void SetAsymmetry(float Value) override
+	void SetAsymmetry(cc_ratio_t Value) override
 	{
 		Base::SetAsymmetry(Value);
 

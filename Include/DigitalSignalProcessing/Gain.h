@@ -9,8 +9,8 @@ struct dBGain;
 struct LinearGain
 {
 public:
-	LinearGain(void) = default;
-	explicit LinearGain(float Value)
+	constexpr LinearGain(void) = default;
+	constexpr explicit LinearGain(float Value)
 		: m_Value(Value)
 	{
 	}
@@ -65,9 +65,16 @@ private:
 };
 
 // https://www.redcrab-software.com/en/Calculator/Electrics/Decibel-Factor
-static constexpr dBGain MIN_GAIN(-90);
-static constexpr dBGain SILENCE_GAIN(-40);
-static constexpr dBGain NORMAL_GAIN(0);
-static constexpr dBGain MAX_GAIN(6);
+static constexpr int8_t MIN_GAIN_VALUE = -90;
+static constexpr dBGain MIN_GAIN(MIN_GAIN_VALUE);
+
+static constexpr int8_t SILENCE_GAIN_VALUE = -40;
+static constexpr dBGain SILENCE_GAIN(SILENCE_GAIN_VALUE);
+
+static constexpr int8_t NORMAL_GAIN_VALUE = 0;
+static constexpr dBGain NORMAL_GAIN(NORMAL_GAIN_VALUE);
+
+static constexpr int8_t MAX_GAIN_VALUE = 6;
+static constexpr dBGain MAX_GAIN(MAX_GAIN_VALUE);
 
 #endif

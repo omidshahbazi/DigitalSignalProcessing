@@ -3,7 +3,6 @@
 #define METAL_NOISE_FILTER_H
 
 #include "Filter.h"
-#include "DigitalSignalProcessing/Debug.h"
 
 template <typename T, uint32_t SampleRate>
 class MetalNoiseFilter : public Filter<T, SampleRate>

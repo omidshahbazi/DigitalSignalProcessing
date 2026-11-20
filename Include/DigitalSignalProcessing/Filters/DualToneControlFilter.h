@@ -15,20 +15,14 @@ public:
 		SetBorderFrequency(1 KHz);
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequency(Frequency Value)
+	void SetBorderFrequency(Frequency_hearable Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_LowShelfFilter.SetCutoffFrequency(Value);
 		m_HighShelfFilter.SetCutoffFrequency(Value);
 	}
 
-	//[-12dB, 12dB]
-	void SetLowTone(dBGain Value)
+	void SetLowTone(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
 		m_LowTone = Value;
 
 		m_LowShelfFilter.SetGain(m_LowTone);
@@ -38,11 +32,8 @@ public:
 		return m_LowTone;
 	}
 
-	//[-12dB, 12dB]
-	void SetHighTone(dBGain Value)
+	void SetHighTone(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
 		m_HighTone = Value;
 
 		m_HighShelfFilter.SetGain(m_HighTone);

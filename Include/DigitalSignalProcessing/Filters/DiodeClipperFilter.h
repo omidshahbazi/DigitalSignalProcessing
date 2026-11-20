@@ -19,12 +19,30 @@ private:
 
 public:
 	DiodeClipperFilter(void)
+		: m_KneeToThreshold(0)
 	{
+		if constexpr (Type == DiodeClipperFilterTypes::Silicon)
+			SetKneeToThreshold(0.074);
+		else if constexpr (Type == DiodeClipperFilterTypes::Germanium)
+			SetKneeToThreshold(0.096);
+		else if constexpr (Type == DiodeClipperFilterTypes::LED)
+			SetKneeToThreshold(0.052);
+		else
+			NOT_IMPLEMENTED();
+
 		SetAsymmetry(0);
 	}
 
-	//[0, 1]
-	void SetAsymmetry(float Value) override
+	void SetKneeToThreshold(oc_ratio_t Value)
+	{
+		m_KneeToThreshold = Value;
+	}
+	float GetKneeToThreshold(void) const
+	{
+		return m_KneeToThreshold;
+	}
+
+	void SetAsymmetry(cc_ratio_t Value) override
 	{
 		Base::SetAsymmetry(Value);
 
@@ -35,9 +53,11 @@ public:
 			threshold = 0.35f;
 		else if constexpr (Type == DiodeClipperFilterTypes::LED)
 			threshold = 1.5f;
+		else
+			NOT_IMPLEMENTED();
 
-		Base::SetPositiveThreshold(threshold);
 		Base::SetNegativeThreshold(-(threshold - (Base::GetAsymmetry() * (threshold * 0.5f))));
+		Base::SetPositiveThreshold(threshold);
 	}
 
 	FILTER_FORWARD_DECLARATION()
@@ -45,11 +65,13 @@ public:
 protected:
 	T Shape(T Value) override
 	{
-		if (Value >= 0)
-			return Math::TanH(Value / Base::GetPositiveThreshold()) * Base::GetPositiveThreshold();
+		const float scale = (Value >= 0 ? Base::GetPositiveThreshold() : -Base::GetNegativeThreshold()) * m_KneeToThreshold;
 
-		return Math::TanH(Value / -Base::GetNegativeThreshold()) * -Base::GetNegativeThreshold();
+		return Math::ASinH(Value / scale) * scale;
 	}
+
+private:
+	float m_KneeToThreshold;
 };
 
 template<typename T, uint32_t SampleRate>

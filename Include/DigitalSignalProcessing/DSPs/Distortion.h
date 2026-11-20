@@ -4,7 +4,6 @@
 
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/Filters/GainStageFilter.h"
 #include "DigitalSignalProcessing/Filters/SimpleClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
@@ -29,11 +28,8 @@ public:
 		//m_DCBlocker.SetCutoffFrequency(Frequency(15));
 	}
 
-	//[0, 1]
-	void SetDrive(float Value)
+	void SetDrive(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Drive = Value;
 
 		m_GainStage.SetInputGain((LinearGain)Math::Lerp(5.0, 100.0, m_Drive));
@@ -45,8 +41,7 @@ public:
 		return m_Drive;
 	}
 
-	//[0, 1]
-	void SetAsymmetryLevel(float Value)
+	void SetAsymmetryLevel(cc_ratio_t Value)
 	{
 		m_GainStage.GetClipper().SetAsymmetry(Value);
 	}
@@ -55,11 +50,8 @@ public:
 		return m_GainStage.GetClipper().GetAsymmetry();
 	}
 
-	//[0, 1]
-	void SetTone(float Value)
+	void SetTone(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Tone = Value;
 
 		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(2 KHz, 8 KHz, m_Tone));
@@ -69,11 +61,8 @@ public:
 		return m_Tone;
 	}
 
-	//[-12dB, 12dB]
-	void SetGain(dBGain Value)
+	void SetGain(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
 		m_Gain = Value;
 
 		m_LinearGain = m_Gain;
@@ -83,11 +72,8 @@ public:
 		return m_Gain;
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const

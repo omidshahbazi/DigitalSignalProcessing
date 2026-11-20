@@ -17,20 +17,14 @@ public:
 		SetBorderFrequency((Frequency)(1 KHz));
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequency(Frequency Value)
+	void SetBorderFrequency(Frequency_hearable Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_LowShelfFilter.SetCutoffFrequency(Value);
 		m_HighShelfFilter.SetCutoffFrequency(Value);
 	}
 
-	//[0, 1]
-	void SetTone(float Value)
+	void SetTone(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Tone = Value;
 
 		const dBGain Gain(6);

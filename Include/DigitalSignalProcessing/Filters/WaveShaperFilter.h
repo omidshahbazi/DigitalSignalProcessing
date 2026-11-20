@@ -4,7 +4,6 @@
 
 #include "Filter.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 
 template <typename T>
 class WaveShaperFilter : public Filter<T, MIN_SAMPLE_RATE>
@@ -27,11 +26,8 @@ public:
     {
     }
 
-    void SetTable(const TablePoints *Table, uint8_t Length)
+    void SetTable(NotNull<const TablePoints> Table, GreaterThan<uint8_t, 1> Length)
     {
-        ASSERT(Table != nullptr, "Invalid Table");
-        ASSERT(Length > 1, "Invalid Length %f", Length);
-
         m_Table = Table;
         m_Length = Length;
 

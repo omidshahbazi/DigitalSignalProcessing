@@ -16,12 +16,8 @@ public:
 		SetBorderFrequencies(Frequency(150), Frequency(5 KHz));
 	}
 
-	//[MIN_FREQUENCY, MAX_FREQUENCY]
-	void SetBorderFrequencies(Frequency LowMid, Frequency MidHigh)
+	void SetBorderFrequencies(Frequency_hearable LowMid, Frequency_hearable MidHigh)
 	{
-		ASSERT(MIN_FREQUENCY <= LowMid && LowMid <= MAX_FREQUENCY, "Invalid LowMid %f", LowMid);
-		ASSERT(MIN_FREQUENCY <= MidHigh && MidHigh <= MAX_FREQUENCY, "Invalid MidHigh %f", MidHigh);
-
 		m_LowShelfFilter.SetCutoffFrequency(LowMid);
 
 		m_PeakEQFilter.SetBand(LowMid, MidHigh);
@@ -29,36 +25,27 @@ public:
 		m_HighShelfFilter.SetCutoffFrequency(MidHigh);
 	}
 
-	//[-12dB, 12dB]
-	void SetLowTone(dBGain Value)
+	void SetLowTone(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
-		m_LowShelfFilter.SetGain(Value);
+		m_LowShelfFilter.SetGain((dBGain)Value);
 	}
 	dBGain GetLowTone(void) const
 	{
 		return m_LowShelfFilter.GetGain();
 	}
 
-	//[-12dB, 12dB]
-	void SetMidTone(dBGain Value)
+	void SetMidTone(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
-		m_PeakEQFilter.SetGain(Value);
+		m_PeakEQFilter.SetGain((dBGain)Value);
 	}
 	dBGain GetMidTone(void) const
 	{
 		return m_PeakEQFilter.GetGain();
 	}
 
-	//[-12dB, 12dB]
-	void SetHighTone(dBGain Value)
+	void SetHighTone(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
-		m_HighShelfFilter.SetGain(Value);
+		m_HighShelfFilter.SetGain((dBGain)Value);
 	}
 	dBGain GetHighTone(void) const
 	{

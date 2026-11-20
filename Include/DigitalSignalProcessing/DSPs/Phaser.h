@@ -4,7 +4,6 @@
 
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
 #include "DigitalSignalProcessing/Filters/BufferFilter.h"
 
@@ -18,7 +17,7 @@ public:
 	{
 		for (uint8_t i = 0; i < StageCount; ++i)
 		{
-			m_Buffers[i].SetFeedback(MIN_GAIN);
+			m_Buffers[i].SetFeedback(SILENCE_GAIN);
 			m_Buffers[i].SetTime(50 ms);
 			m_Buffers[i].SetOutputMixRate(1);
 		}
@@ -31,7 +30,7 @@ public:
 	//(0ms, 3ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, 0, 3 ms);
 
 		m_Depth = Value;
 	}
@@ -40,11 +39,8 @@ public:
 		return m_Depth;
 	}
 
-	//(0, 5Hz]
-	void SetRate(Frequency Value)
+	void SetRate(oc_Frequency<0, 5> Value)
 	{
-		ASSERT(0 < Value && Value <= 5, "Invalid Value %f", Value);
-
 		m_Oscillator.SetFrequency(Value);
 	}
 	Frequency GetRate(void) const
@@ -52,11 +48,8 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const

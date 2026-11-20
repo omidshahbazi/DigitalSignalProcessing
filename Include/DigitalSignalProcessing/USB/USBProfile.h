@@ -4,6 +4,7 @@
 
 #include "DigitalSignalProcessing/Common.h"
 #include "DigitalSignalProcessing/Gain.h"
+#include "DigitalSignalProcessing/ExtendedDataTypes.h"
 
 // Maximum number of classes that can be registered in a profile.
 static constexpr uint8_t MaxClassCount = 4;
@@ -41,11 +42,11 @@ struct AMCClassConfig
 {
 public:
 	uint32_t SupportedSampleRates[SAMPLE_RATE_COUNT]; // Array of supported sample rates (e.g., 44100, 48000).
-	uint8_t SupportedSampleRateCount;                 // Total number of supported sample rates.
+	puint8_t SupportedSampleRateCount;                 // Total number of supported sample rates.
 	uint8_t DefaultSampleRateIndex;                   // Array index for the default sample rate.
 
 	BitDepths SupportedBitDepths[BIT_DEPTH_COUNT];  // Array of supported bit depths (e.g., 16, 24).
-	uint8_t SupportedBitDepthCount;                   // Total number of supported bit depths.
+	puint8_t SupportedBitDepthCount;                   // Total number of supported bit depths.
 	uint8_t DefaultBitDepthIndex;                     // Array index for the default bit depth.
 
 	uint8_t InputChannelCount;                        // Number of input (capture) audio channels.
@@ -107,7 +108,7 @@ public:
 	bool IsSelfPowered;    // Indicates if the device is self-powered (true) or bus-powered (false).
 
 	USBClassNode ClassNodes[MaxClassCount]; // Array of configured class nodes for this device.
-	uint8_t ClassNodeCount;                   // Total count of active class nodes.
+	co_uint8_t<0, MaxClassCount> ClassNodeCount = 0; // Total count of active class nodes.
 };
 
 // Enumeration of supported USB host classes.
@@ -142,7 +143,7 @@ public:
 	bool EnableVBUSPowerControl; // Indicates whether the host actively controls VBUS power.
 
 	USBHostClasses SupportedClasses[MaxClassCount]; // Array of USB classes supported by this host.
-	uint8_t SupportedClassCount;                      // Total number of supported host classes.
+	co_uint8_t<0, MaxClassCount> SupportedClassCount = 0; // Total number of supported host classes.
 };
 
 // Enumeration of overall USB operational modes.

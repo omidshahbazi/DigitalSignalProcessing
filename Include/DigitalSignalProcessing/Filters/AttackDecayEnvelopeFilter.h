@@ -39,7 +39,7 @@ public:
 	//(0, 1s]
 	void SetAttackTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, 0, 1);
 
 		m_SegmentTime[(uint8_t)Segments::Attack] = Value;
 		if (m_CurrSegment == Segments::Attack)
@@ -53,7 +53,7 @@ public:
 	//(0, 1s]
 	void SetDecayTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= 1, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, 0, 1);
 
 		m_SegmentTime[(uint8_t)Segments::Decay] = Value;
 		if (m_CurrSegment == Segments::Decay)
@@ -67,11 +67,10 @@ public:
 	// [0, 100]
 	// 0: Full Linear Curve
 	// Positive: Log Curve
-	void SetCurve(float Value)
+	void SetCurve(pfloat Value)
 	{
-		ASSERT(0 <= Value, "Invalid Value %f", Value);
-
 		m_Curve = Value;
+
 		PrepareSegment();
 	}
 	float GetCurve(void) const

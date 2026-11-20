@@ -3,8 +3,6 @@
 #define BIG_MUFF_H
 
 #include "IDSP.h"
-#include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/Filters/TransistorClipperFilter.h"
 #include "DigitalSignalProcessing/Filters/UpSamplerFilter.h"
 #include "DigitalSignalProcessing/Filters/HighPassFilter.h"
@@ -15,9 +13,6 @@ class BigMuff : public IDSP<T, SampleRate>
 {
 public:
 	BigMuff(void)
-		: m_Drive(0),
-		m_Tone(0),
-		m_WetRate(0)
 	{
 		m_PreFilter.SetCutoffFrequency(Frequency(200));
 		m_ToneStackFilter.SetLowPassFrequency(Frequency(300));
@@ -28,15 +23,12 @@ public:
 		SetGain(NORMAL_GAIN);
 		SetWetRate(1);
 	}
-
-	//[0, 1]
-	void SetDrive(float Value)
+	
+	void SetDrive(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Drive = Value;
 
-		m_PreGain = (LinearGain)Math::SquareRoot(Math::Lerp(10, 800, m_Drive));
+		m_PreGain = (LinearGain)Math::SquareRoot(Math::Lerp(10.0, 800.0, m_Drive));
 		m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
 	}
 	float GetDrive(void) const
@@ -44,11 +36,8 @@ public:
 		return m_Drive;
 	}
 
-	//[0, 1]
-	void SetTone(float Value)
+	void SetTone(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_ToneStackFilter.SetTone(Value);
 	}
 	float GetTone(void) const
@@ -56,11 +45,8 @@ public:
 		return m_ToneStackFilter.GetTone();
 	}
 
-	//[-12dB, 12dB]
-	void SetGain(dBGain Value)
+	void SetGain(dBGain_12 Value)
 	{
-		ASSERT(-12 <= Value && Value <= 12, "Invalid Value %f", Value);
-
 		m_Gain = Value;
 
 		m_LinearGain = m_Gain;
@@ -70,11 +56,8 @@ public:
 		return m_Gain;
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const

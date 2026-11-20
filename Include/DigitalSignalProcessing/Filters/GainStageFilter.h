@@ -4,7 +4,6 @@
 
 #include "Filter.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/Gain.h"
 
 template<typename T, uint32_t SampleRate, typename Clipper>
@@ -19,8 +18,6 @@ public:
 	virtual void SetInputGain(LinearGain Value)
 	{
 		m_InputGain = Value;
-
-		m_Clipper.SetInputGain(m_InputGain);
 	}
 	LinearGain GetInputGain(void) const
 	{

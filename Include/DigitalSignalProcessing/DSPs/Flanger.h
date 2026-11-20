@@ -19,11 +19,11 @@ public:
 		SetDepth(0.001);
 		SetRate(Frequency(1));
 	}
-
+	
 	//(0ms, 3ms]
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, 0, 3 ms);
 
 		m_Depth = Value;
 	}
@@ -32,11 +32,8 @@ public:
 		return m_Depth;
 	}
 
-	//(0Hz, 2Hz]
-	void SetRate(Frequency Value)
+	void SetRate(cc_Frequency<0, 3> Value)
 	{
-		ASSERT(0 < Value && Value <= 4, "Invalid Value %f", Value);
-
 		m_Oscillator.SetFrequency(Value);
 	}
 	Frequency GetRate(void) const
@@ -44,11 +41,8 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	//[SILENCE_GAIN, NORMAL_GAIN]
-	void SetFeedback(dBGain Value)
+	void SetFeedback(cc_dBGain<SILENCE_GAIN_VALUE, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(SILENCE_GAIN <= Value && Value <= 0, "Invalid Value %f", Value);
-
 		m_Buffer.SetFeedback(Value);
 	}
 	dBGain GetFeedback(void) const

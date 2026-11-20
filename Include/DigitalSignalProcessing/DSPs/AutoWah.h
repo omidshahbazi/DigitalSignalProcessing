@@ -10,28 +10,27 @@ class AutoWah : private Wah<T, SampleRate>
 {
 public:
 	AutoWah(void)
-		: m_Sensitivity(1)
 	{
+		SetSensitivity(1);
 		m_EnvelopeFollowerFilter.SetAttackTime(15 ms);
 		m_EnvelopeFollowerFilter.SetReleaseTime(100 ms);
 	}
 
-	//[1, 20]
-	void SetSensitivity(float Value)
+	void SetSensitivity(cc_ratio_t Value)
 	{
-		ASSERT(0 < Value && Value <= 20, "Invalid Value %f", Value);
-
 		m_Sensitivity = Value;
+
+		m_Multiplier = Math::Lerp(1, 20, m_Sensitivity);
 	}
 	float GetSensitivity(void) const
 	{
 		return m_Sensitivity;
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		m_EnvelopeFollowerFilter.Process(Buffer, Count);
-		Wah<T, SampleRate>::SetRatio(Math::Clamp01(m_EnvelopeFollowerFilter.GetCurrentEnvelope() * m_Sensitivity));
+		Wah<T, SampleRate>::SetRatio(Math::Clamp01(m_EnvelopeFollowerFilter.GetCurrentEnvelope() * m_Multiplier));
 
 		Wah<T, SampleRate>::Process(Buffer, Count);
 	}
@@ -39,5 +38,6 @@ public:
 private:
 	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	float m_Sensitivity;
+	float m_Multiplier;
 };
 #endif

@@ -4,7 +4,6 @@
 
 #include "IDSP.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 #include "DigitalSignalProcessing/Filters/OscillatorFilter.h"
 
 template <typename T, uint32_t SampleRate>
@@ -13,17 +12,14 @@ class Tremolo : public IDSP<T, SampleRate>
 public:
 	Tremolo(void)
 		: m_Depth(0),
-		  m_WetRate(0)
+		m_WetRate(0)
 	{
 		SetDepth(0.5);
 		SetRate(Frequency(10));
 	}
 
-	//[0, 1]
-	void SetDepth(float Value)
+	void SetDepth(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Depth = Value;
 	}
 	float GetDepth(void) const
@@ -32,10 +28,8 @@ public:
 	}
 
 	//(0Hz, 25Hz]
-	void SetRate(Frequency Value)
+	void SetRate(oc_Frequency<0, 25> Value)
 	{
-		ASSERT(0 < Value && Value <= 25, "Invalid Value %f", Value);
-
 		m_Oscillator.SetFrequency(Value);
 	}
 	Frequency GetRate(void) const
@@ -43,11 +37,8 @@ public:
 		return m_Oscillator.GetFrequency();
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const
@@ -55,7 +46,7 @@ public:
 		return m_WetRate;
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 		{
@@ -64,11 +55,11 @@ public:
 			Buffer[i] = Mix(Buffer[i], Buffer[i] * modulation);
 		}
 	}
-	
+
 protected:
 	T Mix(T A, T B) override
 	{
-		return Math::LinearCrossFadeMix(A, B, m_WetRate);	
+		return Math::LinearCrossFadeMix(A, B, m_WetRate);
 	}
 
 private:

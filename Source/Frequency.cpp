@@ -23,20 +23,27 @@ LinearOctave::LinearOctave(Frequency Low, Frequency High)
 	FixBandFrequency(Low, High);
 
 	m_Value = High / Low;
+
+	ASSERT_VALUE_GREATER(m_Value, 0);
 }
 
 LinearOctave::LinearOctave(LogarithmicOctave Value)
 	: m_Value(Math::Power2((float)Value))
-{}
-
+{
+	ASSERT_VALUE_GREATER(m_Value, 0);
+}
 
 LogarithmicOctave::LogarithmicOctave(LinearOctave Value)
 	: m_Value(Math::Log2((float)Value))
-{}
+{
+	ASSERT_VALUE_GREATER(m_Value, 0);
+}
 
 LogarithmicOctave::LogarithmicOctave(Frequency Low, Frequency High)
 	: m_Value((float)(LogarithmicOctave)LinearOctave(Low, High))
-{}
+{
+	ASSERT_VALUE_GREATER(m_Value, 0);
+}
 
 Frequency operator*(Frequency Frequency, LinearOctave Octave)
 {
@@ -74,7 +81,7 @@ FrequencyBand::FrequencyBand(Frequency Low, Frequency High)
 
 void FrequencyBand::SetQualityFactor(QualityFactor Quality)
 {
-	m_Bandwidth = LogarithmicOctave(2 * Math::ASinh(1 / (2 * Quality)) / Math::LOG_NATURAL_2);
+	m_Bandwidth = LogarithmicOctave(2 * Math::ASinH(1 / (2 * Quality)) / Math::LOG_NATURAL_2);
 }
 
 QualityFactor FrequencyBand::GetQualityFactor(void) const
@@ -100,4 +107,6 @@ Frequency FrequencyBand::GetHigh(void) const
 QualityFactor::QualityFactor(FrequencyBand Band)
 {
 	m_Value = 1 / (2 * Math::SinH(Math::HALF_LOG_NATURAL_2 * Band.GetBandwidth()));
+
+	ASSERT_VALUE_GREATER(m_Value, 0);
 }

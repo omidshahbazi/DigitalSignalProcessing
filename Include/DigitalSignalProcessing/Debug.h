@@ -101,4 +101,34 @@ private:
 
 #define NOT_IMPLEMENTED() BREAK("Not Implemented.")
 
+#define ASSERT_NOT_NULL(Value) ASSERT(Value != nullptr, "Invalid value [nullptr]");
+
+#define ASSERT_VALUE_COMPARE(Value, Op, Constraint)                          \
+	do                                                                        \
+	{                                                                         \
+		const auto AssertV_ = (Value);                                        \
+		const auto AssertC_ = (Constraint);                                   \
+		ASSERT(AssertV_ Op AssertC_, "Expected [%f] " #Op " [%f]", static_cast<double>(AssertV_), static_cast<double>(AssertC_)); \
+	} while (false)
+
+#define ASSERT_VALUE_NOT_EQUAL(Value, Constraint)     ASSERT_VALUE_COMPARE(Value, !=, Constraint)
+#define ASSERT_VALUE_GREATER(Value, Constraint)       ASSERT_VALUE_COMPARE(Value, >,  Constraint)
+#define ASSERT_VALUE_GREATER_EQUAL(Value, Constraint) ASSERT_VALUE_COMPARE(Value, >=, Constraint)
+#define ASSERT_VALUE_LESS(Value, Constraint)          ASSERT_VALUE_COMPARE(Value, <,  Constraint)
+#define ASSERT_VALUE_LESS_EQUAL(Value, Constraint)    ASSERT_VALUE_COMPARE(Value, <=, Constraint)
+
+#define ASSERT_VALUE_RANGE(Value, Min, OpMin, OpMax, Max)                    \
+	do                                                                        \
+	{                                                                         \
+		const auto AssertV_   = (Value);                                      \
+		const auto AssertMin_ = (Min);                                        \
+		const auto AssertMax_ = (Max);                                        \
+		ASSERT(AssertMin_ OpMin AssertV_ && AssertV_ OpMax AssertMax_, "Expected [%f] " #OpMin " [%f] " #OpMax " [%f]", static_cast<double>(AssertMin_), static_cast<double>(AssertV_), static_cast<double>(AssertMax_));                              \
+	} while (false)
+
+#define ASSERT_VALUE_RANGE_ALL_INCLUSIVE(Value, Min, Max) ASSERT_VALUE_RANGE(Value, Min, <=, <=, Max)
+#define ASSERT_VALUE_RANGE_NON_INCLUSIVE(Value, Min, Max) ASSERT_VALUE_RANGE(Value, Min, <,  <,  Max)
+#define ASSERT_VALUE_RANGE_MIN_INCLUSIVE(Value, Min, Max) ASSERT_VALUE_RANGE(Value, Min, <=, <,  Max)
+#define ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, Min, Max) ASSERT_VALUE_RANGE(Value, Min, <,  <=, Max)
+
 #endif

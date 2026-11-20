@@ -25,10 +25,8 @@ public:
 		SetCutoffFrequency(MIN_FREQUENCY);
 	}
 
-	void SetCutoffFrequency(Frequency Value)
+	void SetCutoffFrequency(Frequency_hearable Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
 		m_CutoffFrequency = Value;
 
 		m_Alpha = 1 / (1 + (SampleRate / (Math::TWO_PI_VALUE * m_CutoffFrequency)));
@@ -52,13 +50,11 @@ public:
 			m_Memory += m_Alpha * (Buffer[i] - m_Memory);
 
 			if constexpr (Order == ResistorCapacitorOrders::ResistorFirst)
-			{
 				Buffer[i] = m_Memory;
-			}
 			else if constexpr (Order == ResistorCapacitorOrders::CapacitorFirst)
-			{
 				Buffer[i] -= m_Memory;
-			}
+			else
+				NOT_IMPLEMENTED();
 		}
 	}
 

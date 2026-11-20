@@ -387,5 +387,14 @@
     <ClInclude Include="Include\DigitalSignalProcessing\Filters\GainStageFilter.h">
       <Filter>Include\DigitalSignalProcessing\Filters</Filter>
     </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\Constrained.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\NotNull.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DigitalSignalProcessing\ExtendedDataTypes.h">
+      <Filter>Include\DigitalSignalProcessing</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,9 +13,9 @@ class Looper : public IDSP<T, SampleRate>
 public:
 	Looper(void)
 		: m_WetRate(0),
-		  m_IsPlaying(true),
-		  m_IsRecording(false),
-		  m_MasterLineIsRecorded(false)
+		m_IsPlaying(true),
+		m_IsRecording(false),
+		m_MasterLineIsRecorded(false)
 	{
 		m_Buffer.SetOutputMixRate(1);
 	}
@@ -89,11 +89,8 @@ public:
 		m_MasterLineIsRecorded = false;
 	}
 
-	//(0, MaxTime]
-	void SetTime(float Value)
+	void SetTime(oc_float<0, MaxTime> Value)
 	{
-		ASSERT(0 < Value && Value <= MaxTime, "Invalid Value %f", Value);
-
 		m_Buffer.SetTime(Value);
 	}
 	float GetTime(void) const
@@ -104,7 +101,7 @@ public:
 	//(0, Time]
 	void SetCurrentTime(float Value)
 	{
-		ASSERT(0 < Value && Value <= GetTime(), "Invalid Value %f", Value);
+		ASSERT_VALUE_RANGE_MAX_INCLUSIVE(Value, 0, GetTime());
 
 		m_Buffer.SetCurrentTime(Value);
 	}
@@ -113,11 +110,8 @@ public:
 		return m_Buffer.GetCurrentTime();
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const
@@ -125,11 +119,8 @@ public:
 		return m_WetRate;
 	}
 
-	//[-20dB, NORMAL_GAIN]
-	void SetOverdubLevel(dBGain Value)
+	void SetOverdubLevel(cc_dBGain<-20, NORMAL_GAIN_VALUE> Value)
 	{
-		ASSERT(-20 <= Value && Value <= NORMAL_GAIN, "Invalid Value %f", Value);
-
 		m_Buffer.SetFeedback(Value);
 	}
 	dBGain GetOverdubLevel(void) const
@@ -137,11 +128,8 @@ public:
 		return m_Buffer.GetFeedback();
 	}
 
-	//[MIN_FREQUENCY, 200Hz]
-	void SetLowCutFrequency(Frequency Value)
+	void SetLowCutFrequency(cc_Frequency<MIN_FREQUENCY_VALUE, 200> Value)
 	{
-		ASSERT(MIN_FREQUENCY <= Value && Value <= 200, "Invalid Value %f", Value);
-
 		m_HighPassFilter.SetCutoffFrequency(Value);
 	}
 	Frequency GetLowCutFrequency(void) const
@@ -149,12 +137,9 @@ public:
 		return m_HighPassFilter.GetLowCutFrequency();
 	}
 
-	//[5KHz, MAX_FREQUENCY]
-	void SetHighCutFrequency(Frequency Value)
+	void SetHighCutFrequency(cc_Frequency<int16_t(5 KHz), MAX_FREQUENCY_VALUE> Value)
 	{
-		ASSERT(5 KHz <= Value && Value <= MAX_FREQUENCY, "Invalid Value %f", Value);
-
-		m_LowPassFilter.SetCutoffFrequency(Value);
+		m_LowPassFilter.SetCutoffFrequency((Frequency)Value);
 	}
 	Frequency GetHighCutFrequency(void) const
 	{
@@ -166,7 +151,7 @@ public:
 		return m_Buffer.IsLastSample();
 	}
 
-	void Process(T *Buffer, uint8_t Count) override
+	void Process(T* Buffer, uint8_t Count) override
 	{
 		CLONE_BUFFER(filteredBuffer);
 

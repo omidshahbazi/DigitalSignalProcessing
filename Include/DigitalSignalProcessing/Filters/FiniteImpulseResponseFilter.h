@@ -40,12 +40,8 @@ public:
 #endif
 	}
 
-	void SetData(const T *Data, uint16_t Length)
+	void SetData(NotNull<const T> Data, oc_float<0, MaxTaps> Length)
 	{
-		ASSERT(Data != nullptr, "Invalid Data");
-		ASSERT(Length != 0, "Invalid Length %u", Length);
-		ASSERT(Length <= MaxTaps, "Invalid Length %u", Length);
-
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
 		m_Instance.numTaps = Length;
 		m_Instance.pCoeffs = Data;

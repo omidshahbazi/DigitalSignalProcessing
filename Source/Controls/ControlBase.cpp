@@ -1,5 +1,4 @@
 #include "DigitalSignalProcessing/Controls/ControlBase.h"
-#include "DigitalSignalProcessing/Debug.h"
 
 ControlBase::ControlBase(IHAL* HAL, uint16_t UpdateRate)
 	: m_HAL(HAL),
@@ -28,10 +27,8 @@ void ControlBase::DigitalWrite(uint8_t Pin, bool Value)
 	m_HAL->DigitalWrite(Pin, Value);
 }
 
-void ControlBase::PWMWrite(uint8_t Pin, float Value)
+void ControlBase::PWMWrite(uint8_t Pin, cc_ratio_t Value)
 {
-	ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 	m_HAL->PWMWrite(Pin, Value);
 }
 

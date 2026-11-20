@@ -4,7 +4,6 @@
 
 #include "Filter.h"
 #include "DigitalSignalProcessing/Math.h"
-#include "DigitalSignalProcessing/Debug.h"
 
 template<typename T, uint32_t SampleRate>
 class ClipperFilter : public Filter<T, SampleRate>
@@ -18,8 +17,8 @@ private:
 public:
 	ClipperFilter(void)
 		: m_Asymmetry(0),
-		m_PositiveThreshold(0),
-		m_NegativeThreshold(0),
+		m_PositiveThreshold(1),
+		m_NegativeThreshold(-1),
 		m_EvenHarmonics(0),
 		m_Warmth(0),
 		m_Bias(0),
@@ -29,14 +28,8 @@ public:
 	{
 	}
 
-	virtual void SetInputGain(LinearGain Value)
-	{}
-
-	//[0, 1]
-	virtual void SetAsymmetry(float Value)
+	virtual void SetAsymmetry(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Asymmetry = Value;
 	}
 	float GetAsymmetry(void) const
@@ -45,10 +38,8 @@ public:
 	}
 
 	//[0, 2]
-	virtual void SetPositiveThreshold(float Value)
+	virtual void SetPositiveThreshold(cc_float<0, 2> Value)
 	{
-		ASSERT(0 <= Value && Value <= 2, "Invalid Value %f", Value);
-
 		m_PositiveThreshold = Value;
 
 		UpdateBias();
@@ -58,23 +49,19 @@ public:
 		return m_PositiveThreshold;
 	}
 
-	//[-2, 0]
-	virtual void SetNegativeThreshold(float Value)
+	virtual void SetNegativeThreshold(cc_float<-2, 0> Value)
 	{
-		ASSERT(-2 <= Value && Value <= 0, "Invalid Value %f", Value);
-
 		m_NegativeThreshold = Value;
+
+		UpdateBias();
 	}
 	float GetNegativeThreshold(void) const
 	{
 		return m_NegativeThreshold;
 	}
 
-	//[0, 1] Amount of even harmonics (0 = none)
-	void SetEvenHarmonics(float Value)
+	void SetEvenHarmonics(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_EvenHarmonics = Value;
 
 		UpdateBias();
@@ -84,11 +71,8 @@ public:
 		return m_EvenHarmonics;
 	}
 
-	//[0, 1] Softness of the knee (0 = unchanged, 1 = warm and compressed)
-	void SetWarmth(float Value)
+	void SetWarmth(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_Warmth = Value;
 
 		m_WarmthCoefficient = Value * MaxWarmth;

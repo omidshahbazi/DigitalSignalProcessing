@@ -15,12 +15,9 @@ public:
 		Flanger<T, SampleRate>::SetTime(50 ms);
 		Flanger<T, SampleRate>::SetFeedback(SILENCE_GAIN);
 	}
-
-	//(0ms, 3ms]
+	//0-3ms
 	void SetDepth(float Value)
 	{
-		ASSERT(0 < Value && Value <= 3 ms, "Invalid Value %f", Value);
-
 		Flanger<T, SampleRate>::SetDepth(Value);
 	}
 	float GetDepth(void) const
@@ -28,11 +25,8 @@ public:
 		return Flanger<T, SampleRate>::GetDepth();
 	}
 
-	//(0Hz, 3Hz]
-	void SetRate(Frequency Value)
+	void SetRate(cc_Frequency<0, 3> Value)
 	{
-		ASSERT(0 < Value && Value <= 3, "Invalid Value %f", Value);
-
 		Flanger<T, SampleRate>::SetRate(Value);
 	}
 	Frequency GetRate(void) const
@@ -40,11 +34,8 @@ public:
 		return Flanger<T, SampleRate>::GetRate();
 	}
 
-	//[0, 1]
-	void SetWetRate(float Value)
+	void SetWetRate(cc_ratio_t Value)
 	{
-		ASSERT(0 <= Value && Value <= 1, "Invalid Value %f", Value);
-
 		m_WetRate = Value;
 	}
 	float GetWetRate(void) const

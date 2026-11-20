@@ -33,8 +33,7 @@ protected:
 
 	void DigitalWrite(uint8_t Pin, bool Value);
 
-	//[0, 1]
-	void PWMWrite(uint8_t Pin, float Value);
+	void PWMWrite(uint8_t Pin, cc_ratio_t Value);
 
 protected:
 	IHAL* GetHAL(void) const
