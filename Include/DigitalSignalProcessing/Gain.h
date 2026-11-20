@@ -16,7 +16,7 @@ public:
 	}
 	LinearGain(const dBGain &gain);
 
-	operator float(void) const
+	constexpr operator float(void) const
 	{
 		return m_Value;
 	}
@@ -45,7 +45,7 @@ public:
 	}
 	dBGain(const LinearGain& gain);
 
-	operator float(void) const
+	constexpr operator float(void) const
 	{
 		return m_Value;
 	}

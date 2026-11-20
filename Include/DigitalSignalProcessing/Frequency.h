@@ -19,7 +19,7 @@ public:
 		: m_Value(Value)
 	{}
 
-	operator float(void) const
+	constexpr operator float(void) const
 	{
 		return m_Value;
 	}

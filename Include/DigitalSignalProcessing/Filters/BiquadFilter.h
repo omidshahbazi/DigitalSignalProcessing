@@ -9,6 +9,10 @@
 #include "DigitalSignalProcessing/NotNull.h"
 #include "DigitalSignalProcessing/Debug.h"
 
+//Reference:
+// https://www.w3.org/TR/audio-eq-cookbook
+// https://ccrma.stanford.edu/~jos/filters
+
 #ifdef ARM_SIMD_BIQUAD
 #include <CMSIS-DSP/Include/arm_math.h>
 

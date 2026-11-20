@@ -41,25 +41,25 @@ public:
 struct AMCClassConfig
 {
 public:
-	uint32_t SupportedSampleRates[SAMPLE_RATE_COUNT]; // Array of supported sample rates (e.g., 44100, 48000).
-	puint8_t SupportedSampleRateCount;                 // Total number of supported sample rates.
-	uint8_t DefaultSampleRateIndex;                   // Array index for the default sample rate.
+	uint32_t SupportedSampleRates[SAMPLE_RATE_COUNT] = {}; // Array of supported sample rates (e.g., 44100, 48000).
+	puint8_t SupportedSampleRateCount = 1;                 // Total number of supported sample rates.
+	uint8_t DefaultSampleRateIndex = 0;                   // Array index for the default sample rate.
 
-	BitDepths SupportedBitDepths[BIT_DEPTH_COUNT];  // Array of supported bit depths (e.g., 16, 24).
-	puint8_t SupportedBitDepthCount;                   // Total number of supported bit depths.
-	uint8_t DefaultBitDepthIndex;                     // Array index for the default bit depth.
+	BitDepths SupportedBitDepths[BIT_DEPTH_COUNT] = {};  // Array of supported bit depths (e.g., 16, 24).
+	puint8_t SupportedBitDepthCount = 1;                   // Total number of supported bit depths.
+	uint8_t DefaultBitDepthIndex = 0;                     // Array index for the default bit depth.
 
-	uint8_t InputChannelCount;                        // Number of input (capture) audio channels.
-	uint8_t OutputChannelCount;                       // Number of output (playback) audio channels.
+	cc_uint8_t<0, 2> InputChannelCount = 0;                        // Number of input (capture) audio channels.
+	cc_uint8_t<0, 2> OutputChannelCount = 0;                       // Number of output (playback) audio channels.
 
-	bool EnableHardwareVolumeControl;               // Indicates if hardware volume control is supported/enabled.
+	bool EnableHardwareVolumeControl = false;               // Indicates if hardware volume control is supported/enabled.
 	dBGain MinimumVolume;                           // Minimum volume level (in dB).
 	dBGain MaximumVolume;                           // Maximum volume level (in dB).
 	dBGain VolumeResolution;                        // Volume resolution (in dB).
-	bool EnableHardwareMute;                        // Indicates if hardware mute control is supported/enabled.
+	bool EnableHardwareMute = true;                        // Indicates if hardware mute control is supported/enabled.
 
-	cstr InputTitle;										// Terminal title for the audio interface (e.g., "Line In", "Microphone").
-	cstr OutputTitle;										// Terminal title for the audio interface (e.g., "Line Out", "Speakers").
+	cstr InputTitle = nullptr;										// Terminal title for the audio interface (e.g., "Line In", "Microphone").
+	cstr OutputTitle = nullptr;										// Terminal title for the audio interface (e.g., "Line Out", "Speakers").
 };
 
 // Enumeration of supported USB device classes.
@@ -74,11 +74,21 @@ struct USBClassNode
 {
 public:
 	USBClassNode(void)
-		: Class(USBDeviceClasses::CDC),
-		CDC{}
+		: Class(USBDeviceClasses::CDC)
 	{}
 
-	~USBClassNode(void) {}
+	explicit USBClassNode(const CDCClassConfig& Config)
+		: Class(USBDeviceClasses::CDC),
+		CDC(Config)
+	{}
+
+	explicit USBClassNode(const AMCClassConfig& Config)
+		: Class(USBDeviceClasses::AMC),
+		AMC(Config)
+	{}
+
+	~USBClassNode(void)
+	{}
 
 public:
 	USBDeviceClasses Class; // The selected USB class type for this node.
