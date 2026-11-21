@@ -60,7 +60,7 @@ enum class BiquadFilterDesigns : uint8_t
 template <typename T, uint32_t SampleRateValue, uint8_t StageCount = 1, BiquadFilterDesigns Design = BiquadFilterDesigns::Identical>
 class BiquadFilter : public Filter<T, SampleRateValue>
 {
-	static_assert(StageCount != 0, "StageCount cannot be 0");
+	STATIC_ASSERT(StageCount != 0, "StageCount cannot be 0");
 
 #ifdef ARM_SIMD_BIQUAD
 	ASSERT_ON_ONLY_FLOAT_TYPE(T);
@@ -228,7 +228,7 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * (float)Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
@@ -266,7 +266,8 @@ public:
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
 
-		const ValueType bBase = (1 - CosOmega) / 2;
+		const ValueType OneMinusCos = 2 * Math::Sin(Omega / 2) * Math::Sin(Omega / 2);
+		const ValueType bBase = OneMinusCos / 2;
 
 		Coefficients CoeffsArray[StageCount] = {};
 		for (uint8_t i = 0; i < StageCount; ++i)
@@ -277,7 +278,7 @@ public:
 			const ValueType Alpha = SinOmega / (2 * DistributedQ);
 
 			Coeffs.b0 = bBase;
-			Coeffs.b1 = 1 - CosOmega;
+			Coeffs.b1 = OneMinusCos;
 			Coeffs.b2 = bBase;
 			Coeffs.a1 = -2 * CosOmega;
 			Coeffs.a2 = 1 - Alpha;
@@ -331,7 +332,7 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
@@ -366,7 +367,7 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
@@ -403,11 +404,13 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
 		const ValueType Omega = Math::TWO_PI_VALUE * (float)Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
+
+		const ValueType StageGain = Math::Power((ValueType)Quality, (ValueType)1 / StageCount);
 
 		Coefficients CoeffsArray[StageCount] = {};
 		for (uint8_t i = 0; i < StageCount; ++i)
@@ -417,9 +420,9 @@ public:
 			const ValueType DistributedQ = GetDistributedQualityFactor(i, Quality);
 			const ValueType Alpha = SinOmega / (2 * DistributedQ);
 
-			Coeffs.b0 = Alpha;
+			Coeffs.b0 = Alpha * StageGain;
 			Coeffs.b1 = 0;
-			Coeffs.b2 = -Alpha;
+			Coeffs.b2 = -Alpha * StageGain;
 			Coeffs.a1 = -2 * CosOmega;
 			Coeffs.a2 = 1 - Alpha;
 
@@ -437,7 +440,7 @@ public:
 	{
 		CHECK_CUTOFF_SLOPE_VALUE();
 
-		const ValueType A = Math::Power(10.0, (dBGain)Gain / 40);
+		const ValueType A = Math::Power(10.0, (dBGain)Gain / (40 * StageCount));
 		const ValueType Omega = Math::TWO_PI_VALUE * (Frequency)Cutoff / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
@@ -475,7 +478,7 @@ public:
 	{
 		CHECK_CUTOFF_SLOPE_VALUE();
 
-		const ValueType A = Math::Power(10.0, (dBGain)Gain / 40);
+		const ValueType A = Math::Power(10.0, (dBGain)Gain / (40 * StageCount));
 		const ValueType Omega = Math::TWO_PI_VALUE * (Frequency)Cutoff / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
@@ -514,9 +517,9 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
-		const ValueType A = Math::Power(10.0, (dBGain)Gain / 40);
+		const ValueType A = Math::Power(10.0, (dBGain)Gain / (40 * StageCount));
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
@@ -550,9 +553,9 @@ public:
 		CHECK_BAND_VALUES();
 
 		const Frequency Center = Band.GetCenter();
-		const QualityFactor Quality(Band);
+		const QualityFactor Quality(Band, SampleRate);
 
-		const ValueType A = Math::Power(10.0, (dBGain)Gain / 40);
+		const ValueType A = Math::Power(10.0, (dBGain)Gain / (40 * StageCount));
 		const ValueType Omega = Math::TWO_PI_VALUE * Center / SampleRate;
 		const ValueType CosOmega = Math::Cos(Omega);
 		const ValueType SinOmega = Math::Sin(Omega);
@@ -566,9 +569,11 @@ public:
 			const ValueType Alpha = SinOmega / (2 * DistributedQ);
 			const ValueType TwoSqrtAAlpha = 2 * Math::SquareRoot(A) * Alpha;
 
-			Coeffs.b0 = A * ((A + 1) + (A - 1) * CosOmega + TwoSqrtAAlpha);
-			Coeffs.b1 = -2 * A * ((A - 1) + (A + 1) * CosOmega);
-			Coeffs.b2 = A * ((A + 1) + (A - 1) * CosOmega - TwoSqrtAAlpha);
+			const ValueType Comp = 1 / A;
+
+			Coeffs.b0 = A * ((A + 1) + (A - 1) * CosOmega + TwoSqrtAAlpha) * Comp;
+			Coeffs.b1 = -2 * A * ((A - 1) + (A + 1) * CosOmega) * Comp;
+			Coeffs.b2 = A * ((A + 1) + (A - 1) * CosOmega - TwoSqrtAAlpha) * Comp;
 			Coeffs.a1 = 2 * ((A - 1) - (A + 1) * CosOmega);
 			Coeffs.a2 = (A + 1) - (A - 1) * CosOmega - TwoSqrtAAlpha;
 
@@ -586,23 +591,20 @@ private:
 
 		const float n = StageCount * 2;
 
-		switch (Design)
-		{
-		case BiquadFilterDesigns::Identical:
+		if constexpr (Design == BiquadFilterDesigns::Identical)
 			return (ValueType)Base;
-
-		case BiquadFilterDesigns::Butterworth:
+		else if constexpr (Design == BiquadFilterDesigns::Butterworth)
 		{
 			const float angle = (2 * StageIndex + 1) * Math::PI_VALUE / (2 * n);
 			return 1 / (2 * Math::Sin(angle));
 		}
-
-		case BiquadFilterDesigns::LinkwitzRiley:
+		else if constexpr (Design == BiquadFilterDesigns::LinkwitzRiley)
 		{
 			const float angle = (2 * (StageIndex / 2) + 1) * Math::PI_VALUE / n;
 			return 1 / (2 * Math::Sin(angle));
 		}
-		}
+
+		NOT_IMPLEMENTED();
 
 		return 0;
 	}

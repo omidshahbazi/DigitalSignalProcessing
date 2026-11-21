@@ -8,7 +8,7 @@
 template <typename T, uint32_t SampleRate, uint16_t SampleCount>
 class FrequencyDetector
 {
-	static_assert(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
+	STATIC_ASSERT(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
 
 public:
 	FrequencyDetector(void)

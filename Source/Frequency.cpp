@@ -1,5 +1,6 @@
 #include "DigitalSignalProcessing/Frequency.h"
 #include "DigitalSignalProcessing/Math.h"
+#include "DigitalSignalProcessing/Debug.h"
 
 void FixBandFrequency(Frequency& Low, Frequency& High)
 {
@@ -107,6 +108,20 @@ Frequency FrequencyBand::GetHigh(void) const
 QualityFactor::QualityFactor(FrequencyBand Band)
 {
 	m_Value = 1 / (2 * Math::SinH(Math::HALF_LOG_NATURAL_2 * Band.GetBandwidth()));
+
+	ASSERT_VALUE_GREATER(m_Value, 0);
+}
+
+QualityFactor::QualityFactor(FrequencyBand Band, uint32_t SampleRate)
+{
+	ASSERT_VALUE_GREATER(SampleRate, 0);
+
+	const float Omega = Math::TWO_PI_VALUE * (float)Band.GetCenter() / SampleRate;
+	const float Warp = Omega / Math::Sin(Omega);
+	const float x = Math::HALF_LOG_NATURAL_2 / 2 * (float)Band.GetBandwidth() * Warp;
+
+	m_Value = 1 / (2 * Math::SinH(x));
+	//m_Value = 1 / (Math::Exponential(x) - Math::Exponential(-x)); // = 1 / (2 * sinh(x))
 
 	ASSERT_VALUE_GREATER(m_Value, 0);
 }

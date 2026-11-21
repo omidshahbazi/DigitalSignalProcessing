@@ -2,6 +2,10 @@
 
 #include "DataTypes.h"
 
+#define STATIC_ASSERT(Expression, Message) static_assert(Expression, Message)
+#define STATIC_BREAK(Message) STATIC_ASSERT(false, Message)
+#define STATIC_NOT_IMPLEMENTED() STATIC_BREAK("Not Implemented.")
+
 #if defined(DEBUG)
 #define TURN_OFF_OPTIMIZER() \
  		_Pragma("GCC push_options") \
@@ -36,7 +40,7 @@ static constexpr uint8_t BIT_DEPTH_24 = 24;
 static constexpr uint8_t BIT_DEPTH_32 = 32;
 static constexpr uint8_t BIT_DEPTH_COUNT = 4;
 
-#define ASSERT_ON_SAMPLE_RATE(SampleRate) static_assert(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
+#define ASSERT_ON_SAMPLE_RATE(SampleRate) STATIC_ASSERT(MIN_SAMPLE_RATE <= SampleRate && SampleRate <= MAX_SAMPLE_RATE, "Invalid SampleRate")
 
 #define KB *1024
 #define MB *1048576
@@ -49,12 +53,12 @@ static constexpr uint8_t BIT_DEPTH_COUNT = 4;
 #ifndef MAX_FRAME_LENGTH
 #define MAX_FRAME_LENGTH 64
 #endif
-static_assert(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
+STATIC_ASSERT(MAX_FRAME_LENGTH > 0, "Invalid MAX_FRAME_LENGTH defined");
 
 #ifndef UP_SAMPLE_FACTOR
 #define UP_SAMPLE_FACTOR 4
 #endif
-static_assert(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
+STATIC_ASSERT(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 
 #define CLONE_BUFFER(Name)                                                                                      \
 	ASSERT(MAX_FRAME_LENGTH >= Count, "Insufficient buffer size for " #Name " %i<%i", MAX_FRAME_LENGTH, Count); \

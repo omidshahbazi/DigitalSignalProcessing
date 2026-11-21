@@ -123,7 +123,7 @@ private:
 	float m_WetRate;
 };
 
-template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
-using DefaultDistortion = Distortion<T, SampleRate, PolynomialSimpleClipperFilter<T, ClipperSampleRate>>;
+template<typename T, uint32_t SampleRate>
+using DefaultDistortion = Distortion<T, SampleRate, PolynomialSimpleClipperFilter<T, SampleRate>>;
 
 #endif

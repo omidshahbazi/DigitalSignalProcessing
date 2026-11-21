@@ -17,6 +17,8 @@ enum class ResistorCapacitorOrders : uint8_t
 template<typename T, uint32_t SampleRate, ResistorCapacitorOrders Order>
 class ResistorCapacitorFilter : public Filter<T, SampleRate>
 {
+	STATIC_ASSERT(SampleRate > 2 * MAX_FREQUENCY_VALUE, "SampleRate must be above twice MAX_FREQUENCY");
+
 public:
 	ResistorCapacitorFilter(void)
 		: m_Alpha(0),
@@ -29,9 +31,9 @@ public:
 	{
 		m_CutoffFrequency = Value;
 
-		m_Alpha = 1 / (1 + (SampleRate / (Math::TWO_PI_VALUE * m_CutoffFrequency)));
+		const T g = Math::Tan(Math::PI_VALUE * m_CutoffFrequency / SampleRate);
 
-		Reset();
+		m_Alpha = g / (1 + g);
 	}
 	Frequency GetCutoffFrequency(void) const
 	{
@@ -47,12 +49,14 @@ public:
 	{
 		for (uint8_t i = 0; i < Count; ++i)
 		{
-			m_Memory += m_Alpha * (Buffer[i] - m_Memory);
+			const T v = (Buffer[i] - m_Memory) * m_Alpha;
+			const T lp = v + m_Memory;
+			m_Memory = lp + v;
 
 			if constexpr (Order == ResistorCapacitorOrders::ResistorFirst)
-				Buffer[i] = m_Memory;
+				Buffer[i] = lp;
 			else if constexpr (Order == ResistorCapacitorOrders::CapacitorFirst)
-				Buffer[i] -= m_Memory;
+				Buffer[i] -= lp;
 			else
 				NOT_IMPLEMENTED();
 		}

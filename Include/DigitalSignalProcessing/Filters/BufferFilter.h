@@ -9,7 +9,7 @@
 template <typename T, uint32_t SampleRate, uint16_t MaxTime>
 class BufferFilter : public Filter<T, SampleRate>
 {
-	static_assert(0 < MaxTime, "Invalid MaxTime");
+	STATIC_ASSERT(0 < MaxTime, "Invalid MaxTime");
 
 public:
 	typedef cc_float<0, MaxTime> TimeRange;

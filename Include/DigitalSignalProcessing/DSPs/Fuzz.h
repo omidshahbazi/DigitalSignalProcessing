@@ -121,7 +121,7 @@ private:
 	float m_WetRate;
 };
 
-template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
-using DefaultFuzz = Fuzz<T, SampleRate, TransistorClipperFilter<T, ClipperSampleRate>>;
+template<typename T, uint32_t SampleRate>
+using DefaultFuzz = Fuzz<T, SampleRate, TransistorClipperFilter<T, SampleRate>>;
 
 #endif

@@ -137,7 +137,11 @@ public:
 		: m_Value(Value)
 	{}
 
+	//Analog
 	QualityFactor(FrequencyBand Band);
+
+	//Digital
+	QualityFactor(FrequencyBand Band, uint32_t SampleRate);
 
 	operator float(void) const
 	{

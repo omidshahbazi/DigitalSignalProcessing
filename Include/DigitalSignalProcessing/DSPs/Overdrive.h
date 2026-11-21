@@ -9,51 +9,51 @@
 #include "DigitalSignalProcessing/Filters/ResistorCapacitorFilter.h"
 #include "DigitalSignalProcessing/Filters/EnvelopeFollowerFilter.h"
 
-//struct OverdriveSettings
-//{
-//public:
-//	Frequency PreHighPassFrequency = Frequency(720);
-//	Frequency PostHighPassFrequency = Frequency(20);
-//	Frequency PostLowPassFrequency = Frequency(2.4 KHz);
-//
-//	Frequency MinToneFrequency = Frequency(1 KHz);
-//	Frequency MaxToneFrequency = Frequency(5 KHz);
-//
-//	dBGain MaxDriveGain = dBGain(60);
-//
-//	//Linear gain applied together with the user gain. 1 = unchanged.
-//	LinearGain OutputCompensation = 1;
-//
-//	cc_ratio_t Asymmetry = 0.3f;
-//	cc_ratio_t PowerSag = 0;
-//};
+struct OverdriveSettings
+{
+public:
+	Frequency PreHighPassFrequency = Frequency(400);
+	Frequency PostHighPassFrequency = Frequency(20);
+	Frequency PostLowPassFrequency = Frequency(4 KHz);
+
+	dBGain MinDrive = dBGain(0);
+	dBGain MaxDrive = dBGain(40);
+
+	Frequency MinToneFrequency = Frequency(800);
+	Frequency MaxToneFrequency = Frequency(6 KHz);
+
+	cc_ratio_t Asymmetry = 0.2f;
+
+	LinearGain DirectPathGain = LinearGain(0);
+	pfloat OutputCompensation = 1;
+};
 
 template <typename T, uint32_t SampleRate, typename Clipper>
 class Overdrive : public IDSP<T, SampleRate>
 {
 public:
-	Overdrive(void)
+	Overdrive(const OverdriveSettings& Settings) :
+		m_Settings(Settings)
 	{
 		SetDrive(0.5);
 		SetTone(0.5);
 		SetGain(NORMAL_GAIN);
 		SetPowerSag(0);
 
-		m_PreFilter.SetCutoffFrequency(Frequency(720));
-		m_PostFilter1.SetCutoffFrequency(Frequency(20));
-		m_PostFilter2.SetCutoffFrequency(Frequency(2.4 KHz));
+		m_PreFilter.SetCutoffFrequency(m_Settings.PreHighPassFrequency);
+		m_PostFilter1.SetCutoffFrequency(m_Settings.PostHighPassFrequency);
+		m_PostFilter2.SetCutoffFrequency(m_Settings.PostLowPassFrequency);
 		m_EnvelopeFollowerFilter.SetAttackTime(5 ms);
 		m_EnvelopeFollowerFilter.SetReleaseTime(100 ms);
-		m_GainStage.GetClipper().SetAsymmetry(0.3);
+		m_GainStage.GetClipper().SetAsymmetry(m_Settings.Asymmetry);
 	}
+	Overdrive(const OverdriveSettings&&) = delete;
 
 	void SetDrive(cc_ratio_t Value)
 	{
 		m_Drive = Value;
 
-		static const float Max = (LinearGain)dBGain(60);
-
-		m_GainStage.SetInputGain((LinearGain)Math::ExponentialLerp(1.0, Max, m_Drive));
+		m_GainStage.SetInputGain((LinearGain)Math::ExponentialLerp((float)(LinearGain)m_Settings.MinDrive, (float)(LinearGain)m_Settings.MaxDrive, m_Drive));
 	}
 	cc_ratio_t GetDrive(void) const
 	{
@@ -64,7 +64,7 @@ public:
 	{
 		m_Tone = Value;
 
-		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(1 KHz, 5 KHz, m_Tone));
+		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(m_Settings.MinToneFrequency, m_Settings.MaxToneFrequency, m_Tone));
 	}
 	float GetTone(void) const
 	{
@@ -76,6 +76,7 @@ public:
 		m_Gain = Value;
 
 		m_OutputGain = m_Gain;
+		m_OutputGain = LinearGain(m_OutputGain * m_Settings.OutputCompensation);
 	}
 	dBGain GetGain(void) const
 	{
@@ -93,10 +94,13 @@ public:
 
 	void Process(T* Buffer, uint8_t Count) override
 	{
+		CLONE_BUFFER(dryBuffer);
+
 		m_PreFilter.Process(Buffer, Count);
 
-		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] *= 1 + m_EnvelopeFollowerFilter.Process(Buffer[i]) * m_PowerSag;
+		if (m_PowerSag != 0)
+			for (uint8_t i = 0; i < Count; ++i)
+				Buffer[i] *= 1 + m_EnvelopeFollowerFilter.Process(Buffer[i]) * m_PowerSag;
 
 		T* upBuffer = m_UpSampler.Process(Buffer);
 		{
@@ -104,6 +108,10 @@ public:
 
 			m_UpSampler.DownSample(Buffer);
 		}
+
+		if (m_Settings.DirectPathGain != 0)
+			for (uint8_t i = 0; i < Count; ++i)
+				Buffer[i] += dryBuffer[i] * m_Settings.DirectPathGain;
 
 		m_PostFilter1.Process(Buffer, Count);
 		m_PostFilter2.Process(Buffer, Count);
@@ -115,6 +123,8 @@ public:
 	}
 
 private:
+	const OverdriveSettings& m_Settings;
+
 	EnvelopeFollowerFilter<T, SampleRate> m_EnvelopeFollowerFilter;
 	HighPassResistorCapacitorFilter<T, SampleRate> m_PreFilter;
 	UpSamplerFilter<T, SampleRate, FrameLength, UP_SAMPLE_FACTOR, true> m_UpSampler;
@@ -130,7 +140,7 @@ private:
 	LinearGain m_OutputGain;
 };
 
-template<typename T, uint32_t SampleRate, uint32_t ClipperSampleRate = SampleRate>
-using DefaultOverdrive = Overdrive<T, SampleRate, SiliconDiodeClipperFilter<T, ClipperSampleRate>>;
+template<typename T, uint32_t SampleRate>
+using DefaultOverdrive = Overdrive<T, SampleRate, SiliconDiodeClipperFilter<T, SampleRate>>;
 
 #endif

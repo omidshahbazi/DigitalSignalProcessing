@@ -18,6 +18,12 @@
 	SPECIFIC_TYPES()
 
 
+#define HANDLE_TYPE(Type) using nn##Type = non_negative_value<Type>;
+SIGNED_INTEGER_TYPES();
+FLOATING_POINT_TYPES();
+#undef HANDLE_TYPE
+
+
 #define HANDLE_TYPE(Type) using nz##Type = non_zero_value<Type>;
 SIGNED_INTEGER_TYPES();
 FLOATING_POINT_TYPES();

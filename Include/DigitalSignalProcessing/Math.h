@@ -389,6 +389,14 @@ public:
 	}
 
 	template <typename T>
+	static T Tan(T Value)
+	{
+		ASSERT_ON_FLOATING_TYPE(T);
+
+		return (T)std::tan(Value);
+	}
+
+	template <typename T>
 	static T ATan(T Value)
 	{
 		ASSERT_ON_FLOATING_TYPE(T);

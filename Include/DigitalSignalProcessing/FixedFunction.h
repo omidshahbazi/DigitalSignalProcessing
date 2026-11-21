@@ -26,8 +26,8 @@ public:
 	template <typename F>
 	FixedFunction(F Callable)
 	{
-		static_assert(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage.");
-		static_assert(alignof(F) <= alignof(void*), "Callable alignment mismatch.");
+		STATIC_ASSERT(sizeof(F) <= StorageSize, "Callable size exceeds FixedFunction storage.");
+		STATIC_ASSERT(alignof(F) <= alignof(void*), "Callable alignment mismatch.");
 
 		new (static_cast<void*>(m_Storage)) F(std::move(Callable));
 
@@ -53,7 +53,7 @@ public:
 			}
 		};
 
-		static_assert(sizeof(BoundMethod) <= StorageSize, "Bound method exceeds storage size.");
+		STATIC_ASSERT(sizeof(BoundMethod) <= StorageSize, "Bound method exceeds storage size.");
 
 		BoundMethod bound = { Instance, Method };
 

@@ -3,6 +3,7 @@
 #define GAIN_H
 
 #include "Math.h"
+#include "Debug.h"
 
 struct dBGain;
 
@@ -13,6 +14,7 @@ public:
 	constexpr explicit LinearGain(float Value)
 		: m_Value(Value)
 	{
+		ASSERT_VALUE_GREATER_EQUAL(m_Value, 0);
 	}
 	LinearGain(const dBGain &gain);
 

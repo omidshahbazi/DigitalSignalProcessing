@@ -51,7 +51,7 @@ public:
 	template <uint16_t SampleCount>
 	static void FastFourierTransform(Complex *Buffer)
 	{
-		static_assert(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
+		STATIC_ASSERT(Math::IsPowerOfTwo(SampleCount), "SampleCount must be power-of-two");
 
 #ifdef ARM_SIMD_FAST_FOURIER_TRANSFORMER
 		arm_cfft_instance_f32 S;

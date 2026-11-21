@@ -14,9 +14,9 @@ class FiniteImpulseResponseFilter : public Filter<T, SampleRate>
 {
 #ifdef ARM_SIMD_FINITE_IMPULSE_RESPONSE
 	ASSERT_ON_ONLY_FLOAT_TYPE(T);
-	static_assert(MaxTaps <= 2048, "FIR filter cannot handle more than 2048 IR taps");
+	STATIC_ASSERT(MaxTaps <= 2048, "FIR filter cannot handle more than 2048 IR taps");
 #else
-	static_assert(MaxTaps <= 1024, "FIR filter cannot handle more than 1024 IR taps");
+	STATIC_ASSERT(MaxTaps <= 1024, "FIR filter cannot handle more than 1024 IR taps");
 #endif
 
 public:

@@ -16,7 +16,7 @@ struct Greater
 	template<typename T>
 	static constexpr bool Check(T X)
 	{
-		static_assert(static_cast<T>(V) == V, "Constraint value not representable in T");
+		STATIC_ASSERT(static_cast<T>(V) == V, "Constraint value not representable in T");
 
 		return X > static_cast<T>(V);
 	}
@@ -31,7 +31,7 @@ struct GreaterEqual
 	template<typename T>
 	static constexpr bool Check(T X)
 	{
-		static_assert(static_cast<T>(V) == V, "Constraint value not representable in T");
+		STATIC_ASSERT(static_cast<T>(V) == V, "Constraint value not representable in T");
 
 		return X >= static_cast<T>(V);
 	}
@@ -46,7 +46,7 @@ struct Less
 	template<typename T>
 	static constexpr bool Check(T X)
 	{
-		static_assert(static_cast<T>(V) == V, "Constraint value not representable in T");
+		STATIC_ASSERT(static_cast<T>(V) == V, "Constraint value not representable in T");
 
 		return X < static_cast<T>(V);
 	}
@@ -61,7 +61,7 @@ struct LessEqual
 	template<typename T>
 	static constexpr bool Check(T X)
 	{
-		static_assert(static_cast<T>(V) == V, "Constraint value not representable in T");
+		STATIC_ASSERT(static_cast<T>(V) == V, "Constraint value not representable in T");
 
 		return X <= static_cast<T>(V);
 	}
@@ -76,7 +76,7 @@ struct NotEqual
 	template<typename T>
 	static constexpr bool Check(T X)
 	{
-		static_assert(static_cast<T>(V) == V, "Constraint value not representable in T");
+		STATIC_ASSERT(static_cast<T>(V) == V, "Constraint value not representable in T");
 
 		return X != static_cast<T>(V);
 	}
@@ -85,7 +85,7 @@ struct NotEqual
 template<typename T, typename... Constraints>
 class Constrained
 {
-	static_assert(sizeof...(Constraints) > 0, "At least one constraint is required");
+	STATIC_ASSERT(sizeof...(Constraints) > 0, "At least one constraint is required");
 
 public:
 	Constrained(void) = delete;   // explicit value required (see below)
@@ -133,6 +133,9 @@ private:
 
 	T m_Value;
 };
+
+template<typename T>
+using non_negative_value = Constrained<T, GreaterEqual<0>>;
 
 template<typename T>
 using non_zero_value = Constrained<T, NotEqual<0>>;
