@@ -15,11 +15,13 @@ public:
 		SetInputGain(NORMAL_GAIN);
 	}
 
-	virtual void SetInputGain(LinearGain Value)
+	virtual void SetInputGain(dBGain Value)
 	{
 		m_InputGain = Value;
+
+		m_Gain = m_InputGain;
 	}
-	LinearGain GetInputGain(void) const
+	dBGain GetInputGain(void) const
 	{
 		return m_InputGain;
 	}
@@ -36,7 +38,7 @@ public:
 	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] *= m_InputGain;
+			Buffer[i] *= m_Gain;
 
 		m_Clipper.Process(Buffer, Count);
 	}
@@ -44,7 +46,8 @@ public:
 	FILTER_FORWARD_DECLARATION()
 
 private:
-	LinearGain m_InputGain;
+	dBGain m_InputGain;
+	LinearGain m_Gain;
 
 	Clipper m_Clipper;
 };

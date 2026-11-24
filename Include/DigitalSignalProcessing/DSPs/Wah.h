@@ -76,9 +76,9 @@ private:
 	void UpdateParameters(void)
 	{
 		const FrequencyRange& freqRange = FREQUENCY_RANGES[(uint32_t)m_Type];
-		Frequency freq = (Frequency)Math::FrequencyLerp(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
+		Frequency freq = Frequency::Interpolate(freqRange.FrequencyMin, freqRange.FrequencyMax, m_Ratio);
 		QualityFactor q = (QualityFactor)Math::Lerp(freqRange.QualityFactorMin, freqRange.QualityFactorMax, m_Ratio);
-		dBGain gain = (dBGain)Math::Lerp(freqRange.GainMin, freqRange.GainMax, m_Ratio);
+		dBGain gain = dBGain::Interpolate(freqRange.GainMin, freqRange.GainMax, m_Ratio);
 
 		m_PeakEQFilter.SetParameters(FrequencyBand(freq, q), gain);
 	}

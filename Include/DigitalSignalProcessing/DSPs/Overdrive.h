@@ -53,7 +53,7 @@ public:
 	{
 		m_Drive = Value;
 
-		m_GainStage.SetInputGain((LinearGain)Math::ExponentialLerp((float)(LinearGain)m_Settings.MinDrive, (float)(LinearGain)m_Settings.MaxDrive, m_Drive));
+		m_GainStage.SetInputGain(dBGain::Interpolate(m_Settings.MinDrive, m_Settings.MaxDrive, m_Drive));
 	}
 	cc_ratio_t GetDrive(void) const
 	{
@@ -64,7 +64,7 @@ public:
 	{
 		m_Tone = Value;
 
-		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(m_Settings.MinToneFrequency, m_Settings.MaxToneFrequency, m_Tone));
+		m_ToneFilter.SetCutoffFrequency(Frequency::Interpolate(m_Settings.MinToneFrequency, m_Settings.MaxToneFrequency, m_Tone));
 	}
 	float GetTone(void) const
 	{

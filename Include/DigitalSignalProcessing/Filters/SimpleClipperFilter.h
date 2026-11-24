@@ -51,14 +51,24 @@ protected:
 			return Value;
 		}
 		else if constexpr (Type == SimpleClipperFilterTypes::Polynomial)
-			return (Value >= 0) ? Math::TanH(Value) : NegativeScale * Math::TanH(Value / NegativeScale);
+		{
+			const float Positive = Base::GetPositiveThreshold();
+			const float Negative = -Base::GetNegativeThreshold() * NegativeScale;
+
+			return (Value >= 0) ? Positive * Math::TanH(Value / Positive) : Negative * Math::TanH(Value / Negative);
+		}
 		else if constexpr (Type == SimpleClipperFilterTypes::Hyperbolic)
-			return (Value >= 0) ? Math::ATan(Value * Math::HALF_PI_VALUE) / Math::HALF_PI_VALUE : NegativeScale * Math::ATan(Value * Math::HALF_PI_VALUE / NegativeScale) / Math::HALF_PI_VALUE;
+		{
+			const float Positive = Base::GetPositiveThreshold();
+			const float Negative = -Base::GetNegativeThreshold() * NegativeScale;
+
+			return (Value >= 0) ? Positive * Math::ATan(Value * Math::HALF_PI_VALUE / Positive) / Math::HALF_PI_VALUE : Negative * Math::ATan(Value * Math::HALF_PI_VALUE / Negative) / Math::HALF_PI_VALUE;
+		}
 		else if constexpr (Type == SimpleClipperFilterTypes::Hard)
 		{
-			const float NegativeLimit = Base::GetNegativeThreshold() * NegativeScale;
+			const float Negative = Base::GetNegativeThreshold() * NegativeScale;
 
-			return Math::Clamp(Value, NegativeLimit, Base::GetPositiveThreshold());
+			return Math::Clamp(Value, Negative, Base::GetPositiveThreshold());
 		}
 		else
 			NOT_IMPLEMENTED();

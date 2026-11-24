@@ -73,4 +73,17 @@ private:
 	uint32_t m_LastFreeIndex;
 };
 
+template<typename AllocatorType, uint16_t Size>
+struct AllocatorBuffer
+{
+public:
+	AllocatorBuffer(void)
+		: StorageBuffer{},
+		Allocator(StorageBuffer, Size)
+	{}
+
+	uint8_t StorageBuffer[Size];
+	AllocatorType Allocator;
+};
+
 #endif

@@ -304,12 +304,6 @@ public:
 	}
 
 	template <typename T, typename U>
-	static auto FrequencyLerp(T Min, U Max, float Time) -> decltype(Min* Max* Time)
-	{
-		return ExponentialLerp(Min, Max, Time);
-	}
-
-	template <typename T, typename U>
 	static auto FrequencyDiff(T Min, U Max) -> decltype(Min* Max)
 	{
 		return Log2(Max / Min);

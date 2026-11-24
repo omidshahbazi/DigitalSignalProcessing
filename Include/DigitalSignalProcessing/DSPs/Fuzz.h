@@ -30,9 +30,9 @@ public:
 	{
 		m_Drive = Value;
 
-		m_GainStage.SetInputGain((LinearGain)Math::Lerp(10, 200, m_Drive));
+		m_GainStage.SetInputGain(LinearGain::Interpolate(10, 200, m_Drive));
 		//m_InvertedPreGain = (LinearGain)(1 / Math::SquareRoot((float)m_PreGain));
-		m_PreFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(200.0, 400.0, m_Drive));
+		m_PreFilter.SetCutoffFrequency(Frequency::Interpolate(200.0, 400.0, m_Drive));
 	}
 	float GetDrive(void) const
 	{
@@ -52,7 +52,7 @@ public:
 	{
 		m_Tone = Value;
 
-		m_ToneFilter.SetCutoffFrequency((Frequency)Math::FrequencyLerp(1 KHz, 8 KHz, m_Tone));
+		m_ToneFilter.SetCutoffFrequency(Frequency::Interpolate(1 KHz, 8 KHz, m_Tone));
 	}
 	float GetTone(void) const
 	{

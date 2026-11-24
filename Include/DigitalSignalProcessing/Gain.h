@@ -33,6 +33,12 @@ public:
 		return LinearGain(m_Value - Other.m_Value);
 	}
 
+	static LinearGain Interpolate(float Min, float Max, float Time, bool Linear = false)
+	{
+		return Interpolate(LinearGain(Min), LinearGain(Max), Time, Linear);
+	}
+	static LinearGain Interpolate(LinearGain Min, LinearGain Max, float Time, bool Linear = false);
+
 private:
 	float m_Value = 1;
 };
@@ -61,6 +67,12 @@ public:
 	{
 		return dBGain(m_Value - Other.m_Value);
 	}
+
+	static dBGain Interpolate(float Min, float Max, float Time)
+	{
+		return Interpolate(dBGain(Min), dBGain(Max), Time);
+	}
+	static dBGain Interpolate(dBGain Min, dBGain Max, float Time);
 
 private:
 	float m_Value = 0;

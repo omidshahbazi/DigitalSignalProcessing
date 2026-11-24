@@ -38,7 +38,7 @@ public:
 	}
 
 	//[0, 2]
-	virtual void SetPositiveThreshold(cc_float<0, 2> Value)
+	virtual void SetPositiveThreshold(oc_float<0, 2> Value)
 	{
 		m_PositiveThreshold = Value;
 
@@ -49,7 +49,7 @@ public:
 		return m_PositiveThreshold;
 	}
 
-	virtual void SetNegativeThreshold(cc_float<-2, 0> Value)
+	virtual void SetNegativeThreshold(oc_float<-2, 0> Value)
 	{
 		m_NegativeThreshold = Value;
 

@@ -2,7 +2,8 @@
 #include "DigitalSignalProcessing/Math.h"
 #include "DigitalSignalProcessing/Debug.h"
 
-void FixBandFrequency(Frequency& Low, Frequency& High)
+// So we won't run into out of range QualityFactor values [0.01, 10]
+static void FixBandFrequency(Frequency& Low, Frequency& High)
 {
 	// LowerBoundRatio = e^(2 * ASinH(1/20))
 	const double LowerBoundRatio = 1.1053423;
@@ -16,6 +17,11 @@ void FixBandFrequency(Frequency& Low, Frequency& High)
 
 		Low = (Frequency)(High / LowerBoundRatio);
 	}
+}
+
+Frequency Frequency::Interpolate(Frequency Min, Frequency Max, float Time)
+{
+	return (Frequency)Math::ExponentialLerp((float)Min, (float)Max, Time);
 }
 
 LinearOctave::LinearOctave(Frequency Low, Frequency High)
@@ -76,7 +82,7 @@ FrequencyBand::FrequencyBand(Frequency Low, Frequency High)
 {
 	FixBandFrequency(Low, High);
 
-	m_Center = (Frequency)Math::FrequencyLerp(Low, High, 0.5);
+	m_Center = Frequency::Interpolate(Low, High, 0.5);
 	m_Bandwidth = LogarithmicOctave(Low, High);
 }
 

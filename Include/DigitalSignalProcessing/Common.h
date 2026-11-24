@@ -72,6 +72,10 @@ STATIC_ASSERT(UP_SAMPLE_FACTOR > 1, "Invalid UP_SAMPLE_FACTOR defined");
 
 #define CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) CREATE_UP_SAMPLE_BUFFER(Name, UP_SAMPLE_FACTOR)
 
+#define CLONE_STANDARD_UP_SAMPLE_BUFFER(UpSamplerName, Name)\
+	CREATE_STANDARD_UP_SAMPLE_BUFFER(Name) \
+	Memory::Copy(UpSamplerName.GetBuffer(), Name, Count * UP_SAMPLE_FACTOR);
+
 #define TO_INTERLEAVING_BUFFER(BufferL, BufferR, Count, InterleavedBuffer) \
 	for (uint16_t i = 0; i < Count; ++i) \
 	{ \

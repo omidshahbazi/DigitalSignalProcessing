@@ -66,7 +66,7 @@ public:
 
 		double currentSlope = ((m_Envelope > Value) ? m_ReleaseSlope : m_AttackSlope);
 
-		m_Envelope = (LinearGain)Math::Lerp(Value, m_Envelope, currentSlope);
+		m_Envelope = LinearGain::Interpolate(Value, m_Envelope, currentSlope, true);
 
 		return m_Envelope;
 	}

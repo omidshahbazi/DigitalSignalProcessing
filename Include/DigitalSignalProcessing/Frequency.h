@@ -17,12 +17,19 @@ public:
 	constexpr Frequency(void) = default;
 	constexpr explicit Frequency(float Value)
 		: m_Value(Value)
-	{}
+	{
+	}
 
 	constexpr operator float(void) const
 	{
 		return m_Value;
 	}
+
+	static Frequency Interpolate(float Min, float Max, float Time)
+	{
+		return Interpolate(Frequency(Min), Frequency(Max), Time);
+	}
+	static Frequency Interpolate(Frequency Min, Frequency Max, float Time);
 
 private:
 	float m_Value = 0;
@@ -33,9 +40,6 @@ static constexpr Frequency MIN_FREQUENCY(MIN_FREQUENCY_VALUE);
 
 static constexpr int16_t MAX_FREQUENCY_VALUE = 20 KHz;
 static constexpr Frequency MAX_FREQUENCY(MAX_FREQUENCY_VALUE);
-
-// So we won't run into out of range QualityFactor values [0.01, 10]
-void FixBandFrequency(Frequency& Low, Frequency& High);
 
 struct LinearOctave
 {
