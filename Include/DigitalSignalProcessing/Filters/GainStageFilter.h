@@ -11,8 +11,19 @@ class GainStageFilter : public Filter<T, SampleRate>
 {
 public:
 	GainStageFilter(void)
+		: m_InputBias(0)
 	{
+		SetInputBias(0);
 		SetInputGain(NORMAL_GAIN);
+	}
+
+	void SetInputBias(cc_ratio_t Value)
+	{
+		m_InputBias = Value;
+	}
+	float GetInputBias(void) const
+	{
+		return m_InputBias;
 	}
 
 	virtual void SetInputGain(dBGain Value)
@@ -38,7 +49,7 @@ public:
 	void Process(T* Buffer, uint8_t Count) override
 	{
 		for (uint8_t i = 0; i < Count; ++i)
-			Buffer[i] *= m_Gain;
+			Buffer[i] = (Buffer[i] + m_InputBias) * m_Gain;
 
 		m_Clipper.Process(Buffer, Count);
 	}
@@ -46,6 +57,8 @@ public:
 	FILTER_FORWARD_DECLARATION()
 
 private:
+	float m_InputBias;
+
 	dBGain m_InputGain;
 	LinearGain m_Gain;
 
